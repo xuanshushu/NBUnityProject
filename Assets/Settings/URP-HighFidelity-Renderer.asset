@@ -119,4 +119,4 @@ MonoBehaviour:
   downSampling: 1
   disturbanceLayerMask:
     serializedVersion: 2
-    m_Bits: 33554432
+    m_Bits: 33555456
