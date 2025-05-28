@@ -1,0 +1,9 @@
+[submodule "Packages/XuanXuanRenderUtility"]
+	path = Packages/XuanXuanRenderUtility
+	url = https://github.com/xuanshushu/XuanXuanRenderUtility.git
+[submodule "Packages/NBShaders"]
+	path = Packages/NBShaders
+	url = https://github.com/xuanshushu/NBShaders.git
+[submodule "Packages/NBPostProcessing"]
+	path = Packages/NBPostProcessing
+	url = https://github.com/xuanshushu/NBPostProcessing
