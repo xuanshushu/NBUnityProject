@@ -455,7 +455,7 @@
         if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MAINTEX_CONTRAST))
         {
             _Contrast = GetCustomData(_W9ParticleCustomDataFlag2,FLAGBIT_POS_2_CUSTOMDATA_MAINTEX_CONTRAST,_Contrast,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
-            result.rgb = lerp(0.5,result.rgb,_Contrast);
+            result.rgb = lerp(_ContrastMidColor,result.rgb,_Contrast);
         }
         
         //流光部分

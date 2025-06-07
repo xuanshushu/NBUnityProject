@@ -17,6 +17,7 @@
     half _Saturability;
     half _HueShift;
     half _Contrast;
+    half3 _ContrastMidColor;
     half _AlphaAll;
     float4 _BaseMap_ST;
     float4 _BaseMap_AnimationSheetBlend_ST;//20240826 暂时只是给AnimationSheetHelper用。

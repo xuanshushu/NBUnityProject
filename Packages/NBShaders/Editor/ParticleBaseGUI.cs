@@ -228,6 +228,7 @@ namespace UnityEditor
                 });
                 
                 DrawToggleFoldOut(W9ParticleShaderFlags.foldOutMianTexContrast,4,"主贴图对比度","_Contrast_Toggle",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_1_MAINTEX_CONTRAST,1,isIndentBlock:true,drawBlock:(isToggle)=>{
+                    matEditor.ShaderProperty(helper.GetProperty("_ContrastMidColor"),"对比度中值颜色");
                     helper.DrawSlider("对比度","_Contrast",0,5);
                     DrawCustomDataSelect("对比度自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_2_CUSTOMDATA_MAINTEX_CONTRAST,2);
                 });

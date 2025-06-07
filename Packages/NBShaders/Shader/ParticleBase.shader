@@ -58,6 +58,7 @@
         _Saturability("饱和度", range(0,1)) = 0
         _Contrast_Toggle("__Contrast_Toggle",Float) = 0
         _Contrast("对比度", Float) = 1
+        _ContrastMidColor ("对比度中值颜色", Color) = (0.5, 0.5, 0.5, 1)//HDR颜色不需要做Gamma Linear转换，Unity默认用Linear颜色
         _HueShift("色相",Range(0,1)) = 0
         _AlphaAll("整体透明度",Range(0,1)) = 1
         _IgnoreVetexColor_Toggle("_IgnoreVetexColor_Toggle",Float) = 0
