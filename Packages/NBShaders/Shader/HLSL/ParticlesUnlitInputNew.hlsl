@@ -16,6 +16,7 @@
     // #endif
     half _Saturability;
     half _HueShift;
+    half _Contrast;
     half _AlphaAll;
     float4 _BaseMap_ST;
     float4 _BaseMap_AnimationSheetBlend_ST;//20240826 暂时只是给AnimationSheetHelper用。
@@ -113,8 +114,12 @@
     half3 _VertexOffset_CustomDir;
     half4 _VertexOffset_Map_ST;
 
+    half4 _VertexOffset_MaskMap_ST;
+    half3 _VertexOffset_MaskMap_Vec;
+
     half _ParallaxMapping_Intensity;
     half4 _ParallaxMapping_Map_ST;
+    half4 _ParallaxMapping_Vec;
 
     uint _W9ParticleShaderFlags;
 
@@ -125,6 +130,7 @@
     uint _W9ParticleCustomDataFlag0;
     uint _W9ParticleCustomDataFlag1;
     uint _W9ParticleCustomDataFlag2;
+    uint _W9ParticleCustomDataFlag3;
 
     uint _UVModeFlag0;
 
@@ -170,26 +176,66 @@
     SamplerState sampler_linear_RepeatU_ClampV;
     SamplerState sampler_linear_ClampU_RepeatV;
 
-    half4 SampleTexture2DWithWrapFlags(Texture2D tex,float2 uv,uint bits)
+    half4 SampleTexture2DWithWrapFlags(Texture2D tex,float2 uv,uint bits,bool sampleLOD = false,int lod = 0)
     {
         const int wrapMode = CheckLocalWrapFlags(bits);
         switch (wrapMode)
         {
-        case 0:
-            return tex.Sample(sampler_linear_repeat,uv);
-            break;
-        case 1:
-            return tex.Sample(sampler_linear_clamp,uv);
-            break;
-        case 2:
-            return tex.Sample(sampler_linear_RepeatU_ClampV,uv);
-            break;
-        case 3:
-            return tex.Sample(sampler_linear_ClampU_RepeatV,uv);
-            break;
-        default:
-            return tex.Sample(sampler_linear_repeat,uv);
-            break;
+            case 0:
+                if (sampleLOD)
+                {
+                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_repeat,uv,lod);
+                    
+                }
+                else
+                {
+                    return tex.Sample(sampler_linear_repeat,uv);
+                }
+                break;
+            case 1:
+                if (sampleLOD)
+                {
+                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_clamp,uv,lod);
+                    
+                }
+                else
+                {
+                    return tex.Sample(sampler_linear_clamp,uv);
+                }
+                break;
+            case 2:
+                if (sampleLOD)
+                {
+                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_RepeatU_ClampV,uv,lod);
+                    
+                }
+                else
+                {
+                    return tex.Sample(sampler_linear_RepeatU_ClampV,uv);
+                }
+                break;
+            case 3:
+                if (sampleLOD)
+                {
+                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_ClampU_RepeatV,uv,lod);
+                    
+                }
+                else
+                {
+                    return tex.Sample(sampler_linear_ClampU_RepeatV,uv);
+                }
+                break;
+            default:
+                if (sampleLOD)
+                {
+                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_repeat,uv,lod);
+                    
+                }
+                else
+                {
+                    return tex.Sample(sampler_linear_repeat,uv);
+                }
+                break;
         }
     }
 
@@ -739,38 +785,53 @@
     }
 
     Texture2D _VertexOffset_Map;
+    Texture2D _VertexOffset_MaskMap;
+    
     // half3  _VertexOffset_Vec;
     // half3 _VertexOffset_CustomDir;
     // half4 _VertexOffset_Map_ST;
 
-    half3 VetexOffset(half3 positionOS,half2 originUV,half3 normalOS)
+    half3 VetexOffset(half3 positionOS,half2 originUV,half2 originMaskUV,half3 normalOS)
     {
         half2 uv = TRANSFORM_TEX(originUV,_VertexOffset_Map);
         uv = UVOffsetAnimaiton(uv,_VertexOffset_Vec.xy);
         // half vertexOffsetSample = tex2Dlod(_VertexOffset_Map,half4(uv,0,0));
-        half vertexOffsetSample;
-        UNITY_BRANCH
-        if(CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_VERTEXOFFSETMAP))
+        half vertexOffsetSample = SampleTexture2DWithWrapFlags(_VertexOffset_Map,uv,FLAG_BIT_WRAPMODE_VERTEXOFFSET_MASKMAP,true,0);
+        // UNITY_BRANCH
+        // if(CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_VERTEXOFFSETMAP))
+        // {
+        //     vertexOffsetSample = SAMPLE_TEXTURE2D_LOD(_VertexOffset_Map,sampler_linear_clamp,uv,0);
+        // }
+        // else
+        // {
+        //     vertexOffsetSample = SAMPLE_TEXTURE2D_LOD(_VertexOffset_Map,sampler_linear_repeat,uv,0);
+        // }
+
+        if (!CheckLocalFlags1(FLAG_BIT_PARTICLE_1_VERTEXOFFSET_START_FROM_ZERO))
         {
-            vertexOffsetSample = SAMPLE_TEXTURE2D_LOD(_VertexOffset_Map,sampler_linear_clamp,uv,0);
+            vertexOffsetSample = vertexOffsetSample*2-1;
         }
-        else
-        {
-            vertexOffsetSample = SAMPLE_TEXTURE2D_LOD(_VertexOffset_Map,sampler_linear_repeat,uv,0);
-        }
-        vertexOffsetSample = vertexOffsetSample*2-1;
 
         half3 finalPos;
+        half vertexOffsetMask = 1;
+        if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_VERTEXOFFSET_MASKMAP))
+        {
+            half2 maskUV = TRANSFORM_TEX(originMaskUV,_VertexOffset_MaskMap);
+            maskUV = UVOffsetAnimaiton(maskUV,_VertexOffset_MaskMap_Vec.xy);
+            half vertexOffsetMaskSample = SampleTexture2DWithWrapFlags(_VertexOffset_MaskMap,maskUV,FLAG_BIT_WRAPMODE_VERTEXOFFSET_MASKMAP,true,0);
+            vertexOffsetMask = lerp(1,vertexOffsetMaskSample,_VertexOffset_MaskMap_Vec.z);
+        }
      
         UNITY_BRANCH
         if(CheckLocalFlags(FLAG_BIT_PARTICLE_VERTEX_OFFSET_NORMAL_DIR))
         {
-            finalPos = positionOS + normalOS*_VertexOffset_Vec.z*vertexOffsetSample;
+            finalPos = positionOS + normalOS*_VertexOffset_Vec.z*vertexOffsetSample*vertexOffsetMask;
         }
         else
         {
-            finalPos = positionOS + _VertexOffset_CustomDir*_VertexOffset_Vec.z*vertexOffsetSample;
+            finalPos = positionOS + _VertexOffset_CustomDir*_VertexOffset_Vec.z*vertexOffsetSample*vertexOffsetMask;
         }
+
 
         return finalPos;
         
@@ -877,8 +938,10 @@
     half2 ParallaxOcclusionMapping(half2 texCoords, half3 viewDir)
     { 
         // number of depth layers
-        const float minLayers = 2;
-        const float maxLayers = 30;
+        // const float minLayers = 10;
+        // const float maxLayers = 10;
+        const float minLayers = _ParallaxMapping_Vec.x;
+        const float maxLayers = _ParallaxMapping_Vec.y;
         float numLayers = lerp(maxLayers, minLayers, abs(dot(half3(0.0, 0.0, 1.0), viewDir)));  
         // calculate the size of each layer
         float layerDepth = 1.0 / numLayers;

@@ -133,6 +133,9 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_PARTICLE_1_UV_FROM_MESH= 1 << 21;//3D条件下，如果不是来源于Mesh，就默认来源于粒子。
     public const int FLAG_BIT_PARTICLE_1_UIEFFECT_BASEMAP_MODE= 1 << 22;//3D条件下，如果不是来源于Mesh，就默认来源于粒子。
     public const int FLAG_BIT_PARTICLE_1_IS_PARTICLE_SYSTEM= 1 << 23;//3D条件下，如果不是来源于Mesh，就默认来源于粒子。
+    public const int FLAG_BIT_PARTICLE_1_MAINTEX_CONTRAST= 1 << 24;
+    public const int FLAG_BIT_PARTICLE_1_VERTEXOFFSET_START_FROM_ZERO= 1 << 25;
+    public const int FLAG_BIT_PARTICLE_1_VERTEXOFFSET_MASKMAP= 1 << 26;
     
     
     public const int FLAG_BIT_WRAPMODE_BASEMAP= 1 << 0;
@@ -148,6 +151,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_WRAPMODE_PARALLAXMAPPINGMAP = 1 << 10;
     public const int FLAG_BIT_WRAPMODE_MASKMAP3= 1 << 11;
     public const int FLAG_BIT_WRAPMODE_NOISE_MASKMAP= 1 << 12;
+    public const int FLAG_BIT_WRAPMODE_VERTEXOFFSET_MASKMAP= 1 << 13;
 
     public const int foldOutBitMeshOption = 1 << 0;
     public const int foldOutBitMainTexOption = 1 << 1;
@@ -196,11 +200,15 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int foldOutBit2UVModeDissolveMaskMap = 1 << 8;
     public const int foldOutBit2UVModeColorBlendMap = 1 << 9;
     public const int foldOutBit2UVModeVertexOffsetMap = 1 << 10;
+    public const int foldOutBit2UVModeVertexOffsetMaskMap = 1 << 11;
+    
     //留一些位置给以后可能会增加的贴图。
     public const int foldOutPortal= 1 << 20;
     public const int foldOutZOffset= 1 << 21;
     public const int foldOutCustomStencilTest= 1 << 22;
     public const int foldOutTaOption = 1 << 23;
+    public const int foldOutMianTexContrast= 1 << 24;
+    public const int foldOutVertexOffsetMask= 1 << 25;
 
 
     #region CustomDataCodes
@@ -211,9 +219,11 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const string CustomDataFlag0Name = "_W9ParticleCustomDataFlag0";
     public const string CustomDataFlag1Name = "_W9ParticleCustomDataFlag1";
     public const string CustomDataFlag2Name = "_W9ParticleCustomDataFlag2";
+    public const string CustomDataFlag3Name = "_W9ParticleCustomDataFlag3";
     public static int CustomDataFlag0Id = Shader.PropertyToID(CustomDataFlag0Name);
     public static int CustomDataFlag1Id = Shader.PropertyToID(CustomDataFlag1Name);
     public static int CustomDataFlag2Id = Shader.PropertyToID(CustomDataFlag2Name);
+    public static int CustomDataFlag3Id = Shader.PropertyToID(CustomDataFlag3Name);
 
     public enum CutomDataComponent
     {
@@ -252,6 +262,11 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAGBIT_POS_2_CUSTOMDATA_DISSOLVE_NOISE2_OFFSET_Y = 3*4;
     public const int FLAGBIT_POS_2_CUSTOMDATA_NOISE_DIRECTION_X= 4*4;
     public const int FLAGBIT_POS_2_CUSTOMDATA_NOISE_DIRECTION_Y= 5*4;
+    public const int FLAGBIT_POS_2_CUSTOMDATA_MAINTEX_CONTRAST= 6*4;
+    //---->这里还有一个坑可以用哦
+    
+    public const int FLAGBIT_POS_3_CUSTOMDATA_VERTEX_OFFSET_MASK_X= 0*4;
+    public const int FLAGBIT_POS_3_CUSTOMDATA_VERTEX_OFFSET_MASK_Y= 1*4;
     
 
     public const int isCustomDataBit = 1 << 3;
@@ -279,6 +294,8 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
             
             case 2 :
                 return CustomDataFlag2Id;
+            case 3 :
+                return CustomDataFlag3Id;
                
         }
 
@@ -297,6 +314,9 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
             
             case 2:
                 return CustomDataFlag2Name;
+            
+            case 3:
+                return CustomDataFlag3Name;
                 
         }
 
@@ -401,9 +421,10 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
         int prop0Flag = material.GetInteger(CustomDataFlag0Id);
         int prop1Flag = material.GetInteger(CustomDataFlag1Id);
         int prop2Flag = material.GetInteger(CustomDataFlag2Id);
+        int prop3Flag = material.GetInteger(CustomDataFlag3Id);
         uint dataOnBit = 0b_1000_1000_1000_1000_1000_1000_1000_1000;//10001000100010001000100010001000;
 
-        return ((prop0Flag & dataOnBit) >0) || ((prop1Flag & dataOnBit)>0) || ((prop2Flag & dataOnBit)>0);
+        return ((prop0Flag & dataOnBit) >0) || ((prop1Flag & dataOnBit)>0) || ((prop2Flag & dataOnBit)>0)||((prop3Flag & dataOnBit)>0);
     }
 
     bool CheckCustomData(int dataIndex, int flagIndex)
@@ -419,6 +440,9 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
                 break;
             case 2:
                 flagID = CustomDataFlag2Id;
+                break;
+            case 3:
+                flagID = CustomDataFlag3Id;
                 break;
         }
 
@@ -458,6 +482,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
         isCustomData1On |= CheckCustomData(1, 0);
         isCustomData1On |= CheckCustomData(1, 1);
         isCustomData1On |= CheckCustomData(1, 2);
+        isCustomData1On |= CheckCustomData(1, 3);
         return isCustomData1On;
         
         // int prop0Flag = material.GetInteger(CustomDataFlag0Id);
@@ -498,6 +523,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
         isCustomData1On |= CheckCustomData(2, 0);
         isCustomData1On |= CheckCustomData(2, 1);
         isCustomData1On |= CheckCustomData(2, 2);
+        isCustomData1On |= CheckCustomData(2, 3);
         return isCustomData1On;
         // int prop0Flag = material.GetInteger(CustomDataFlag0Id);
         //
@@ -569,6 +595,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_UVMODE_POS_0_DISSOLVE_MASK_MAP = 8 * 2;
     public const int FLAG_BIT_UVMODE_POS_0_COLOR_BLEND_MAP = 9 * 2;
     public const int FLAG_BIT_UVMODE_POS_0_VERTEX_OFFSET_MAP = 10 * 2;
+    public const int FLAG_BIT_UVMODE_POS_0_VERTEX_OFFSET_MASKMAP = 11 * 2;
 
     public int GetUVModeFlagPropID(int flagIndex)
     {

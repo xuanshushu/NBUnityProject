@@ -23,6 +23,7 @@ public class PostProcessingManagerGUI : Editor
         DrawToggle("肌理开关",PostProcessingManager.overlayTextureToggles);
         DrawToggle("黑白闪开关",PostProcessingManager.flashToggles);
         DrawToggle("暗角开关",PostProcessingManager.vignetteToggles);
+        DrawToggle32("ShaderFlags", PostProcessingManager.material.GetInteger(NBPostProcessFlags.FlagsId));
 
     }
 
@@ -37,6 +38,13 @@ public class PostProcessingManagerGUI : Editor
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField(label);
         EditorGUILayout.LabelField(BinaryIntDrawer.DrawBinaryInt(intValue,8));
+        EditorGUILayout.EndHorizontal();
+    }
+    void DrawToggle32(string label, int intValue)
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField(label);
+        EditorGUILayout.LabelField(BinaryIntDrawer.DrawBinaryInt(intValue,32));
         EditorGUILayout.EndHorizontal();
     }
 

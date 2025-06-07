@@ -201,6 +201,7 @@ public class PostProcessingControllerGUI : Editor
                 ppController.flashDeSaturateIntensity =
                     EditorGUILayout.FloatField("饱和度", ppController.flashDeSaturateIntensity);
                 ppController.flashContrast = EditorGUILayout.FloatField("对比度", ppController.flashContrast);
+                ppController.flashColor = EditorGUILayout.ColorField("闪颜色", ppController.flashColor);
             });
 
         DrawToggleFoldOut(ppController.AnimBools[6], "暗角", ref ppController.vignetteToggle, drawEndChangeCheck:

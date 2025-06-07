@@ -15,6 +15,8 @@ Shader "XuanXuan/Postprocess/NBPostProcessUber"
             _InvertIntensity("反向强度",Float) = 0
             _DeSaturateIntensity("饱和度强度",Float) = 0
             _Contrast("对比度",Float) = 1
+            _FlashColor("闪颜色", Vector) = (1, 1, 1, 1)
+            
 
             [HideInInspector] _NBPostProcessFlags("_NBPostProcessFlags", Integer) = 0
             _ChromaticAberrationVector("色散矢量",Vector) = (1,0,0,0)
@@ -101,6 +103,7 @@ Shader "XuanXuan/Postprocess/NBPostProcessUber"
                     half _InvertIntensity;
                     half _DeSaturateIntensity;
                     half _Contrast;
+                    half3 _FlashColor;
                 
                     half4 _ChromaticAberrationVec;
                     half4 _CustomScreenCenter;
@@ -328,12 +331,16 @@ Shader "XuanXuan/Postprocess/NBPostProcessUber"
                     if(CheckLocalFlags(FLAG_BIT_FLASH))
                     {
                         color.xyz = RgbToHsv(color.rgb);
+                        half3 colorHSV = color.xyz;
                         color.y *= _DeSaturateIntensity;
                         color.rgb = HsvToRgb(color.xyz);
 
                         //因为颜色空间的特殊原因，这里的转换运算可能会造成性能热点，后续考虑优化。
                         half3 invertColor = SRGBToLinear(1- LinearToSRGB(color.xyz));
                         color.rgb = lerp(color.rgb,invertColor,_InvertIntensity);
+
+                        half3 endColor = lerp(color,_FlashColor,luminance(color.rgb));
+                        color.rgb = lerp(color.rgb,endColor,_InvertIntensity);
                         
                         color.rgb = lerp(half3(0.5,0.5,0.5),color.rgb,_Contrast);
 

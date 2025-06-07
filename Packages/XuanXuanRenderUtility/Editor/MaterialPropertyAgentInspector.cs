@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 
 // #if UNITY_EDITOR
-[CustomEditor(typeof(MaterialPropertyAgentNew))]
+[CustomEditor(typeof(MaterialPropertyAgent))]
 public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
 {
-    private MaterialPropertyAgentNew agent;
+    private MaterialPropertyAgent agent;
 
     private void OnEnable()
     {
-        agent = (MaterialPropertyAgentNew)target;
+        agent = (MaterialPropertyAgent)target;
     }
 
     private GUIContent materialIndexContent = new GUIContent("材质序号:", "只有模型模式下需要使用，谨慎修改");
@@ -69,7 +69,7 @@ public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
         }
     }
 
-    void DrawPropertyData(ref MaterialPropertyAgentNew.PropertyData data, string dataLabel, SerializedProperty property)
+    void DrawPropertyData(ref MaterialPropertyAgent.PropertyData data, string dataLabel, SerializedProperty property)
     {
         EditorGUI.BeginProperty(EditorGUILayout.GetControlRect(false, 0f), GUIContent.none, property);
         if (data.isActive)
@@ -115,7 +115,7 @@ public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
             EditorGUIUtility.labelWidth = originLabelWidth;
             switch (data.type)
             {
-                case MaterialPropertyAgentNew.shaderPropertyType.Color:
+                case MaterialPropertyAgent.shaderPropertyType.Color:
                     SerializedProperty colorProp = property.FindPropertyRelative("colorValue");
                     if (data.descripName.ToLower().Contains("hdr"))
                     {
@@ -126,27 +126,27 @@ public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
                         colorProp.colorValue = EditorGUILayout.ColorField(data.propName + " :", colorProp.colorValue);
                     }
                     break;
-                case MaterialPropertyAgentNew.shaderPropertyType.Vector:
-                case MaterialPropertyAgentNew.shaderPropertyType.TexEnv:
+                case MaterialPropertyAgent.shaderPropertyType.Vector:
+                case MaterialPropertyAgent.shaderPropertyType.TexEnv:
                     SerializedProperty vecProp = property.FindPropertyRelative("vecValue");
-                    if (data.type == MaterialPropertyAgentNew.shaderPropertyType.Vector)
+                    if (data.type == MaterialPropertyAgent.shaderPropertyType.Vector)
                     {
                         vecProp.vector4Value = EditorGUILayout.Vector4Field(data.propName + " :", vecProp.vector4Value);
                     }
-                    else if (data.type == MaterialPropertyAgentNew.shaderPropertyType.TexEnv)
+                    else if (data.type == MaterialPropertyAgent.shaderPropertyType.TexEnv)
                     {
                         vecProp.vector4Value = EditorGUILayout.Vector4Field(data.propName + ":", vecProp.vector4Value);
 
                     }
                     break;
-                case MaterialPropertyAgentNew.shaderPropertyType.Float:
-                case MaterialPropertyAgentNew.shaderPropertyType.Range:
+                case MaterialPropertyAgent.shaderPropertyType.Float:
+                case MaterialPropertyAgent.shaderPropertyType.Range:
                     SerializedProperty floatProp = property.FindPropertyRelative("floatValue");
-                    if (data.type == MaterialPropertyAgentNew.shaderPropertyType.Float)
+                    if (data.type == MaterialPropertyAgent.shaderPropertyType.Float)
                     {
                         floatProp.floatValue = EditorGUILayout.FloatField(data.propName + ":", floatProp.floatValue);
                     }
-                    else if (data.type == MaterialPropertyAgentNew.shaderPropertyType.Range)
+                    else if (data.type == MaterialPropertyAgent.shaderPropertyType.Range)
                     {
                         floatProp.floatValue = EditorGUILayout.Slider(data.propName + ":", floatProp.floatValue, data.rangMin, data.rangMax);
 
@@ -193,7 +193,7 @@ public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
         }
     }
     
-    public void AfterShaderPropSerch(ref MaterialPropertyAgentNew.PropertyData data, string propertyDesrpt)
+    public void AfterShaderPropSerch(ref MaterialPropertyAgent.PropertyData data, string propertyDesrpt)
     {
         int preservedIndex = data.index;
         // string propname = data.propName;

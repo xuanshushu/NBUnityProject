@@ -70,6 +70,7 @@ namespace MhRender.RendererFeatures
         private bool canFind = false;
         public override void Create()
         {
+            
             if (Shader.Find("XuanXuan/ColorBlit") == null || 
                 Shader.Find("XuanXuan/Postprocess/NBPostProcessUber") == null)
             {
@@ -117,6 +118,7 @@ namespace MhRender.RendererFeatures
             // Shader shader = Shader.Find("XuanXuan/Postprocess/NBPostProcessUber");
             NBPostProcessMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("XuanXuan/Postprocess/NBPostProcessUber"));
 
+            PostProcessingManager.InitMat();
      
             // if (Application.isPlaying)
             // {
@@ -124,13 +126,13 @@ namespace MhRender.RendererFeatures
             // }
             _renderPass = new NBPostProcessRenderPass(NBPostProcessMaterial,fullscreenTriangle);
             _renderPass.renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
+           
         }
         
         #if UNIVERSAL_RP_13_1_2_OR_NEWER
         
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
-            PostProcessingManager.InitMat();
             if ((renderingData.cameraData.cameraType == CameraType.Game ||
                 renderingData.cameraData.cameraType == CameraType.SceneView) && canFind)
             {
@@ -162,8 +164,6 @@ namespace MhRender.RendererFeatures
                     _screenColorRenderPass.ConfigureInput(ScriptableRenderPassInput.Color);
                     _screenColorRenderPass.SetUp(renderer);
                 #endif
-                
-                PostProcessingManager.InitMat();
                 renderer.EnqueuePass(_screenColorRenderPass);
                 renderer.EnqueuePass(_disturbanceMaskRenderPass);
                 renderer.EnqueuePass(_renderPass);
@@ -407,10 +407,9 @@ namespace MhRender.RendererFeatures
 #endif
                 cmd.SetGlobalTexture("_DisturbanceMaskTex", _DownRT);
 
-            context.ExecuteCommandBuffer(cmd);
-            cmd.Clear();
-            CommandBufferPool.Release(cmd);
             }
+            context.ExecuteCommandBuffer(cmd);
+            CommandBufferPool.Release(cmd);
         }
 
         #if !UNIVERSAL_RP_13_1_2_OR_NEWER

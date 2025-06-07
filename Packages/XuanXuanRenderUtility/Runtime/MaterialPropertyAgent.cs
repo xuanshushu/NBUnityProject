@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 //TODO增加一键去重功能。测试排查BUG
 [ExecuteInEditMode]
-public class MaterialPropertyAgentNew : MonoBehaviour,IMaterialModifier
+public class MaterialPropertyAgent : MonoBehaviour,IMaterialModifier
 {
     [System.Serializable]
     public struct PropertyData
     {
         [HideInInspector] public int dataIndexInAgent;
-        [HideInInspector] public MaterialPropertyAgentNew agent;
+        [HideInInspector] public MaterialPropertyAgent agent;
         [HideInInspector] public int id;
 
 
@@ -420,7 +420,7 @@ public class MaterialPropertyAgentNew : MonoBehaviour,IMaterialModifier
         //         return;//游戏进行中不允许编辑
         //     }
         // }
-        // Debug.Log("MaterialPropertyAgentNew : " + "OnValidate");
+        // Debug.Log("MaterialPropertyAgent : " + "OnValidate");
         refreshShderPropNameList();
         if (TryGetComponent<Renderer>(out Renderer r)||customRenderer)
         {
@@ -505,7 +505,7 @@ public class PropertyAgentPropertyDataDrawer : PropertyDrawer
 
             EditorGUILayout.BeginHorizontal();
             var index = property.FindPropertyRelative("index"); 
-            MaterialPropertyAgentNew agent = property.FindPropertyRelative("agent").objectReferenceValue as MaterialPropertyAgentNew;
+            MaterialPropertyAgent agent = property.FindPropertyRelative("agent").objectReferenceValue as MaterialPropertyAgent;
             int preservedIndex = index.intValue;
             float originLabelWidth = EditorGUIUtility.labelWidth;
             EditorGUIUtility.labelWidth = 80;
@@ -529,19 +529,19 @@ public class PropertyAgentPropertyDataDrawer : PropertyDrawer
             EditorGUIUtility.labelWidth = originLabelWidth;
             switch (data.type)
             {
-                case MaterialPropertyAgentNew.shaderPropertyType.Color:
+                case MaterialPropertyAgent.shaderPropertyType.Color:
                     data.colorValue = EditorGUILayout.ColorField(data.descripName + " :", data.colorValue);
                     break;
-                case MaterialPropertyAgentNew.shaderPropertyType.Vector:
+                case MaterialPropertyAgent.shaderPropertyType.Vector:
                     data.vecValue = EditorGUILayout.Vector4Field(data.descripName + " :", data.vecValue);
                     break;
-                case MaterialPropertyAgentNew.shaderPropertyType.Float:
+                case MaterialPropertyAgent.shaderPropertyType.Float:
                     data.floatValue = EditorGUILayout.FloatField(data.descripName + ":", data.floatValue);
                     break;
-                case MaterialPropertyAgentNew.shaderPropertyType.Range:
+                case MaterialPropertyAgent.shaderPropertyType.Range:
                     data.floatValue = EditorGUILayout.Slider(data.descripName + ":", data.floatValue, data.rangMin, data.rangMax);
                     break;
-                case MaterialPropertyAgentNew.shaderPropertyType.TexEnv:
+                case MaterialPropertyAgent.shaderPropertyType.TexEnv:
                     data.vecValue = EditorGUILayout.Vector4Field(data.propName + "_ST:", data.vecValue);
                     break;
             }

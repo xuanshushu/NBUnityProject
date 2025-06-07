@@ -73,7 +73,7 @@ public class PostProcessingManager : MonoBehaviour
         }
     }
     
-    public static NBPostProcessFlags flags = new NBPostProcessFlags(material);
+    public static NBPostProcessFlags flags = new NBPostProcessFlags();
 
     // public CinemachineBrain cameraBrain;
     // public CinemachineVirtualCamera currentVirtualCamera;
@@ -85,6 +85,10 @@ public class PostProcessingManager : MonoBehaviour
     public static void InitMat()
     {
         flags.SetMaterial(PostProcessingManager.material);
+        if (_instance)
+        {
+            _instance.ResetEffect();
+        }
     }
     private void OnEnable()
     {
@@ -131,7 +135,6 @@ public class PostProcessingManager : MonoBehaviour
         //重置Flag
         flags = new NBPostProcessFlags(material);
         flags.SetFlagBits(0);
-        
     }
 
     private void OnDisable()
@@ -234,6 +237,53 @@ public class PostProcessingManager : MonoBehaviour
     }
 
     private bool isFirstUpdate = true;
+
+    private void ResetEffect()
+    {
+        if (_lastIsChromaticAberration)
+        {
+            EndChromaticAberration();
+            _lastIsChromaticAberration = false;
+        }
+
+        if (_lastIsRadialBlur)
+        {
+            EndRadialBlur();
+            _lastIsRadialBlur = false;
+        }
+
+        if (_lastIsDistortSpeed)
+        {
+            EndDistortSpeed();
+            _lastIsDistortSpeed = false;
+        }
+
+#if CINIMACHINE_3_0
+            if (_lastIsCameraShake)
+            {
+                EndCameraShake();
+                _lastIsCameraShake = false;
+            }
+#endif
+
+        if (_lastIsOverlayTexture)
+        {
+            EndOverlayTexture();
+            _lastIsOverlayTexture = false;
+        }
+
+        if (_lastIsFlash)
+        {
+            EndFlash();
+            _lastIsFlash = false;
+        }
+
+        if (_lastIsVignette)
+        {
+            EndVignette();
+            _lastIsVignette = false;
+        }
+    }
     
     private void LateUpdate()//晚于所有脚本触发。
     {
@@ -255,50 +305,7 @@ public class PostProcessingManager : MonoBehaviour
 
         if (_controllerIndexFlags == 0)
         {
-            if (_lastIsChromaticAberration)
-            {
-                EndChromaticAberration();
-                _lastIsChromaticAberration = false;
-            }
-
-            if (_lastIsRadialBlur)
-            {
-                EndRadialBlur();
-                _lastIsRadialBlur = false;
-            }
-
-            if (_lastIsDistortSpeed)
-            {
-                EndDistortSpeed();
-                _lastIsDistortSpeed = false;
-            }
-
-#if CINIMACHINE_3_0
-            if (_lastIsCameraShake)
-            {
-                EndCameraShake();
-                _lastIsCameraShake = false;
-            }
-#endif
-
-            if (_lastIsOverlayTexture)
-            {
-                EndOverlayTexture();
-                _lastIsOverlayTexture = false;
-            }
-
-            if (_lastIsFlash)
-            {
-                EndFlash();
-                _lastIsFlash = false;
-            }
-
-            if (_lastIsVignette)
-            {
-                EndVignette();
-                _lastIsVignette = false;
-            }
-
+            ResetEffect();
             flags.ClearFlagBits(NBPostProcessFlags.FLAG_BIT_NB_POSTPROCESS_ON);
             return;
         }
@@ -391,6 +398,7 @@ public class PostProcessingManager : MonoBehaviour
 
             _lastIsCaByDistort = isCaByDistort;
         }
+        
         material.SetVector(_chromaticAberrationVecProperty, new Vector4(chromaticAberrationIntensity,chromaticAberrationPos,chromaticAberrationRange));
         chromaticAberrationIntensity = 0;//等待下一次update
         chromaticAberrationPos = 0;//等待下一次update
@@ -609,10 +617,12 @@ public class PostProcessingManager : MonoBehaviour
     
     public static float flashContrast = 0;
 
+    public static Color flashColor = new Color(1, 1, 1, 1);
 
     private readonly int _flashDesaturateProperty = Shader.PropertyToID("_DeSaturateIntensity");
     private readonly int _flashInvertProperty = Shader.PropertyToID("_InvertIntensity");
     private readonly int _flashContrastProperty = Shader.PropertyToID("_Contrast");
+    private readonly int _flashColorProperty = Shader.PropertyToID("_FlashColor");
 
     private void InitFlash()
     {
@@ -624,9 +634,11 @@ public class PostProcessingManager : MonoBehaviour
         material.SetFloat(_flashDesaturateProperty, flashDesaturateIntensity);
         material.SetFloat(_flashInvertProperty, flashInvertIntensity);
         material.SetFloat(_flashContrastProperty, flashContrast);
+        material.SetColor(_flashColorProperty,flashColor);
         flashDesaturateIntensity = 0;
         flashInvertIntensity = 0;
         flashContrast = 0;
+        flashColor = Color.white;
     }
 
     private void EndFlash()

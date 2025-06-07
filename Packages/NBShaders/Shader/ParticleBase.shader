@@ -56,6 +56,8 @@
         [HDR]_BaseBackColor ("背面颜色_hdr", Color) = (1, 1, 1, 1)//HDR颜色不需要做Gamma Linear转换，Unity默认用Linear颜色
         _BaseColorIntensityForTimeline("整体颜色强度", Range(0,10)) = 1 //独立出来是以为Timeline  K颜色的时候会很奇怪的影响色相
         _Saturability("饱和度", range(0,1)) = 0
+        _Contrast_Toggle("__Contrast_Toggle",Float) = 0
+        _Contrast("对比度", Float) = 1
         _HueShift("色相",Range(0,1)) = 0
         _AlphaAll("整体透明度",Range(0,1)) = 1
         _IgnoreVetexColor_Toggle("_IgnoreVetexColor_Toggle",Float) = 0
@@ -207,13 +209,20 @@
         
         _VertexOffset_Toggle("顶点偏移",Float) = 0
         _VertexOffset_Map("顶点偏移贴图",2D) = "white"{}
-        _VertexOffset_Vec("顶点偏移动画",Vector) = (0,0,1,0)
+        _VertexOffset_Vec("xy:顶点偏移动画z:顶点偏移强度",Vector) = (0,0,1,0)
         _VertexOffset_NormalDir_Toggle("顶点偏移自定义方向开关",Float) = 0
+        _VertexOffset_StartFromZero("顶点偏移从零开始开关",Float) = 0
         _VertexOffset_CustomDir("顶点偏移自定义方向",Vector) = (1,1,1,0)
+    	
+    	_VertexOffset_Mask_Toggle("顶点偏移遮罩开关",Float) = 0
+    	_VertexOffset_MaskMap("顶点偏移遮罩贴图",2D) = "white"{}
+        _VertexOffset_MaskMap_Vec("xy:顶点偏移遮罩动画z:顶点偏移遮罩强度",Vector) = (0,0,1,0)
+    	
         
         _ParallaxMapping_Toggle("视差",Float) = 0
         _ParallaxMapping_Map("视差贴图",2D) = "white"{}
         _ParallaxMapping_Intensity("视差强度",Float) = 1
+    	_ParallaxMapping_Vec("遮蔽视差层数 x:最小值,y:最大值",Vector) = (5,30,0,0)
         
         
         // Particle specific   粒子特殊的隐藏属性
@@ -268,6 +277,7 @@
         [HideInInspector] _W9ParticleCustomDataFlag0("_W9ParticleCustomDataFlag0", Integer) = 0
         [HideInInspector] _W9ParticleCustomDataFlag1("_W9ParticleCustomDataFlag1", Integer) = 0
         [HideInInspector] _W9ParticleCustomDataFlag2("_W9ParticleCustomDataFlag2", Integer) = 0
+        [HideInInspector] _W9ParticleCustomDataFlag3("_W9ParticleCustomDataFlag3", Integer) = 0
         [HideInInspector] _UVModeFlag0("_UVModeFlag0", Integer) = 0
         [HideInInspector] _W9ParticleShaderGUIFoldToggle("_W9ParticleShaderGUIFoldToggle", Integer) = 31//前5个开关默认打开
         [HideInInspector] _W9ParticleShaderGUIFoldToggle1("_W9ParticleShaderGUIFoldToggle1", Integer) = 255//这边默认全开

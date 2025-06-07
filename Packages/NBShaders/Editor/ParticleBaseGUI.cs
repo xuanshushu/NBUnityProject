@@ -59,7 +59,7 @@ namespace UnityEditor
                 CacheRenderersUsingThisMaterial(mats[0], 0);
             
 
-                if (!_uieffectEnabled)
+                if (!_uieffectEnabled||_uiParticleEnabled)
                 {
                     DoVertexStreamsArea(mats[0], m_RenderersUsingThisMaterial, 0);//填充stream和stremList
                 }
@@ -83,6 +83,7 @@ namespace UnityEditor
         }
 
         bool _uieffectEnabled = false;
+        bool _uiParticleEnabled = false;
         bool _noiseEnabled = false;//扭曲
         // bool _uieffectSpriteMode = false;
         private MeshSourceMode _meshSourceMode;
@@ -113,7 +114,7 @@ namespace UnityEditor
             {
                 
                 _meshSourceMode = (MeshSourceMode)mode;
-                if (_meshSourceMode == MeshSourceMode.UIEffectRawImage || _meshSourceMode == MeshSourceMode.UIEffectSprite || _meshSourceMode == MeshSourceMode.UIEffectBaseMap)
+                if (_meshSourceMode == MeshSourceMode.UIEffectRawImage || _meshSourceMode == MeshSourceMode.UIEffectSprite || _meshSourceMode == MeshSourceMode.UIEffectBaseMap||_meshSourceMode == MeshSourceMode.UIParticle)
                 {
                     _uieffectEnabled = true;
                 }
@@ -122,9 +123,18 @@ namespace UnityEditor
                     _uieffectEnabled = false;
                 }
 
+                if (_meshSourceMode == MeshSourceMode.UIParticle)
+                {
+                    _uiParticleEnabled = true;
+                }
+                else
+                {
+                    _uiParticleEnabled = false;
+                }
+
                 if (checkIsParicleSystem)
                 {
-                    if (_meshSourceMode != MeshSourceMode.Particle)
+                    if (!(_meshSourceMode != MeshSourceMode.Particle || !_uiParticleEnabled))
                     {
                         EditorGUILayout.HelpBox("检测到材质用在粒子系统上，和设置不匹配",MessageType.Error);
                     }
@@ -186,7 +196,7 @@ namespace UnityEditor
                     DrawUVModeSelect(W9ParticleShaderFlags.foldOutBit2UVModeMainTex,4,"主贴图UV来源",W9ParticleShaderFlags.FLAG_BIT_UVMODE_POS_0_MAINTEX,0,hasMap:hasMainTex);
                 }
 
-                if (!_uieffectEnabled)
+                if (!_uieffectEnabled||_uiParticleEnabled)
                 {
                     DrawCustomDataSelect("主贴图X轴偏移自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_0_CUSTOMDATA_MAINTEX_OFFSET_X,0);
                     DrawCustomDataSelect("主贴图Y轴偏移自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_0_CUSTOMDATA_MAINTEX_OFFSET_Y,0);
@@ -210,9 +220,20 @@ namespace UnityEditor
                         helper.DrawSlider("色相","_HueShift",0,1);
                         DrawCustomDataSelect("色相自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_0_CUSTOMDATA_HUESHIFT,0);
                 });
+                
+                        
+                DrawToggleFoldOut(W9ParticleShaderFlags.foldOutBitSaturability,3,"主贴图饱和度","_ChangeSaturability_Toggle",W9ParticleShaderFlags.FLAG_BIT_SATURABILITY_ON,isIndentBlock:true,drawBlock:(isToggle)=>{
+                    helper.DrawSlider("饱和度","_Saturability",0,1);
+                    DrawCustomDataSelect("饱和度强度自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_1_CUSTOMDATA_SATURATE,1);
+                });
+                
+                DrawToggleFoldOut(W9ParticleShaderFlags.foldOutMianTexContrast,4,"主贴图对比度","_Contrast_Toggle",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_1_MAINTEX_CONTRAST,1,isIndentBlock:true,drawBlock:(isToggle)=>{
+                    helper.DrawSlider("对比度","_Contrast",0,5);
+                    DrawCustomDataSelect("对比度自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_2_CUSTOMDATA_MAINTEX_CONTRAST,2);
+                });
             };
 
-            if (!_uieffectEnabled || _meshSourceMode == MeshSourceMode.UIEffectBaseMap)
+            if (!_uieffectEnabled || _uiParticleEnabled || _meshSourceMode == MeshSourceMode.UIEffectBaseMap)
             {
                 DrawTextureFoldOut(W9ParticleShaderFlags.foldOutBitBaseMap,3,"主贴图","_BaseMap","_BaseColor",drawWrapMode:true,flagBitsName:W9ParticleShaderFlags.FLAG_BIT_WRAPMODE_BASEMAP,flagIndex:2,drawBlock:
                     theBaseMap =>
@@ -285,11 +306,6 @@ namespace UnityEditor
             
             }
             // helper.DrawToggle("使用3U作为UV来源","_UseUV1_Toggle",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_USETEXCOORD2);
-            
-            DrawToggleFoldOut(W9ParticleShaderFlags.foldOutBitSaturability,3,"饱和度调整","_ChangeSaturability_Toggle",W9ParticleShaderFlags.FLAG_BIT_SATURABILITY_ON,isIndentBlock:true,drawBlock:(isToggle)=>{
-                    helper.DrawSlider("饱和度","_Saturability",0,1);
-                    DrawCustomDataSelect("饱和度强度自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_1_CUSTOMDATA_SATURATE,1);
-            });
             
      
       
@@ -655,6 +671,8 @@ namespace UnityEditor
                             if (!isToggle)
                             {
                                 helper.GetProperty("_CustomStencilTest").floatValue = 0f;
+                                helper.GetProperty("_Cull").floatValue = (float)RenderFace.Front;
+                                helper.GetProperty("_ZTest").floatValue = (float)CompareFunction.LessEqual;
                             }
                         }
                         
@@ -675,6 +693,7 @@ namespace UnityEditor
                         helper.DrawVector4In2Line("_VertexOffset_Vec","顶点偏移动画");
                         helper.DrawVector4Componet("顶点偏移强度","_VertexOffset_Vec","z",false);
                         DrawCustomDataSelect("顶点扰动强度自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_1_CUSTOMDATA_VERTEXOFFSET_INTENSITY,1);
+                        helper.DrawToggle("顶点偏移从零开始","_VertexOffset_StartFromZero",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_1_VERTEXOFFSET_START_FROM_ZERO,1);
                         helper.DrawToggle("顶点偏移使用法线方向","_VertexOffset_NormalDir_Toggle",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_VERTEX_OFFSET_NORMAL_DIR,isIndentBlock:false,drawBlock:
                             isToggle =>
                             {
@@ -682,6 +701,16 @@ namespace UnityEditor
                                 {
                                     matEditor.ShaderProperty(helper.GetProperty("_VertexOffset_CustomDir"),"顶点偏移本地方向");
                                 }
+                            });
+                        DrawToggleFoldOut(W9ParticleShaderFlags.foldOutVertexOffsetMask,4,"顶点偏移遮罩","_VertexOffset_Mask_Toggle",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_1_VERTEXOFFSET_MASKMAP,1,
+                            drawBlock:isMaskToggle =>
+                            {
+                                helper.DrawTexture("顶点偏移遮罩图","_VertexOffset_MaskMap",drawScaleOffset:true,drawWrapMode:true,flagBitsName:W9ParticleShaderFlags.FLAG_BIT_WRAPMODE_VERTEXOFFSET_MASKMAP,flagIndex:2);
+                                DrawCustomDataSelect("顶点扰动遮罩X轴偏移自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_3_CUSTOMDATA_VERTEX_OFFSET_MASK_X,3);
+                                DrawCustomDataSelect("顶点扰动遮罩Y轴偏移自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_3_CUSTOMDATA_VERTEX_OFFSET_MASK_Y,3);
+                                DrawUVModeSelect(W9ParticleShaderFlags.foldOutBit2UVModeVertexOffsetMaskMap,4,"顶点偏移遮罩图UV来源",W9ParticleShaderFlags.FLAG_BIT_UVMODE_POS_0_VERTEX_OFFSET_MASKMAP,0);
+                                helper.DrawVector4In2Line("_VertexOffset_MaskMap_Vec","顶点偏移遮罩动画");
+                                helper.DrawVector4Componet("顶点偏移遮罩强度","_VertexOffset_MaskMap_Vec","z",true);
                             });
                     // }
                     
@@ -698,7 +727,23 @@ namespace UnityEditor
                             helper.DrawTexture("视差贴图", "_ParallaxMapping_Map", drawWrapMode: true,
                                 flagBitsName: W9ParticleShaderFlags.FLAG_BIT_WRAPMODE_PARALLAXMAPPINGMAP, flagIndex: 2);
                             helper.DrawSlider("视差", "_ParallaxMapping_Intensity", 0, 0.1f);
-                        // }
+                            
+                            helper.DrawVector4Componet("遮蔽视差最小层数","_ParallaxMapping_Vec","x",true,0f,100f);
+                            helper.DrawVector4Componet("遮蔽视差最大层数","_ParallaxMapping_Vec","y",true,0f,100f);
+                            Vector4 parallexMappingVecValue = helper.GetProperty("_ParallaxMapping_Vec").vectorValue;
+                            if (parallexMappingVecValue.y < parallexMappingVecValue.x+1)
+                            {
+                                parallexMappingVecValue.y = parallexMappingVecValue.x+1;
+                            }
+                            helper.GetProperty("_ParallaxMapping_Vec").vectorValue = parallexMappingVecValue;
+                            if (parallexMappingVecValue.y > 20f)
+                            {
+                                EditorGUILayout.HelpBox("遮蔽视差层数过高将影响性能",MessageType.Warning);
+                            }
+
+
+
+                            // }
                     });
                 DrawToggleFoldOut(W9ParticleShaderFlags.foldOutPortal,4,"模板视差", "_Portal_Toggle", fontStyle:FontStyle.Bold,drawBlock: isPortalToggle =>
                 {
@@ -744,6 +789,8 @@ namespace UnityEditor
                         if (!isToggle)
                         {
                             helper.GetProperty("_CustomStencilTest").floatValue = 0f;
+                            helper.GetProperty("_TransparentMode").floatValue = (float)TransparentMode.Transparent;
+                            helper.GetProperty("_ZTest").floatValue = (float)CompareFunction.LessEqual;
                         }
                     }
                 );
@@ -802,7 +849,7 @@ namespace UnityEditor
                 });
             }
 
-            if (!_uieffectEnabled)
+            if (!_uieffectEnabled||_uiParticleEnabled)
             {
                 #region CustomData旧版本
 /*
@@ -1175,7 +1222,7 @@ namespace UnityEditor
                 
             });
 
-            if (!isCustomedStencil)
+            if (!isCustomedStencil && !_uieffectEnabled)
             {
                 for (int i = 0; i < mats.Count; i++)
                 {
@@ -1437,7 +1484,7 @@ namespace UnityEditor
                         }
 
                         int defaultQueue = 3100;
-                        if (_uieffectEnabled)
+                        if (_uieffectEnabled||_uiParticleEnabled)
                         {
                             defaultQueue = 3000;
                         }
@@ -1863,7 +1910,7 @@ namespace UnityEditor
             // if(!_isUseParticleSystem)return;//只有粒子系统才会处理相关内容。
             if (mats.Count != 1) return; //仅单选触发
             
-            if(_meshSourceMode != MeshSourceMode.Particle) return;
+            if(!(_meshSourceMode == MeshSourceMode.Particle || _uiParticleEnabled) ) return;
             EditorGUI.showMixedValue =
                 helper.GetProperty(shaderFlags[0].GetCustomDataFlagPropertyName(dataIndex)).hasMixedValue; 
             W9ParticleShaderFlags.CutomDataComponent component = shaderFlags[0].GetCustomDataFlag(dataBitPos, dataIndex);
@@ -2019,7 +2066,8 @@ namespace UnityEditor
             "模型（非粒子发射）",
             "2D RawImage",
             "2D 精灵",
-            "2D 材质贴图"
+            "2D 材质贴图",
+            "2D UIParticle"
         };
 
         enum MeshSourceMode
@@ -2028,7 +2076,8 @@ namespace UnityEditor
             Mesh,
             UIEffectRawImage,
             UIEffectSprite,
-            UIEffectBaseMap
+            UIEffectBaseMap,
+            UIParticle
         }
         void SetUVModeByOldSettings()
         {

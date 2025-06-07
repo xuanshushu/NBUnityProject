@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 // using Sirenix.OdinInspector;
 #if CINIMACHINE_3_0
@@ -197,6 +198,7 @@ public class PostProcessingController : MonoBehaviour
     public float flashDeSaturateIntensity = 1f;
     // [LabelText("对比度")] [ToggleGroup("flashToggle")]
     public float flashContrast = 1f;
+    public Color flashColor = new Color(1f,1f,1f,1f);
     
     // [ToggleGroup("vignetteToggle", "暗角")] 
     // [OnValueChanged("InitAllSettings")]
@@ -532,6 +534,7 @@ public class PostProcessingController : MonoBehaviour
                 Mathf.Max(PostProcessingManager.flashInvertIntensity, flashInvertIntensity);
             PostProcessingManager.flashContrast =
                 Mathf.Max(PostProcessingManager.flashContrast, flashContrast);
+            PostProcessingManager.flashColor = flashColor;
         }
 
         if (radialBlurToggle)
