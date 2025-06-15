@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 // #if UNITY_EDITOR
 [CustomEditor(typeof(MaterialPropertyAgent))]
-public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
+public class MaterialPropertyAgentInspector : UnityEditor.Editor
 {
     private MaterialPropertyAgent agent;
 
@@ -56,6 +56,7 @@ public class MaterialPropertyAgentNewInspector : UnityEditor.Editor
         serializedObject.ApplyModifiedProperties();
         if (EditorGUI.EndChangeCheck())
         {
+            PrefabUtility.RecordPrefabInstancePropertyModifications(agent);
             if (!agent.isGetByComponet && agent.mat)
             {
                 if(matEditor) DestroyImmediate(matEditor);
