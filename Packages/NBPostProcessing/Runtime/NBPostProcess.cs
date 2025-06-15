@@ -17,7 +17,7 @@ namespace MhRender.RendererFeatures
         public static Material NBPostProcessMaterial;
         
         //public MaskFormat maskFormat = MaskFormat.RG32;
-        public Downsampling downSampling = Downsampling._2xBilinear;
+        public Downsampling downSampling = Downsampling.None;
         public LayerMask disturbanceLayerMask=1 << 25;
         
         private Material _disturbanceDownSampleMat;
