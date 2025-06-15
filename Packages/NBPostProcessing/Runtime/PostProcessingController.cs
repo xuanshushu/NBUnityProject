@@ -127,7 +127,7 @@ public class PostProcessingController : MonoBehaviour
     
     // [ToggleGroup("radialBlurToggle")]
     // [LabelText("采样次数")]
-    // [Range(1,12)]
+    [Range(1,12)]
     public int radialBlurSampleCount = 4;
     // [ToggleGroup("radialBlurToggle")]
     // [LabelText("强度")]
@@ -266,6 +266,10 @@ public class PostProcessingController : MonoBehaviour
                 PostProcessingManager.material.SetTexture(_distortSpeedTextureID, distortSpeedTexture);
                 PostProcessingManager.distortTextureMidValue = distortTextureMidValue;
             }
+            else
+            {
+                PostProcessingManager.material.SetTexture(_distortSpeedTextureID, null);
+            }
         }
 
         if (overlayTextureToggle)
@@ -278,10 +282,16 @@ public class PostProcessingController : MonoBehaviour
             {
                 PostProcessingManager.flags.ClearFlagBits(NBPostProcessFlags.FLAG_BIT_OVERLAYTEXTURE_POLLARCOORD);
             }
+            
             if (overlayTexture)
             {
                 Debug.Log("SetOverlayTexture");
                 PostProcessingManager.material.SetTexture(_overlayTextureID,overlayTexture);
+            }
+            else
+            {
+                Debug.Log("ClearOverlayTexture");
+                PostProcessingManager.material.SetTexture(_overlayTextureID,null);
             }
 
             if (overlayMaskTexture)

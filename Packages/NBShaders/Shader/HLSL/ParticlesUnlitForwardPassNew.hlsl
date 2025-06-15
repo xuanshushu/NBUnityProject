@@ -457,6 +457,16 @@
             _Contrast = GetCustomData(_W9ParticleCustomDataFlag2,FLAGBIT_POS_2_CUSTOMDATA_MAINTEX_CONTRAST,_Contrast,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
             result.rgb = lerp(_ContrastMidColor,result.rgb,_Contrast);
         }
+
+        
+        if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MAINTEX_COLOR_REFINE))
+        {
+            half3 colorA = result.rgb*_BaseMapColorRefine.x;
+            half3 colorB = pow(result.rgb,_BaseMapColorRefine.y)*_BaseMapColorRefine.z;
+            result.rgb = lerp(colorA,colorB,_BaseMapColorRefine.w);
+        }
+        
+        
         
         //流光部分
         half4 emission = half4(0, 0, 0,1);

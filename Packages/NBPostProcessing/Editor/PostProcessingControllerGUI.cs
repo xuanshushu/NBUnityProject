@@ -17,6 +17,8 @@ public class PostProcessingControllerGUI : Editor
     private SerializedProperty _managerProperty;
     private SerializedProperty _indexProperty;
 
+    private Action delayExcuteReflect = () => { };
+
     public override void OnInspectorGUI()
     {
         PostProcessingController ppController = (PostProcessingController)target;
@@ -29,53 +31,63 @@ public class PostProcessingControllerGUI : Editor
         EditorGUI.EndDisabledGroup();
 
         EditorGUI.BeginChangeCheck();
-        ppController.customScreenCenterPos =
-            EditorGUILayout.Vector2Field("自定义屏幕中心", ppController.customScreenCenterPos);
+        // ppController.customScreenCenterPos = EditorGUILayout.Vector2Field("自定义屏幕中心", ppController.customScreenCenterPos);
+        SerializedProperty customScreenCenterPosProp = serializedObject.FindProperty("customScreenCenterPos");
+        EditorGUILayout.PropertyField(customScreenCenterPosProp,new GUIContent("自定义屏幕中心"));
+        
         if (EditorGUI.EndChangeCheck())
         {
             ReflectMethod("SetScreenCenterPos", ppController);
         }
 
-        DrawToggleFoldOut(ppController.AnimBools[0], "色散", ref ppController.chromaticAberrationToggle,
+        SerializedProperty caToggleProp = serializedObject.FindProperty("chromaticAberrationToggle");
+        DrawToggleFoldOut(ppController.AnimBools[0], "色散", caToggleProp,
             drawEndChangeCheck: isChangeToggle => { ReflectMethod("InitAllSettings", ppController); }
             , drawBlock: isToggle =>
             {
                 EditorGUI.BeginChangeCheck();
-                ppController.caFromDistort = EditorGUILayout.Toggle("色散UV跟随后处理扭曲", ppController.caFromDistort);
+                // ppController.caFromDistort = EditorGUILayout.Toggle("色散UV跟随后处理扭曲", ppController.caFromDistort);
+                SerializedProperty caFromDistortProp = serializedObject.FindProperty("caFromDistort");
+                EditorGUILayout.PropertyField(caFromDistortProp, new GUIContent("色散UV跟随后处理扭曲"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ReflectMethod("SetUVFromDistort", ppController);
                 }
 
-                ppController.chromaticAberrationIntensity =
-                    EditorGUILayout.FloatField("色散强度", ppController.chromaticAberrationIntensity);
+                // ppController.chromaticAberrationIntensity = EditorGUILayout.FloatField("色散强度", ppController.chromaticAberrationIntensity);
+                SerializedProperty caIntensityProps = serializedObject.FindProperty("chromaticAberrationIntensity"); 
+                EditorGUILayout.PropertyField(caIntensityProps, new GUIContent("色散强度"));
 
                 if (!ppController.caFromDistort)
                 {
-                    ppController.chromaticAberrationPos =
-                        EditorGUILayout.FloatField("色散位置", ppController.chromaticAberrationPos);
+                    // ppController.chromaticAberrationPos = EditorGUILayout.FloatField("色散位置", ppController.chromaticAberrationPos);
+                    SerializedProperty caPosProp = serializedObject.FindProperty("chromaticAberrationPos");
+                    EditorGUILayout.PropertyField(caPosProp, new GUIContent("色散位置"));
 
-                    ppController.chromaticAberrationRange =
-                        EditorGUILayout.FloatField("色散过渡范围", ppController.chromaticAberrationRange);
+                    // ppController.chromaticAberrationRange = EditorGUILayout.FloatField("色散过渡范围", ppController.chromaticAberrationRange);
+                    SerializedProperty caRangeProp = serializedObject.FindProperty("chromaticAberrationRange");
+                    EditorGUILayout.PropertyField(caRangeProp, new GUIContent("色散过渡范围"));
                 }
             });
 
-        DrawToggleFoldOut(ppController.AnimBools[1], "扭曲", ref ppController.distortSpeedToggle, drawEndChangeCheck:
+        SerializedProperty distortSpeedToggleProp = serializedObject.FindProperty("distortSpeedToggle");
+        DrawToggleFoldOut(ppController.AnimBools[1], "扭曲", distortSpeedToggleProp, drawEndChangeCheck:
             isChangeToggle => { ReflectMethod("InitAllSettings", ppController); },
             drawBlock: isToggle =>
             {
                 EditorGUI.BeginChangeCheck();
-                ppController.distortScreenUVMode =
-                    EditorGUILayout.Toggle("后处理走常规屏幕坐标", ppController.distortScreenUVMode);
+                // ppController.distortScreenUVMode = EditorGUILayout.Toggle("后处理走常规屏幕坐标", ppController.distortScreenUVMode);
+                SerializedProperty distortScreenUVModeProp = serializedObject.FindProperty("distortScreenUVMode");
+                EditorGUILayout.PropertyField(distortScreenUVModeProp,new GUIContent("后处理走常规屏幕坐标"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ReflectMethod("SetUVFromDistort", ppController);
                 }
 
                 EditorGUI.BeginChangeCheck();
-                ppController.distortSpeedTexture =
-                    (Texture2D)EditorGUILayout.ObjectField("后处理扭曲贴图", ppController.distortSpeedTexture,
-                        typeof(Texture2D));
+                // ppController.distortSpeedTexture = (Texture2D)EditorGUILayout.ObjectField("后处理扭曲贴图", ppController.distortSpeedTexture, typeof(Texture2D));
+                SerializedProperty distortSpeedTextureProp = serializedObject.FindProperty("distortSpeedTexture");
+                EditorGUILayout.PropertyField(distortSpeedTextureProp, new GUIContent("后处理扭曲贴图"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ReflectMethod("InitAllSettings", ppController);
@@ -84,8 +96,9 @@ public class PostProcessingControllerGUI : Editor
                 if (ppController.distortScreenUVMode)
                 {
                     EditorGUI.BeginChangeCheck();
-                    ppController.distortTextureMidValue =
-                        EditorGUILayout.FloatField("扭曲贴图中间值", ppController.distortTextureMidValue);
+                    // ppController.distortTextureMidValue = EditorGUILayout.FloatField("扭曲贴图中间值", ppController.distortTextureMidValue);
+                    SerializedProperty distortTextureMidValueProp = serializedObject.FindProperty("distortTextureMidValue");
+                    EditorGUILayout.PropertyField(distortTextureMidValueProp, new GUIContent("扭曲贴图中间值"));
                     if (EditorGUI.EndChangeCheck())
                     {
                         ReflectMethod("SetTexture", ppController);
@@ -93,49 +106,66 @@ public class PostProcessingControllerGUI : Editor
                 }
 
 
-                ppController.distortSpeedTexSt = EditorGUILayout.Vector4Field("扭曲贴图ST", ppController.distortSpeedTexSt);
-
-                ppController.distortSpeedIntensity =
-                    EditorGUILayout.FloatField("扭曲强度", ppController.distortSpeedIntensity);
+                // ppController.distortSpeedTexSt = EditorGUILayout.Vector4Field("扭曲贴图ST", ppController.distortSpeedTexSt);
+                SerializedProperty distortSpeedTexStProp = serializedObject.FindProperty("distortSpeedTexSt");
+                EditorGUILayout.PropertyField(distortSpeedTexStProp, new GUIContent("扭曲贴图缩放平移"));
+                // ppController.distortSpeedIntensity = EditorGUILayout.FloatField("扭曲强度", ppController.distortSpeedIntensity);
+                SerializedProperty distortSpeedIntensityProp = serializedObject.FindProperty("distortSpeedIntensity");
+                EditorGUILayout.PropertyField(distortSpeedIntensityProp, new GUIContent("扭曲强度"));
 
                 if (!ppController.distortScreenUVMode)
                 {
-                    ppController.distortSpeedPosition =
-                        EditorGUILayout.FloatField("扭曲位置", ppController.distortSpeedPosition);
-                    ppController.distortSpeedRange = EditorGUILayout.FloatField("扭曲过渡范围", ppController.distortSpeedRange);
+                    // ppController.distortSpeedPosition = EditorGUILayout.FloatField("扭曲位置", ppController.distortSpeedPosition);
+                    SerializedProperty distortSpeedPositionProp = serializedObject.FindProperty("distortSpeedPosition");
+                    EditorGUILayout.PropertyField(distortSpeedPositionProp, new GUIContent("扭曲位置"));
+                    // ppController.distortSpeedRange = EditorGUILayout.FloatField("扭曲过渡范围", ppController.distortSpeedRange);
+                    SerializedProperty distortSpeedRangeProp = serializedObject.FindProperty("distortSpeedRange");
+                    EditorGUILayout.PropertyField(distortSpeedRangeProp, new GUIContent("扭曲过渡范围"));
                 }
 
-                ppController.distortSpeedMoveSpeedX =
-                    EditorGUILayout.FloatField("扭曲纹理流动X", ppController.distortSpeedMoveSpeedX);
-                ppController.distortSpeedMoveSpeed =
-                    EditorGUILayout.FloatField("扭曲纹理流动Y", ppController.distortSpeedMoveSpeed);
+                // ppController.distortSpeedMoveSpeedX = EditorGUILayout.FloatField("扭曲纹理流动X", ppController.distortSpeedMoveSpeedX);
+                SerializedProperty distortSpeedMoveSpeedXProp = serializedObject.FindProperty("distortSpeedMoveSpeedX");
+                EditorGUILayout.PropertyField(distortSpeedMoveSpeedXProp, new GUIContent("扭曲纹理流动X"));
+                // ppController.distortSpeedMoveSpeed = EditorGUILayout.FloatField("扭曲纹理流动Y", ppController.distortSpeedMoveSpeed);
+                SerializedProperty distortSpeedMoveSpeed    = serializedObject.FindProperty("distortSpeedMoveSpeed");
+                EditorGUILayout.PropertyField(distortSpeedMoveSpeed    , new GUIContent("扭曲纹理流动Y"));
             });
 
 
-        DrawToggleFoldOut(ppController.AnimBools[2], "径向模糊", ref ppController.radialBlurToggle, drawEndChangeCheck:
+        SerializedProperty radialBlurToggleProp = serializedObject.FindProperty("radialBlurToggle");
+        DrawToggleFoldOut(ppController.AnimBools[2], "径向模糊", radialBlurToggleProp, drawEndChangeCheck:
             isChangeToggle => { ReflectMethod("InitAllSettings", ppController); },
             drawBlock: isToggle =>
             {
                 EditorGUI.BeginChangeCheck();
-                ppController.radialBlurFromDistort =
-                    EditorGUILayout.Toggle("径向模糊跟随后处理扭曲", ppController.radialBlurFromDistort);
+                // ppController.radialBlurFromDistort = EditorGUILayout.Toggle("径向模糊跟随后处理扭曲", ppController.radialBlurFromDistort);
+                SerializedProperty radialBlurFromDistortProp = serializedObject.FindProperty("radialBlurFromDistort");
+                EditorGUILayout.PropertyField(radialBlurFromDistortProp, new GUIContent("径向模糊跟随后处理扭曲"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ReflectMethod("SetUVFromDistort", ppController);
                 }
 
-                ppController.radialBlurSampleCount =
-                    EditorGUILayout.IntSlider("采样次数", ppController.radialBlurSampleCount, 1, 12);
-                ppController.radialBlurIntensity = EditorGUILayout.FloatField("强度", ppController.radialBlurIntensity);
+                // ppController.radialBlurSampleCount = EditorGUILayout.IntSlider("采样次数", ppController.radialBlurSampleCount, 1, 12);
+                SerializedProperty radialBlurSampleCountProp = serializedObject.FindProperty("radialBlurSampleCount");
+                EditorGUILayout.PropertyField(radialBlurSampleCountProp, new GUIContent("采样次数"));
+                // ppController.radialBlurIntensity = EditorGUILayout.FloatField("强度", ppController.radialBlurIntensity);
+                SerializedProperty radialBlurIntensityProp = serializedObject.FindProperty("radialBlurIntensity");
+                EditorGUILayout.PropertyField(radialBlurIntensityProp, new GUIContent("强度"));
                 if (!ppController.radialBlurFromDistort)
                 {
-                    ppController.radialBlurPos = EditorGUILayout.FloatField("位置", ppController.radialBlurPos);
-                    ppController.radialBlurRange = EditorGUILayout.FloatField("过渡范围", ppController.radialBlurRange);
+                    // ppController.radialBlurPos = EditorGUILayout.FloatField("位置", ppController.radialBlurPos);\
+                    SerializedProperty radialBlurPosProp = serializedObject.FindProperty("radialBlurPos");
+                    EditorGUILayout.PropertyField(radialBlurPosProp, new GUIContent("位置"));
+                    // ppController.radialBlurRange = EditorGUILayout.FloatField("过渡范围", ppController.radialBlurRange);
+                    SerializedProperty radialBlurRangeProp = serializedObject.FindProperty("radialBlurRange");
+                    EditorGUILayout.PropertyField(radialBlurRangeProp, new GUIContent("过渡范围"));
                 }
             });
 
         #if CINIMACHINE_3_0
-        DrawToggleFoldOut(ppController.AnimBools[3], "震屏", ref ppController.cameraShakeToggle, drawEndChangeCheck:
+        SerializedProperty cameraShakeToggleProp = serializedObject.FindProperty("cameraShakeToggle");
+        DrawToggleFoldOut(ppController.AnimBools[3], "震屏", cameraShakeToggleProp, drawEndChangeCheck:
             isChangeToggle =>
             {
                 ReflectMethod("InitAllSettings",ppController);
@@ -144,77 +174,107 @@ public class PostProcessingControllerGUI : Editor
             {
 
                 EditorGUI.BeginChangeCheck();
-                ppController.cinemachineCamera = (CinemachineCamera)EditorGUILayout.ObjectField("绑定Cinemachine相机", ppController.cinemachineCamera, typeof(CinemachineCamera));
+                // ppController.cinemachineCamera = (CinemachineCamera)EditorGUILayout.ObjectField("绑定Cinemachine相机", ppController.cinemachineCamera, typeof(CinemachineCamera));
+                SerializedProperty cinemachineCameraProp = serializedObject.FindProperty("cinemachineCamera");
+                EditorGUILayout.PropertyField(cinemachineCameraProp, new GUIContent("绑定Cinemachine相机"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     // ReflectMethod("InitCinemachineCamera",ppController);
                     ppController.InitCinemachineCamera();
                 }
 
-                ppController.cameraShakeIntensity =
-                    EditorGUILayout.FloatField("相机震动强度", ppController.cameraShakeIntensity);
-            });
+                // ppController.cameraShakeIntensity = EditorGUILayout.FloatField("相机震动强度", ppController.cameraShakeIntensity);
+                SerializedProperty cameraShakeIntensityProp = serializedObject.FindProperty("cameraShakeIntensity");    
+                EditorGUILayout.PropertyField(cameraShakeIntensityProp, new GUIContent("相机震动强度"));
+                });
         #endif
 
-        DrawToggleFoldOut(ppController.AnimBools[4], "肌理叠加图", ref ppController.overlayTextureToggle, drawEndChangeCheck:isChangeToggle =>
+        SerializedProperty overlayTextureToggleProp = serializedObject.FindProperty("overlayTextureToggle");
+        DrawToggleFoldOut(ppController.AnimBools[4], "肌理叠加图", overlayTextureToggleProp, drawEndChangeCheck:isChangeToggle =>
             {
                 ReflectMethod("InitAllSettings", ppController);
             }, 
             drawBlock: isToggle =>
             {
                 EditorGUI.BeginChangeCheck();
-                ppController.overlayTexturePolarCoordMode =
-                    EditorGUILayout.Toggle("肌理图极坐标模式", ppController.overlayTexturePolarCoordMode);
-                ppController.overlayTexture = (Texture2D)EditorGUILayout.ObjectField("肌理图", ppController.overlayTexture, typeof(Texture2D));
+                // ppController.overlayTexturePolarCoordMode = EditorGUILayout.Toggle("肌理图极坐标模式", ppController.overlayTexturePolarCoordMode);
+                    SerializedProperty overlayTexturePolarCoordModeProp = serializedObject.FindProperty("overlayTexturePolarCoordMode");
+                    EditorGUILayout.PropertyField(overlayTexturePolarCoordModeProp, new GUIContent("肌理图极坐标模式"));
+                    // ppController.overlayTexture = (Texture2D)EditorGUILayout.ObjectField("肌理图", ppController.overlayTexture, typeof(Texture2D));
+                    SerializedProperty overlayTextureProp = serializedObject.FindProperty("overlayTexture");
+                    EditorGUILayout.PropertyField(overlayTextureProp, new GUIContent("肌理图"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ReflectMethod("SetTexture",ppController);
                 }
 
-                ppController.overlayTextureSt = EditorGUILayout.Vector4Field("肌理图缩放平移", ppController.overlayTextureSt);
-                ppController.overlayTextureAnim =
-                    EditorGUILayout.Vector2Field("肌理图偏移动画", ppController.overlayTextureAnim);
-                ppController.overlayTextureIntensity =
-                    EditorGUILayout.FloatField("肌理图强度", ppController.overlayTextureIntensity);
+                // ppController.overlayTextureSt = EditorGUILayout.Vector4Field("肌理图缩放平移", ppController.overlayTextureSt);
+                SerializedProperty overlayTextureStProp = serializedObject.FindProperty("overlayTextureSt");
+                EditorGUILayout.PropertyField(overlayTextureStProp, new GUIContent("肌理图缩放平移"));
+                // ppController.overlayTextureAnim = EditorGUILayout.Vector2Field("肌理图偏移动画", ppController.overlayTextureAnim);
+                SerializedProperty overlayTextureAnimProp = serializedObject.FindProperty("overlayTextureAnim");
+                EditorGUILayout.PropertyField(overlayTextureAnimProp, new GUIContent("肌理图偏移动画"));
+                // ppController.overlayTextureIntensity = EditorGUILayout.FloatField("肌理图强度", ppController.overlayTextureIntensity);
+                SerializedProperty overlayTextureIntensityProp = serializedObject.FindProperty("overlayTextureIntensity");
+                EditorGUILayout.PropertyField(overlayTextureIntensityProp, new GUIContent("肌理图强度"));
                 
                 EditorGUI.BeginChangeCheck();
-                ppController.overlayMaskTexture = (Texture2D)EditorGUILayout.ObjectField("肌理蒙版图", ppController.overlayMaskTexture, typeof(Texture2D));
+                // ppController.overlayMaskTexture = (Texture2D)EditorGUILayout.ObjectField("肌理蒙版图", ppController.overlayMaskTexture, typeof(Texture2D));
+                SerializedProperty overlayMaskTextureProp = serializedObject.FindProperty("overlayMaskTexture");
+                EditorGUILayout.PropertyField(overlayMaskTextureProp, new GUIContent("肌理蒙版图"));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ReflectMethod("SetTexture",ppController);
                 }
 
-                ppController.overlayMaskTextureSt =
-                    EditorGUILayout.Vector4Field("肌理图蒙版缩放平移", ppController.overlayMaskTextureSt);
+                // ppController.overlayMaskTextureSt = EditorGUILayout.Vector4Field("肌理图蒙版缩放平移", ppController.overlayMaskTextureSt);
+                SerializedProperty overlayMaskTextureStProp = serializedObject.FindProperty("overlayMaskTextureSt");
+                EditorGUILayout.PropertyField(overlayMaskTextureStProp, new GUIContent("肌理图蒙版缩放平移"));
 
             });
 
-        DrawToggleFoldOut(ppController.AnimBools[5], "反闪", ref ppController.flashToggle, drawEndChangeCheck:
+        SerializedProperty flashToggleProp = serializedObject.FindProperty("flashToggle");
+        DrawToggleFoldOut(ppController.AnimBools[5], "反闪", flashToggleProp, drawEndChangeCheck:
             isChangeToggle =>
             {
                 ReflectMethod("InitAllSettings",ppController);
             },
             drawBlock: isToggle =>
             {
-                ppController.flashInvertIntensity =
-                    EditorGUILayout.FloatField("反转度", ppController.flashInvertIntensity);
-                ppController.flashDeSaturateIntensity =
-                    EditorGUILayout.FloatField("饱和度", ppController.flashDeSaturateIntensity);
-                ppController.flashContrast = EditorGUILayout.FloatField("对比度", ppController.flashContrast);
-                ppController.flashColor = EditorGUILayout.ColorField("闪颜色", ppController.flashColor);
+                // ppController.flashInvertIntensity = EditorGUILayout.FloatField("反转度", ppController.flashInvertIntensity);
+                SerializedProperty flashInvertIntensityProp = serializedObject.FindProperty("flashInvertIntensity");
+                EditorGUILayout.PropertyField(flashInvertIntensityProp, new GUIContent("反转度"));
+                // ppController.flashDeSaturateIntensity = EditorGUILayout.FloatField("饱和度", ppController.flashDeSaturateIntensity);
+                SerializedProperty flashDeSaturateIntensityProp = serializedObject.FindProperty("flashDeSaturateIntensity");
+                EditorGUILayout.PropertyField(flashDeSaturateIntensityProp, new GUIContent("饱和度"));
+                // ppController.flashContrast = EditorGUILayout.FloatField("对比度", ppController.flashContrast);
+                SerializedProperty flashContrastProp = serializedObject.FindProperty("flashContrast");
+                EditorGUILayout.PropertyField(flashContrastProp, new GUIContent("对比度"));
+                // ppController.flashColor = EditorGUILayout.ColorField("闪颜色", ppController.flashColor);
+                SerializedProperty flashColorProp = serializedObject.FindProperty("flashColor");
+                EditorGUILayout.PropertyField(flashColorProp, new GUIContent("闪颜色"));
             });
 
-        DrawToggleFoldOut(ppController.AnimBools[6], "暗角", ref ppController.vignetteToggle, drawEndChangeCheck:
+        SerializedProperty vignetteToggleProp = serializedObject.FindProperty("vignetteToggle");
+        DrawToggleFoldOut(ppController.AnimBools[6], "暗角", vignetteToggleProp, drawEndChangeCheck:
             isChangeToggle =>
             {
                 ReflectMethod("InitAllSettings", ppController);
             },
             drawBlock: isToggle =>
             {
-                ppController.vignetteColor = EditorGUILayout.ColorField("暗角颜色", ppController.vignetteColor);
-                ppController.vignetteIntensity = EditorGUILayout.FloatField("暗角强度", ppController.vignetteIntensity);
-                ppController.vignetteRoundness = EditorGUILayout.FloatField("暗角圆度", ppController.vignetteRoundness);
-                ppController.vignetteSmothness = EditorGUILayout.FloatField("暗角平滑度", ppController.vignetteSmothness);
+                // ppController.vignetteColor = EditorGUILayout.ColorField("暗角颜色", ppController.vignetteColor);
+                SerializedProperty vignetteColorProp = serializedObject.FindProperty("vignetteColor");
+                EditorGUILayout.PropertyField(vignetteColorProp, new GUIContent("暗角颜色"));
+                // ppController.vignetteIntensity = EditorGUILayout.FloatField("暗角强度", ppController.vignetteIntensity);
+                SerializedProperty vignetteIntensityProp = serializedObject.FindProperty("vignetteIntensity");
+                EditorGUILayout.PropertyField(vignetteIntensityProp, new GUIContent("暗角强度"));
+                // ppController.vignetteRoundness = EditorGUILayout.FloatField("暗角圆度", ppController.vignetteRoundness);
+                SerializedProperty vignetteRoundnessProp = serializedObject.FindProperty("vignetteRoundness");
+                EditorGUILayout.PropertyField(vignetteRoundnessProp, new GUIContent("暗角圆度"));
+                // ppController.vignetteSmothness = EditorGUILayout.FloatField("暗角平滑度", ppController.vignetteSmothness);
+                SerializedProperty vignetteSmothnessProp = serializedObject.FindProperty("vignetteSmothness");
+                EditorGUILayout.PropertyField(vignetteSmothnessProp, new GUIContent("暗角平滑度"));
             });
 
         if (GUILayout.Button("选择当前Manager"))
@@ -227,10 +287,12 @@ public class PostProcessingControllerGUI : Editor
             ppController.FindVirtualCamera();
         }
         #endif
+        
+        serializedObject.ApplyModifiedProperties();
 
     }
     
-    public void DrawToggleFoldOut(AnimBool foldOutAnimBool,string label, ref bool isToggle,
+    public void DrawToggleFoldOut(AnimBool foldOutAnimBool,string label, SerializedProperty boolProperty,
            bool isIndentBlock = true,
             FontStyle fontStyle = FontStyle.Bold,
             Action<bool> drawBlock = null, Action<bool> drawEndChangeCheck = null)
@@ -250,10 +312,11 @@ public class PostProcessingControllerGUI : Editor
             // bool isToggle = false;
             // 必须先画Toggle，不然按钮会被FoldOut和Label覆盖。
             EditorGUI.BeginChangeCheck();
-            isToggle = EditorGUI.Toggle(rect, isToggle, EditorStyles.toggle);
+            EditorGUI.PropertyField(rect,boolProperty,new GUIContent(""));
+            // isToggle = EditorGUI.Toggle(rect, isToggle, EditorStyles.toggle);
             if (EditorGUI.EndChangeCheck())
             {
-                drawEndChangeCheck?.Invoke(isToggle);
+                drawEndChangeCheck?.Invoke(boolProperty.boolValue);
             }
 
             // EditorGUI.DrawRect(foldoutRect,Color.red);
@@ -269,8 +332,8 @@ public class PostProcessingControllerGUI : Editor
             if (faded == 0) faded = 0.00001f; //用于欺骗FadeGroup，不要让他真的关闭了。这样会藏不住相关的GUI。我们的目的是，GUI藏住，但是逻辑还是在跑。drawBlock要执行。
             EditorGUILayout.BeginFadeGroup(faded);
             {
-                EditorGUI.BeginDisabledGroup(!isToggle);
-                drawBlock?.Invoke(isToggle);
+                EditorGUI.BeginDisabledGroup(!boolProperty.boolValue);
+                drawBlock?.Invoke(boolProperty.boolValue);
                 EditorGUI.EndDisabledGroup();
             }
             EditorGUILayout.EndFadeGroup();
@@ -279,6 +342,7 @@ public class PostProcessingControllerGUI : Editor
 
     void ReflectMethod(string methodName,PostProcessingController controller)
     {
+        serializedObject.ApplyModifiedProperties();
         MethodInfo privateMethod = typeof(PostProcessingController).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
         if (privateMethod != null)
         {

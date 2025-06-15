@@ -28,7 +28,11 @@ public class PostProcessingManager : MonoBehaviour
         {
             if (_instance == null)
             {
+                #if UNITY_2022_1_OR_NEWER
                 _instance = FindFirstObjectByType<PostProcessingManager>();
+                #else
+                _instance = FindObjectOfType<PostProcessingManager>();
+                #endif
                 if (_instance == null)
                 {
                     GameObject singletonObj = new GameObject();
@@ -93,8 +97,15 @@ public class PostProcessingManager : MonoBehaviour
     private void OnEnable()
     {
 #if UNITY_EDITOR
+        if (_controllerIndexFlags > 0)
+        {
+            ReRegistEditorUpdate();
+        }
+        else
+        {
+            EditorApplication.update += EditorUpdate;
+        }
         // 注册编辑器帧更新事件
-        EditorApplication.update += EditorUpdate;
 #endif
         // //TODO 后续版本要找比较准确快的找Volume的方式
         // volume = GameObject.FindObjectOfType<Volume>();
@@ -154,7 +165,7 @@ public class PostProcessingManager : MonoBehaviour
     private int _controllerIndexFlags = 0;
 
     public static int laseUpdateControllerIndex;
-
+    
     private int GetControllerIndex()
     {
         for (int i = 0; i < 31; i++)

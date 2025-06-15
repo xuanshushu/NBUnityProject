@@ -136,6 +136,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_PARTICLE_1_MAINTEX_CONTRAST= 1 << 24;
     public const int FLAG_BIT_PARTICLE_1_VERTEXOFFSET_START_FROM_ZERO= 1 << 25;
     public const int FLAG_BIT_PARTICLE_1_VERTEXOFFSET_MASKMAP= 1 << 26;
+    public const int FLAG_BIT_PARTICLE_1_MAINTEX_COLOR_REFINE= 1 << 27;
     
     
     public const int FLAG_BIT_WRAPMODE_BASEMAP= 1 << 0;
@@ -209,6 +210,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int foldOutTaOption = 1 << 23;
     public const int foldOutMianTexContrast= 1 << 24;
     public const int foldOutVertexOffsetMask= 1 << 25;
+    public const int foldOutMainTexColorRefine= 1 << 26;
 
 
     #region CustomDataCodes

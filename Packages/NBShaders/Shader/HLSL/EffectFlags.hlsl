@@ -62,6 +62,7 @@
     #define FLAG_BIT_PARTICLE_1_MAINTEX_CONTRAST (1 << 24)
     #define FLAG_BIT_PARTICLE_1_VERTEXOFFSET_START_FROM_ZERO (1 << 25)
     #define FLAG_BIT_PARTICLE_1_VERTEXOFFSET_MASKMAP (1 << 26)
+    #define FLAG_BIT_PARTICLE_1_MAINTEX_COLOR_REFINE (1 << 27)
     
  
     //WrapMode不能够超过16位（因为会占用x和x+16两个bit位）

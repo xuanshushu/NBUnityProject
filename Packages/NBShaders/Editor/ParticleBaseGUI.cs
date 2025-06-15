@@ -232,6 +232,15 @@ namespace UnityEditor
                     helper.DrawSlider("对比度","_Contrast",0,5);
                     DrawCustomDataSelect("对比度自定义曲线",W9ParticleShaderFlags.FLAGBIT_POS_2_CUSTOMDATA_MAINTEX_CONTRAST,2);
                 });
+                
+                DrawToggleFoldOut(W9ParticleShaderFlags.foldOutMainTexColorRefine,4,"主贴图颜色修正","_BaseMapColorRefine_Toggle",W9ParticleShaderFlags.FLAG_BIT_PARTICLE_1_MAINTEX_COLOR_REFINE,1,isIndentBlock:true,drawBlock:
+                    (isToggle) =>
+                    {
+                        helper.DrawVector4Componet("A:主颜色相乘","_BaseMapColorRefine","x",false);
+                        helper.DrawVector4Componet("B:主颜色Power","_BaseMapColorRefine","y",false);
+                        helper.DrawVector4Componet("B:主颜色Power后相乘","_BaseMapColorRefine","z",false);
+                        helper.DrawVector4Componet("A/B线性差值","_BaseMapColorRefine","w",true,0f,1f);
+                    });
             };
 
             if (!_uieffectEnabled || _uiParticleEnabled || _meshSourceMode == MeshSourceMode.UIEffectBaseMap)
@@ -390,10 +399,11 @@ namespace UnityEditor
                         //     
                         // EditorGUI.EndDisabledGroup();
                         DrawNoiseAffectBlock(() => {helper.DrawSlider("遮罩扭曲强度","_MaskDistortion_intensity",-2,2);});
-                        if(!_noiseEnabled)
-                        {
-                            helper.GetProperty("_MaskDistortion_intensity").floatValue = 0f;
-                        }
+                        //没有必要自动归位
+                        // if(!_noiseEnabled)
+                        // {
+                        //     helper.GetProperty("_MaskDistortion_intensity").floatValue = 0f;
+                        // }
                         
                     // }
                     
@@ -494,10 +504,11 @@ namespace UnityEditor
                     helper.DrawFloat("流光颜色强度","_EmissionMapColorIntensity");
                     helper.DrawSlider("流光贴图旋转","_EmissionMapUVRotation",0f,360f);
                     DrawNoiseAffectBlock(() => {helper.DrawFloat("流光贴图扭曲强度","_Emi_Distortion_intensity"); });
-                    if (!_noiseEnabled)
-                    {
-                        helper.GetProperty("_Emi_Distortion_intensity").floatValue = 0;
-                    }
+                    //没有必要自动归位
+                    // if (!_noiseEnabled)
+                    // {
+                    //     helper.GetProperty("_Emi_Distortion_intensity").floatValue = 0;
+                    // }
 
                     helper.DrawVector4In2Line("_EmissionMapUVOffset", "流光贴图偏移速度");
                     // helper.DrawSlider("LiuuvRapSoft","_uvRapSoft",0f,1f);
@@ -1604,9 +1615,13 @@ namespace UnityEditor
         {
             checkIsParicleSystem = false;
             m_RenderersUsingThisMaterial.Clear();
+            #if UNITY_2022_1_OR_NEWER
             ParticleSystemRenderer[] renderers =
-                // UnityEngine.Object.FindObjectsOfType(typeof(ParticleSystemRenderer)) as ParticleSystemRenderer[];
                 UnityEngine.Object.FindObjectsByType(typeof(ParticleSystemRenderer),FindObjectsSortMode.None) as ParticleSystemRenderer[];
+            #else
+            ParticleSystemRenderer[] renderers =
+                UnityEngine.Object.FindObjectsOfType(typeof(ParticleSystemRenderer)) as ParticleSystemRenderer[];
+            #endif
             foreach (ParticleSystemRenderer renderer in renderers)
             {
                 if (renderer.sharedMaterial == material || renderer.trailMaterial == material)
