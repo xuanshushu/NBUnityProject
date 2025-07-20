@@ -28,11 +28,11 @@ public class PostProcessingManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                #if UNITY_2022_1_OR_NEWER
-                _instance = FindFirstObjectByType<PostProcessingManager>();
-                #else
-                _instance = FindObjectOfType<PostProcessingManager>();
-                #endif
+                // #if UNITY_2022_1_OR_NEWER
+                // _instance = FindFirstObjectByType<PostProcessingManager>();
+                // #else
+                _instance = FindObjectOfType<PostProcessingManager>();//因为兼容性因素，保留较慢版本
+                // #endif
                 if (_instance == null)
                 {
                     GameObject singletonObj = new GameObject();

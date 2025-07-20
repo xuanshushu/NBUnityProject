@@ -44,6 +44,24 @@ namespace stencilTestHelper
             Debug.LogError("StencilValuesConfig: 不存在Key"+key);
             return null;
         }
+
+        public int GetKeyIndex(string key)
+        {
+            for (int i = 0; i < Config.Count; i++)
+            {
+                if (Config[i].key == key)
+                {
+                    return i;
+                }
+            }
+            Debug.LogError("StencilValuesConfig: 不存在Key"+key);
+            return -1;
+        }
+
+        public string GetKeyByIndex(int index)
+        {
+            return Config[index].key;
+        }
         
 
         public StencilValues this[string key]

@@ -1,90 +1,8 @@
 #ifndef PARTICLESUNLITFORWARDPASS
     #define PARTICLESUNLITFORWARDPASS
+    #include "HLSL/ParticlesUnlitInputNew.hlsl"
+    #include "HLSL/SixWaySmokeLit.hlsl"
 
-    struct AttributesParticle//即URP语境下的appdata
-    {
-        float4 vertex: POSITION;
-        float3 normalOS: NORMAL;
-        half4 color: COLOR;
-        #if defined(_FLIPBOOKBLENDING_ON)
-            float4 texcoords: TEXCOORD0;       //texcoords.zw就是粒子那边新建的UV2
-            float3 texcoordBlend: TEXCOORD3;//注意，假如需要UI支持，則Canvas要開放相關Channel
-        #else
-            float4 texcoords: TEXCOORD0;
-        #endif
-
-        #ifdef _PARALLAX_MAPPING
-            float4 tangentOS     : TANGENT;
-        #endif
-        
-        float4 Custom1: TEXCOORD1;
-        float4 Custom2: TEXCOORD2;
-        
-        UNITY_VERTEX_INPUT_INSTANCE_ID
-    };
-    
-    struct VaryingsParticle//即URP语境下的v2f
-    {
-        float4 clipPos: SV_POSITION;
-        
-        half4 color: COLOR;
-        float4 texcoord: TEXCOORD0;  // 主帖图 和 mask
-        
-        #if defined (_EMISSION)   || defined(_COLORMAPBLEND)
-            float4 emissionColorBlendTexcoord: TEXCOORD1;  // 流光
-        #endif
-
-        #ifdef _NOISEMAP
-            float4 noisemapTexcoord:TEXCOORD2;//Noise
-        #endif
- 
-        #if defined(_DISSOLVE) 
-
-            float4 dissolveTexcoord:TEXCOORD15;
-            float4 dissolveNoiseTexcoord: TEXCOORD5;
-
-        #endif
-
-        
-        float4 positionWS: TEXCOORD3;
-        float4 positionOS: TEXCOORD12;
-        
-        float4 texcoord2AndSpecialUV: TEXCOORD6;  // UV2和SpecialUV
-
-        float4 positionNDC: TEXCOORD7;
-        
-        
-        float4 VaryingsP_Custom1: TEXCOORD8;
-        float4 VaryingsP_Custom2: TEXCOORD9;
-        
-
-        float4 normalWSAndAnimBlend: TEXCOORD10;
-        
-        float3 fresnelViewDir :TEXCOORD11;
-        
-        float3 viewDirWS :TEXCOORD13;
-        float4 texcoordMaskMap2 : TEXCOORD14;
-
-        #ifdef _PARALLAX_MAPPING
-          half3  tangentViewDir : TEXCOORD16;
-        #endif
-        
-        UNITY_VERTEX_INPUT_INSTANCE_ID
-        UNITY_VERTEX_OUTPUT_STEREO
-    };
-
-    bool isProcessUVInFrag()
-    {
-        if(CheckLocalFlags(FLAG_BIT_PARTICLE_POLARCOORDINATES_ON) || CheckLocalFlags(FLAG_BIT_PARTICLE_UTWIRL_ON)) 
-        {
-            return true;
-        }
-        #if defined(_DEPTH_DECAL) || defined(_PARALLAX_MAPPING) || defined(_SCREEN_DISTORT_MODE)
-            return true;
-        #endif
-        return false;
-    }
-    
     
     ///////////////////////////////////////////////////////////////////////////////
     //                  Vertex and Fragment functions                            //
@@ -152,6 +70,33 @@
 
         output.viewDirWS = GetWorldSpaceNormalizeViewDir(output.positionWS.xyz);
         output.normalWSAndAnimBlend.xyz = TransformObjectToWorldNormal(input.normalOS.xyz);
+
+        #if defined(_NORMALMAP)||defined(_FX_LIGHT_MODE_SIX_WAY) 
+            real sign = input.tangentOS.w * GetOddNegativeScale();
+            half3 tangentWS = TransformObjectToWorldDir(input.tangentOS.xyz);
+            output.tangentWS = half4(tangentWS,sign);
+        #endif
+
+
+        #ifndef _FX_LIGHT_MODE_UNLIT
+            #ifdef _FX_LIGHT_MODE_SIX_WAY
+                float3 bitangent = sign * cross(output.normalWSAndAnimBlend.xyz, output.tangentWS.xyz);
+                // GetSixWayBakeDiffuseLight(output.normalWSAndAnimBlend.xyz,output.tangentWS,bitangent,
+                //     output.bakeDiffuseLighting0,output.bakeDiffuseLighting1,output.bakeDiffuseLighting2,
+                //     output.backBakeDiffuseLighting0,output.backBakeDiffuseLighting1,output.backBakeDiffuseLighting2);
+
+                GetSixWayBakeDiffuseLight(output.normalWSAndAnimBlend.xyz,output.tangentWS,bitangent,
+                    output.bakeDiffuseLighting0,output.bakeDiffuseLighting1,output.bakeDiffuseLighting2,
+                    output.backBakeDiffuseLighting0,output.backBakeDiffuseLighting1,output.backBakeDiffuseLighting2);
+
+            #else
+                OUTPUT_SH(output.normalWSAndAnimBlend.xyz, output.vertexSH);
+                #ifdef _ADDITIONAL_LIGHTS_VERTEX
+                output.vertexLight = VertexLighting(output.positionWS.xyz, output.normalWSAndAnimBlend.xyz);
+                #endif
+            #endif
+        #endif
+        
         
         
         UNITY_FLATTEN
@@ -192,6 +137,11 @@
            
             output.texcoordMaskMap2.xy = particleUVs.maskMap2UV;
             output.texcoordMaskMap2.zw = particleUVs.maskMap3UV;
+            #ifdef _NORMALMAP
+                output.bumpTexTexcoord.xy = particleUVs.bumpTexUV;
+
+            #endif
+            
             #if defined (_EMISSION)   || defined(_COLORMAPBLEND)
                 output.emissionColorBlendTexcoord.xy = particleUVs.emissionUV;
                 output.emissionColorBlendTexcoord.zw = particleUVs.colorBlendUV;
@@ -307,6 +257,7 @@
         float2 dissolve_uv;
         float2 dissolve_mask_uv;
         float4 dissolve_noise_uv;
+        float2 BumpTex_uv;
 
         //如果同时在粒子系统里开启序列帧融帧和特殊UV通道模式。
         
@@ -334,6 +285,7 @@
             noiseMap_uv = particleUVs.noiseMapUV;
             noiseMaskMap_uv = particleUVs.noiseMaskMapUV;
             dissolve_noise_uv = float4(particleUVs.dissolve_noise1_UV,particleUVs.dissolve_noise2_UV);
+            BumpTex_uv = particleUVs.bumpTexUV;
             
         }
         else
@@ -341,6 +293,11 @@
             MaskMapuv = input.texcoord.zw;
             MaskMapuv2 = input.texcoordMaskMap2.xy;
             MaskMapuv3 = input.texcoordMaskMap2.zw;
+            
+            #ifdef _NORMALMAP
+            BumpTex_uv = input.bumpTexTexcoord.xy;
+            #endif
+            
             #ifdef _NOISEMAP
                 noiseMap_uv = input.noisemapTexcoord.xy;
                 noiseMaskMap_uv = input.noisemapTexcoord.zw;
@@ -377,7 +334,8 @@
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_NOISE_MASKMAP))
             {
-                noiseMask= SampleTexture2DWithWrapFlags(_NoiseMaskMap,noiseMaskMap_uv,FLAG_BIT_WRAPMODE_NOISE_MASKMAP).r;
+                half4 noiseMaskSample = SampleTexture2DWithWrapFlags(_NoiseMaskMap,noiseMaskMap_uv,FLAG_BIT_WRAPMODE_NOISE_MASKMAP);
+                noiseMask= GetColorChannel(noiseMaskSample,FLAG_BIT_COLOR_CHANNEL_POS_0_NOISE_MASK);
                 noiseMask *= noiseSample.a;
             }
             _TexDistortion_intensity = GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_NOISE_INTENSITY,_TexDistortion_intensity,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
@@ -394,12 +352,13 @@
             uv.xy += mainTexNoise;//主贴图纹理扭曲
             blendUv.xy += mainTexNoise;
         #endif
-        
+
         // SampleAlbedo--------------------
         half4 albedo = 0;
         #if defined(_SCREEN_DISTORT_MODE)
             albedo = half4(cum_noise_xy, 1.0, noiseMask);
         #else
+        
             UNITY_FLATTEN
             if(CheckLocalFlags(FLAG_BIT_PARTICLE_BACKCOLOR))
             {
@@ -414,7 +373,6 @@
             #else
                 baseMap = _BaseMap;
             #endif
-         
         
             UNITY_BRANCH
             if (CheckLocalFlags(FLAG_BIT_PARTICLE_UIEFFECT_ON) & !CheckLocalFlags1(FLAG_BIT_PARTICLE_1_UIEFFECT_BASEMAP_MODE))
@@ -430,18 +388,25 @@
             }
             else
             {
+                
                  albedo = BlendTexture(baseMap, uv, blendUv,FLAG_BIT_WRAPMODE_BASEMAP);
                 
             }
+
+            albedo.a = GetColorChannel(albedo,FLAG_BIT_COLOR_CHANNEL_POS_0_MAINTEX_ALPHA);
+        
             albedo *= _BaseColor ;
             albedo.rgb *= _BaseColorIntensityForTimeline;
 
         #endif
-
-
         
         half alpha = albedo.a;
         half3 result = albedo.rgb;
+        
+        #ifdef _FX_LIGHT_MODE_SIX_WAY
+        float4 rigRTBkSample  = BlendTexture(_RigRTBk, uv, blendUv,FLAG_BIT_WRAPMODE_BASEMAP);
+        float4 rigLBtFSample  = BlendTexture(_RigLBtF, uv, blendUv,FLAG_BIT_WRAPMODE_BASEMAP);
+        #endif
       
         UNITY_BRANCH
         if(CheckLocalFlags(FLAG_BIT_HUESHIFT_ON))
@@ -465,6 +430,122 @@
             half3 colorB = pow(result.rgb,_BaseMapColorRefine.y)*_BaseMapColorRefine.z;
             result.rgb = lerp(colorA,colorB,_BaseMapColorRefine.w);
         }
+        
+        half3 normalTS = half3(0, 0, 1);//TODO
+
+        if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_BUMP_TEX_UV_FOLLOW_MAINTEX))
+        {
+            BumpTex_uv = uv;
+        }
+
+        half metallic = 1;
+        half smoothness = 1;
+        #ifdef _NORMALMAP
+        
+        half4 normalMapSample = SampleTexture2DWithWrapFlags(_BumpTex,BumpTex_uv,FLAG_BIT_WRAPMODE_BUMPTEX);
+        if (CheckLocalFlags(FLAG_BIT_PARTICLE_NORMALMAP_MASK_MODE))
+        {
+            normalTS = UnpackNormalRGB(half4(normalMapSample.xy,0,1),_BumpScale);
+            metallic *= normalMapSample.z;
+            smoothness *= normalMapSample.w;
+        }
+        else
+        {
+            normalTS = UnpackNormalScale(half4(normalMapSample),_BumpScale);
+        }
+
+        #endif
+        //光照模式
+        #ifndef _FX_LIGHT_MODE_UNLIT
+    
+            InputData inputData;
+            InitializeInputData(input, normalTS, inputData);
+            metallic *= _MaterialInfo.x;
+            half3 specular = 0;
+            smoothness *= _MaterialInfo.y;
+            half occlusion = 1;
+            half3 pbrEmission = 0;
+           // return half4(inputData.bakedGI,1);
+            #if defined (_FX_LIGHT_MODE_BLINN_PHONG) || defined(_FX_LIGHT_MODE_HALF_LAMBERT) 
+            half4 specularGloss = _SpecularColor;
+            #ifdef _FX_LIGHT_MODE_BLINN_PHONG
+            half4 blinnPhong = UniversalFragmentBlinnPhong(inputData,result.rgb, specularGloss, smoothness, pbrEmission, alpha,normalTS);
+            #else //_FX_LIGHT_MODE_HALF_LAMBERT
+            half4 blinnPhong = UniversalFragmentHalfLambert(inputData,result.rgb, specularGloss, smoothness, pbrEmission, alpha,normalTS);
+            #endif
+            result = blinnPhong.rgb;
+            alpha = blinnPhong.a;
+            #elif _FX_LIGHT_MODE_PBR
+            half4 pbr = UniversalFragmentPBR(inputData,result.rgb,  metallic,  specular, smoothness,  occlusion,  pbrEmission, alpha);
+            result = pbr.rgb;
+            alpha = pbr.a;
+            #elif _FX_LIGHT_MODE_SIX_WAY
+            BSDFData bsdfData = (BSDFData)0;
+            bsdfData.absorptionRange = GetAbsorptionRange(_SixWayInfo.x);
+            bsdfData.diffuseColor = albedo;
+            bsdfData.normalWS = inputData.normalWS;
+            bsdfData.tangentWS = input.tangentWS;//Check this
+            bsdfData.rigRTBk = rigRTBkSample.xyz * INV_PI;//AccordingTo SixWayForwardPass
+            bsdfData.rigLBtF = rigLBtFSample.xyz * INV_PI;//AccordingTo SixWayForwardPass
+            bsdfData.bakeDiffuseLighting0 = input.bakeDiffuseLighting0;
+            bsdfData.bakeDiffuseLighting1 = input.bakeDiffuseLighting1;
+            bsdfData.bakeDiffuseLighting2 = input.bakeDiffuseLighting2;
+            bsdfData.backBakeDiffuseLighting0 = input.backBakeDiffuseLighting0;
+            bsdfData.backBakeDiffuseLighting1 = input.backBakeDiffuseLighting1;
+            bsdfData.backBakeDiffuseLighting2 = input.backBakeDiffuseLighting2;
+            bsdfData.emissionInput = rigLBtFSample.a;
+            GetSixWayEmission(bsdfData,_SixWayEmissionRamp,_SixWayEmissionColor,CheckLocalFlags1(FLAG_BIT_PARTICLE_1_SIXWAY_RAMPMAP));//Init Emission
+            bsdfData.alpha = rigRTBkSample.a * _BaseColor.a;
+
+            ModifyBakedDiffuseLighting(bsdfData,inputData.bakedGI);
+
+            half4 sixWay = UniversalFragmentSixWay(inputData,bsdfData);
+            
+            
+        // half3 dir = _MainLightPosition.xyz;
+        // dir = TransformToLocalFrame(dir, bsdfData);
+        // return half4(dir,1);
+        
+            result = sixWay.rgb;
+            alpha = sixWay.a;
+        
+            #endif
+            
+            #ifdef _ADDITIONAL_LIGHTS_VERTEX
+            result.rgb *= input.vertexLight;
+            #endif
+
+            input.normalWSAndAnimBlend.xyz = inputData.normalWS;
+        
+        #else
+            #ifdef _NORMALMAP
+            float sgn = input.tangentWS.w;      // should be either +1 or -1
+            float3 bitangent = sgn * cross(input.normalWSAndAnimBlend.xyz, input.tangentWS.xyz);
+            half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangent.xyz, input.normalWSAndAnimBlend.xyz);
+            input.normalWSAndAnimBlend.xyz = TransformTangentToWorld(normalTS, tangentToWorld);
+            #endif
+        #endif
+       
+        #ifdef _MATCAP
+        // URP 
+        half3 normalVS = mul(input.normalWSAndAnimBlend.xyz, (float3x3)UNITY_MATRIX_I_V); // 逆转置矩阵 
+        half3 positionVS = TransformWorldToView(input.positionWS);
+
+        
+        float3 r = reflect(positionVS, normalVS); 
+        r = normalize(r); 
+        float m = 2.828427f * sqrt(r.z + 1.0);  
+        float2 matCapUV = r.xy / m + 0.5;
+        half3 matCapSample = SAMPLE_TEXTURE2D(_MatCapTex,sampler_linear_clamp,matCapUV);
+
+        matCapSample *= _MatCapColor.rgb;
+
+        half3 matCapMutilResult = result * matCapSample;
+        half3 matAddResult = result + matCapSample;
+        half3 matCapResult = lerp(matAddResult,matCapMutilResult,_MatCapInfo.x);
+       
+        result = lerp(result,matCapResult,_MatCapColor.a);
+        #endif
         
         
         
@@ -495,9 +576,10 @@
                     dissolve_mask_uv += cum_noise * _DissolveOffsetRotateDistort.w;
                 }
             #endif
-            half dissolveValue;
         
-            dissolveValue  = SampleTexture2DWithWrapFlags(_DissolveMap,dissolve_uv,FLAG_BIT_WRAPMODE_DISSOLVE_MAP);
+            half4 dissolveMapSample  = SampleTexture2DWithWrapFlags(_DissolveMap,dissolve_uv,FLAG_BIT_WRAPMODE_DISSOLVE_MAP);
+            
+            half dissolveValue = GetColorChannel(dissolveMapSample,FLAG_BIT_COLOR_CHANNEL_POS_0_DISSOLVE_MAP);
 
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOVLE_VORONOI))
@@ -529,7 +611,8 @@
             UNITY_BRANCH
             if(CheckLocalFlags(FLAG_BIT_PARTICLE_DISSOLVE_MASK))
             {
-                dissolveMaskValue = SampleTexture2DWithWrapFlags(_DissolveMaskMap,dissolve_mask_uv,FLAG_BIT_WRAPMODE_DISSOLVE_MASKMAP);
+                half4 dissolveMaskSample = SampleTexture2DWithWrapFlags(_DissolveMaskMap,dissolve_mask_uv,FLAG_BIT_WRAPMODE_DISSOLVE_MASKMAP);
+                dissolveMaskValue = GetColorChannel(dissolveMaskSample,FLAG_BIT_COLOR_CHANNEL_POS_0_DISSOLVE_MASK_MAP);
                 _Dissolve.z += GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_DISSOLVE_MASK_INTENSITY,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
                 dissolveMaskValue *= _Dissolve.z;
                 dissolveValue = lerp(dissolveValue,1.01,dissolveMaskValue);
@@ -583,7 +666,8 @@
            
                     _FresnelUnit.x += GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_FRESNEL_OFFSET,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);;
                             
-                    fresnelValue = NB_Remap(fresnelValue,_FresnelUnit.x,1,0,1);
+                    // half fresnelHardness =  - _FresnelUnit.w*0.5 +0.5;
+                    fresnelValue = NB_Remap(fresnelValue,_FresnelUnit.x,_FresnelUnit.x + 1.01 - _FresnelUnit.w,0,1);
                     UNITY_BRANCH
                     if(!CheckLocalFlags(FLAG_BIT_PARTICLE_FRESNEL_INVERT_ON))
                     {
@@ -591,9 +675,8 @@
                     }
                     fresnelValue = pow(fresnelValue,_FresnelUnit.y);
 
-                    half fresnelHardness = (1 - _FresnelUnit.w)*0.5;
                     
-                    fresnelValue = smoothstep(0.5-fresnelHardness,0.5+fresnelHardness,fresnelValue);
+                    // fresnelValue = smoothstep(0.5-fresnelHardness,0.5+fresnelHardness,fresnelValue);
                 }
 
                 UNITY_BRANCH
@@ -602,7 +685,10 @@
                     float fresnelColorIntensity = fresnelValue*_FresnelColor.a*_FresnelUnit.z;
                     
                     result = lerp(result,_FresnelColor.rgb,fresnelColorIntensity);
-                    alpha = max(alpha,fresnelColorIntensity);//颜色要不要不被主贴图Alpha影响呢？
+                    if (!CheckLocalFlags(FLAG_BIT_PARTICLE_FRESNEL_COLOR_AFFETCT_BY_ALPHA))
+                    {
+                        alpha = max(alpha,fresnelColorIntensity);//颜色要不要不被主贴图Alpha影响呢？
+                    }
                 }
 
                 UNITY_BRANCH
@@ -635,28 +721,31 @@
             #if defined(_NOISEMAP)
                 MaskMapuv += cum_noise * _MaskDistortion_intensity; //加入扭曲效果
             #endif
-            half4 maskmap1 = SampleTexture2DWithWrapFlags(_MaskMap, MaskMapuv,FLAG_BIT_WRAPMODE_MASKMAP);
+            half4 maskmap1Sample = SampleTexture2DWithWrapFlags(_MaskMap, MaskMapuv,FLAG_BIT_WRAPMODE_MASKMAP);
+            half mask1 = GetColorChannel(maskmap1Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP1);
         
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP2))
             {
-                half maskMap2 = SampleTexture2DWithWrapFlags(_MaskMap2, MaskMapuv2,FLAG_BIT_WRAPMODE_MASKMAP2).r;
-                maskmap1 *= maskMap2;
+                half maskMap2Sample = SampleTexture2DWithWrapFlags(_MaskMap2, MaskMapuv2,FLAG_BIT_WRAPMODE_MASKMAP2).r;
+                half mask2 = GetColorChannel(maskMap2Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP2);
+                mask1 *= mask2;
             }
 
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP3))
             {
-                half maskMap3 = SampleTexture2DWithWrapFlags(_MaskMap3, MaskMapuv3,FLAG_BIT_WRAPMODE_MASKMAP3).r;
-                maskmap1 *= maskMap3;
+                half maskMap3Sample = SampleTexture2DWithWrapFlags(_MaskMap3, MaskMapuv3,FLAG_BIT_WRAPMODE_MASKMAP3).r;
+                half mask3 = GetColorChannel(maskMap3Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP3);
+                mask1 *= mask3;
             }
 
-            maskmap1.rgb = lerp(1,maskmap1.rgb,_MaskMapVec.x);
-            maskmap1.rgb = saturate(maskmap1.rgb);
+            mask1 = lerp(1,mask1,_MaskMapVec.x);
+            mask1 = saturate(mask1);
         
-            maskmap1.rgb *= maskmap1.a;//预乘
+            // maskmap1.rgb *= maskmap1.a;//预乘
         
-            alpha *= maskmap1.r;  //mask边缘
+            alpha *= mask1;  //mask边缘
         #endif
         
 
@@ -714,28 +803,36 @@
         half3 beforeFogResult = result;
         result = MixFog(result,input.positionWS.w);
         result = lerp(beforeFogResult, result, _fogintensity);
-        
-        
 
-        #ifndef _SCREEN_DISTORT_MODE
-            result.rgb = result.rgb * alpha;
-        #endif
+        // #ifndef _SCREEN_DISTORT_MODE
+        //     result.rgb = result.rgb * alpha;
+        // #endif
         
-            UNITY_FLATTEN
-            if(CheckLocalFlags(FLAG_BIT_PARTICLE_LINEARTOGAMMA_ON))
-            {
-                result.rgb = LinearToGammaSpace(result.rgb);
-            }
+        UNITY_FLATTEN
+        if(CheckLocalFlags(FLAG_BIT_PARTICLE_LINEARTOGAMMA_ON))
+        {
+            result.rgb = LinearToGammaSpace(result.rgb);
+        }
         
 
         alpha *= _AlphaAll;
 
+        #if defined  (_ALPHAPREMULTIPLY_ON) || defined(_ALPHAMODULATE_ON)
+            result *= alpha;
+            #ifdef _ALPHAPREMULTIPLY_ON
+                alpha *= _AdditiveToPreMultiplyAlphaLerp;
+            #endif
+        #endif
         half4 color = half4(result, alpha);
+
+        
 
         #ifdef _ALPHATEST_ON
         clip(color.a - _Cutoff);
 
         #endif
+
+        color = min(color,1000);
         
         return color;
     }

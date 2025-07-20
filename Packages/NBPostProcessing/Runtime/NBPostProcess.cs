@@ -349,23 +349,25 @@ namespace MhRender.RendererFeatures
             using (new ProfilingScope(cmd, _profilingSampler))
             {
                 context.DrawRenderers(renderingData.cullResults, ref DisturbanceDraw, ref _Filtering);
-
+                
 #if UNIVERSAL_RP_13_1_2_OR_NEWER
                 _renderMaskMat.SetTexture(CameraTexture, _DisturbanceMaskRTHandle);
+                cmd.SetRenderTarget((RenderTargetIdentifier)_DownRT);
+                
                 switch (_downSampling)
                 {
                     case Downsampling._2xBilinear:
-                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, _DownRT, _renderMaskMat, 0);
+                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, Vector2.one, _renderMaskMat, 0);
                         break;
                     case Downsampling._4xBilinear:
-                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, _DownRT, _renderMaskMat, 0);
+                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, Vector2.one, _renderMaskMat, 0);
                         break;
                     case Downsampling._4xBox:
                         _renderMaskMat.SetFloat(SampleOffset, 2);
-                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, _DownRT, _renderMaskMat, 1);
+                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, Vector2.one, _renderMaskMat, 1);
                         break;
                     default:
-                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, _DownRT, _renderMaskMat, 0);
+                        Blitter.BlitTexture(cmd, _DisturbanceMaskRTHandle, Vector2.one, _renderMaskMat, 0);
                         break;
                 }
 

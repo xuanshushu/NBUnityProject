@@ -35,23 +35,6 @@ public abstract class ShaderFlagsBase
     private void SetIntValue(Material material, int flagBits,int index = 0)
     {
 #if UNITY_EDITOR
-        // SerializedObject serializedObject = new SerializedObject(_material);
-        // SerializedProperty serializedProperty = serializedObject.FindProperty("m_SavedProperties");
-        // serializedProperty = serializedProperty.FindPropertyRelative("m_Floats");
-        // for (int index = serializedProperty.arraySize - 1; index >= 0; index--)
-        // {
-        //     var property = serializedProperty.GetArrayElementAtIndex(index);
-        //     string propertyName = property.displayName;
-        //     if (propertyName == "_W9PBRStandardShaderFlags")
-        //     {
-        //         var propertyType = property.propertyType;
-        //         Debug.Log("xxx: "+propertyType);
-        //
-        //
-        //         property.floatValue = (float) (flags | flagBits);
-        //     }
-        // }
-        // material.SetInt(GetShaderFlagsName(), flagBits);
         material.SetInteger(GetShaderFlagsId(index), flagBits);
 #else
         material.SetInteger(GetShaderFlagsId(index), flagBits);

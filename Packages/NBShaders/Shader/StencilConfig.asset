@@ -13,6 +13,16 @@ MonoBehaviour:
   m_Name: StencilConfig
   m_EditorClassIdentifier: Assembly-CSharp-Editor:stencilTestHelper:StencilValuesConfig
   Config:
+  - key: ParticleBaseDefault
+    Values:
+      DefaultQueue: 3100
+      Ref: 0
+      Comp: 8
+      Pass: 0
+      Fail: 0
+      ZFail: 0
+      ReadMask: 255
+      WriteMask: 255
   - key: Disturbance
     Values:
       DefaultQueue: 3000
@@ -48,16 +58,6 @@ MonoBehaviour:
       DefaultQueue: 3100
       Ref: 2
       Comp: 7
-      Pass: 0
-      Fail: 0
-      ZFail: 0
-      ReadMask: 255
-      WriteMask: 255
-  - key: ParticleBaseDefault
-    Values:
-      DefaultQueue: 3100
-      Ref: 0
-      Comp: 8
       Pass: 0
       Fail: 0
       ZFail: 0

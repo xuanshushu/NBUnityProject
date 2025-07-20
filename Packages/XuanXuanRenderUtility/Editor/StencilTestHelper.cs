@@ -40,6 +40,7 @@ namespace stencilTestHelper
             public string stencilReadMask = "_StencilReadMask";
             public string stencilZFail = "_StencilZFail";
             public string stencilFail = "_StencilFail";
+            public string stencilKexIndex = "_StencilKeyIndex";
 
             public StencilPropertyNames()
             {
@@ -47,7 +48,7 @@ namespace stencilTestHelper
 
             public StencilPropertyNames(string stencilName, string stencilCompName, string stencilOpName,
                 string stencilWriteMaskName, string stencilReadMaskName, string stencilZFailName,
-                string stencilFailName)
+                string stencilFailName,string stencilKexIndexName)
             {
                 if (!string.IsNullOrEmpty(stencilName))
                 {
@@ -76,6 +77,11 @@ namespace stencilTestHelper
                 if (!string.IsNullOrEmpty(stencilFailName))
                 {
                     stencilFail = stencilFailName;
+                }
+
+                if (!string.IsNullOrEmpty(stencilKexIndexName))
+                {
+                    stencilKexIndex = stencilKexIndexName;
                 }
             }
         }
@@ -133,6 +139,11 @@ namespace stencilTestHelper
                 if (!string.IsNullOrEmpty(stencilPropertyNames.stencilFail))
                 {
                     mat.SetFloat(stencilPropertyNames.stencilFail, (float)stencilValues.Fail);
+                }
+
+                if (!string.IsNullOrEmpty(stencilPropertyNames.stencilKexIndex))
+                {
+                    mat.SetFloat(stencilPropertyNames.stencilKexIndex,stencilValuesConfig.GetKeyIndex(stencilConfigKey));
                 }
 
                 defaultQueue = stencilValues.DefaultQueue;

@@ -132,20 +132,22 @@ namespace MhRender.RendererFeatures
 #if UNIVERSAL_RP_13_1_2_OR_NEWER
 
                 _material.SetTexture(CameraTexture, _screenColorHandle);
+                cmd.SetRenderTarget((RenderTargetIdentifier)_tempRTHandle);
                 switch (_downSampling)
                 {
                     case Downsampling._2xBilinear:
-                        Blitter.BlitTexture(cmd, _screenColorHandle, _tempRTHandle, _material, 0);
+                        
+                        Blitter.BlitTexture(cmd, _screenColorHandle, Vector2.one, _material, 0);
                         break;
                     case Downsampling._4xBilinear:
-                        Blitter.BlitTexture(cmd, _screenColorHandle, _tempRTHandle, _material, 0);
+                        Blitter.BlitTexture(cmd, _screenColorHandle, Vector2.one, _material, 0);
                         break;
                     case Downsampling._4xBox:
                         _material.SetFloat(SampleOffset,2);
-                        Blitter.BlitTexture(cmd, _screenColorHandle, _tempRTHandle, _material, 1);
+                        Blitter.BlitTexture(cmd, _screenColorHandle, Vector2.one, _material, 1);
                         break;
                     default:
-                        Blitter.BlitTexture(cmd, _screenColorHandle, _tempRTHandle, _material, 0);  
+                        Blitter.BlitTexture(cmd, _screenColorHandle, Vector2.one, _material, 0);  
                         break;
                 }
 #else
