@@ -348,4 +348,10 @@ half2 Rotate(half2 v, half cos0, half sin0)
     return half2(v.x * cos0 - v.y * sin0,
                   v.x * sin0 + v.y * cos0);
 }
+
+half SmoothStep01(half interval)//让01线性过渡变成SmoothStep过渡，但是控制计算量。
+{
+    interval = saturate(interval);
+    return interval * interval * ( 3 - 2 * interval );
+}
 #endif

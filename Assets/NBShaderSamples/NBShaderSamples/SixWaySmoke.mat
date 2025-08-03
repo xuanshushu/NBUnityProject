@@ -181,8 +181,8 @@ Material:
     - _W9ParticleShaderColorChannelFlag: 3
     - _W9ParticleShaderFlags: 8
     - _W9ParticleShaderFlags1: 545259520
-    - _W9ParticleShaderGUIFoldToggle: 16415
-    - _W9ParticleShaderGUIFoldToggle1: 142606591
+    - _W9ParticleShaderGUIFoldToggle: 16400
+    - _W9ParticleShaderGUIFoldToggle1: 134217983
     - _W9ParticleShaderGUIFoldToggle2: 255
     - _W9ParticleShaderWrapFlags: 0
     m_Floats:

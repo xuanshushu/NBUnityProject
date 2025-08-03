@@ -111,25 +111,24 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_HUESHIFT_ON = 1 << 19;
     public const int FLAG_BIT_PARTICLE_CUSTOMDATA2_ON = 1 << 20;
     public const int FLAG_BIT_PARTICLE_NORMALMAP_MASK_MODE = 1 << 21;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA1Y_MAINTEXOFFSETY = 1 << 22;
- 
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA1W_HUESHIFT = 1 << 23;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA2X_MASKMAPOFFSETX = 1 << 24;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA2Y_MASKMAPOFFSETY = 1 << 25;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA2Z_FRESNELOFFSET = 1 << 26;
+    public const int FLAG_BIT_PARTICLE_COLOR_BLEND_FOLLOW_MAINTEX_UV = 1 << 22;
+    public const int FLAG_BIT_PARTICLE_RAMP_COLOR_MAP_MODE_ON = 1 << 23;
+    public const int FLAG_BIT_PARTICLE_RAMP_COLOR_BLEND_ALPHA_MULTIPLY= 1 << 24;
+    public const int FLAG_BIT_PARTICLE_COLOR_BLEND_ALPHA_MULTIPLY_MODE = 1 << 25;
+    public const int FLAG_BIT_PARTICLE_DISSOLVE_RAMP_GRADIENT = 1 << 26;
     public const int FLAG_BIT_PARTICLE_DISSOLVE_MASK = 1 << 27;
     public const int FLAG_BIT_PARTICLE_BACKCOLOR = 1 << 28;
-    public const int FLAG_BIT_PARTICLE_PC_ONLYSPECIALFUNC = 1 << 29;
+    public const int FLAG_BIT_PARTICLE_EMISSION_FOLLOW_MAINTEX_UV= 1 << 29;
     public const int FLAG_BIT_PARTICLE_VERTEX_OFFSET_ON = 1 << 30;
     public const int FLAG_BIT_PARTICLE_VERTEX_OFFSET_NORMAL_DIR= 1 << 31;
     
     public const int FLAG_BIT_PARTICLE_1_DEPTH_OUTLINE= 1 << 0;
     public const int FLAG_BIT_PARTICLE_1_PARALLAX_MAPPING= 1 << 1;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA1X_DISSOLVETEXOFFSETX= 1 << 2;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA1Y_DISSOLVETEXOFFSETY = 1 << 3;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA1Z_NOISE_INTENSITY = 1 << 4;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA1W_SATURATE = 1 << 5;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA2X_VERTEXOFFSETX = 1 << 6;
+    public const int FLAG_BIT_PARTICLE_1_MASKMAP_GRADIENT= 1 << 2;
+    public const int FLAG_BIT_PARTICLE_1_MASKMAP_2_GRADIENT = 1 << 3;
+    public const int FLAG_BIT_PARTICLE_1_MASKMAP_3_GRADIENT = 1 << 4;
+    public const int FLAG_BIT_PARTICLE_1_DISSOLVE_LINE_MASK = 1 << 5;
+    public const int FLAG_BIT_PARTICLE_1_DISSOLVE_RAMP_MULITPLY = 1 << 6;
     public const int FLAG_BIT_PARTICLE_CUSTOMDATA2Y_VERTEXOFFSETY = 1 << 7;
     public const int FLAG_BIT_PARTICLE_CUSTOMDATA2W_CHORATICABERRAT_INTENSITY = 1 << 8;
     public const int FLAG_BIT_PARTICLE_1_IGNORE_VERTEX_COLOR = 1 << 9;
@@ -171,6 +170,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_WRAPMODE_NOISE_MASKMAP= 1 << 12;
     public const int FLAG_BIT_WRAPMODE_VERTEXOFFSET_MASKMAP= 1 << 13;
     public const int FLAG_BIT_WRAPMODE_BUMPTEX= 1 << 14;
+    public const int FLAG_BIT_WRAPMODE_RAMP_COLOR_MAP= 1 << 15; //很快就要超支了。。。
 
     public const int foldOutBitMeshOption = 1 << 0;
     public const int foldOutBitMainTexOption = 1 << 1;
@@ -221,6 +221,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int foldOutBit1UVModeVertexOffsetMap = 1 << 10;
     public const int foldOutBit1UVModeVertexOffsetMaskMap = 1 << 11;
     public const int foldOutBit1UVModeBumpTex = 1 << 12;
+    public const int foldOutBit1UVModeRampColorMap = 1 << 13;
     
     //留一些位置给以后可能会增加的贴图。
     public const int foldOutBit1Portal= 1 << 20;
@@ -236,6 +237,8 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     
     public const int foldOutBit2BumpTexToggle= 1 << 0;
     public const int foldOutBit2MatCapToggle= 1 << 1;
+    public const int foldOutBit2RampColor= 1 << 2;
+    public const int foldOutBit2DissolveLine= 1 << 3;
 
 
     #region CustomDataCodes
@@ -563,6 +566,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_UVMODE_POS_0_VERTEX_OFFSET_MAP = 10 * 2;
     public const int FLAG_BIT_UVMODE_POS_0_VERTEX_OFFSET_MASKMAP = 11 * 2;
     public const int FLAG_BIT_UVMODE_POS_0_BUMPMAP = 12 * 2;
+    public const int FLAG_BIT_UVMODE_POS_0_RAMP_COLOR_MAP = 13 * 2;
 
     public int GetUVModeFlagPropID(int flagIndex)
     {
@@ -627,6 +631,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_COLOR_CHANNEL_POS_0_NOISE_MASK = 4 * 2;
     public const int FLAG_BIT_COLOR_CHANNEL_POS_0_DISSOLVE_MAP = 5 * 2;
     public const int FLAG_BIT_COLOR_CHANNEL_POS_0_DISSOLVE_MASK_MAP = 6 * 2;
+    public const int FLAG_BIT_COLOR_CHANNEL_POS_0_RAMP_COLOR_MAP = 7 * 2;
     
 
     public enum ColorChannel

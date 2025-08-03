@@ -137,9 +137,10 @@
            
             output.texcoordMaskMap2.xy = particleUVs.maskMap2UV;
             output.texcoordMaskMap2.zw = particleUVs.maskMap3UV;
-            #ifdef _NORMALMAP
-                output.bumpTexTexcoord.xy = particleUVs.bumpTexUV;
-
+            #if defined (_NORMALMAP) || defined(_COLOR_RAMP)
+                output.bumpTexAndColorRampMapTexcoord.xy = particleUVs.bumpTexUV;
+                output.bumpTexAndColorRampMapTexcoord.zw = particleUVs.colorRampMapUV;
+            
             #endif
             
             #if defined (_EMISSION)   || defined(_COLORMAPBLEND)
@@ -258,6 +259,7 @@
         float2 dissolve_mask_uv;
         float4 dissolve_noise_uv;
         float2 BumpTex_uv;
+        float2 colorRamp_uv;
 
         //如果同时在粒子系统里开启序列帧融帧和特殊UV通道模式。
         
@@ -286,7 +288,7 @@
             noiseMaskMap_uv = particleUVs.noiseMaskMapUV;
             dissolve_noise_uv = float4(particleUVs.dissolve_noise1_UV,particleUVs.dissolve_noise2_UV);
             BumpTex_uv = particleUVs.bumpTexUV;
-            
+            colorRamp_uv = particleUVs.colorRampMapUV;
         }
         else
         {
@@ -294,8 +296,9 @@
             MaskMapuv2 = input.texcoordMaskMap2.xy;
             MaskMapuv3 = input.texcoordMaskMap2.zw;
             
-            #ifdef _NORMALMAP
-            BumpTex_uv = input.bumpTexTexcoord.xy;
+            #if defined (_NORMALMAP)||defined(_COLOR_RAMP)
+            BumpTex_uv = input.bumpTexAndColorRampMapTexcoord.xy;
+            colorRamp_uv = input.bumpTexAndColorRampMapTexcoord.zw;
             #endif
             
             #ifdef _NOISEMAP
@@ -553,7 +556,10 @@
         half4 emission = half4(0, 0, 0,1);
         #if defined(_EMISSION)
             #ifdef _NOISEMAP
+            if (!CheckLocalFlags(FLAG_BIT_PARTICLE_EMISSION_FOLLOW_MAINTEX_UV))
+            {
                 emission_uv += cum_noise * _Emi_Distortion_intensity;
+            }
             #endif
             // emission = tex2D_TryLinearizeWithoutAlphaFX(_EmissionMap,emission_uv);
             emission = SampleTexture2DWithWrapFlags(_EmissionMap,emission_uv,FLAG_BIT_WRAPMODE_EMISSIONMAP);
@@ -564,6 +570,55 @@
         #endif
         
         result += emission;
+
+
+        #if defined(_COLOR_RAMP)
+            half rampValue = 0;
+            if (CheckLocalFlags(FLAG_BIT_PARTICLE_RAMP_COLOR_MAP_MODE_ON))
+            {
+                half4 RampColorSample = SampleTexture2DWithWrapFlags(_RampColorMap,colorRamp_uv,FLAG_BIT_WRAPMODE_RAMP_COLOR_MAP);
+                rampValue = GetColorChannel(RampColorSample,FLAG_BIT_COLOR_CHANNEL_POS_0_RAMP_COLOR_MAP);
+            }
+            else
+            {
+                const int rampColorWrapMode = CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_RAMP_COLOR_MAP);
+                if (rampColorWrapMode == 0 || rampColorWrapMode == 2)
+                {
+                    rampValue = frac(colorRamp_uv.x);
+                }
+                else
+                {
+                    rampValue = saturate(colorRamp_uv.x);
+                }
+            }
+
+            half3 colorRampColorArr[] = {_RampColor0.rgb,_RampColor1.rgb,_RampColor2.rgb,_RampColor3.rgb,_RampColor4.rgb,_RampColor5.rgb};
+            half colorRampColorTimeArr[] = {_RampColor0.a,_RampColor1.a,_RampColor2.a,_RampColor3.a,_RampColor4.a,_RampColor5.a};
+            int colorRampColorCount = _RampColorCount & 0xFFFF;
+
+            half colorRampAlphaArr[] = {_RampColorAlpha0.x,_RampColorAlpha0.z,_RampColorAlpha1.x,_RampColorAlpha1.z,_RampColorAlpha2.x,_RampColorAlpha2.z};
+            half colorRampAlphaTimeArr[] = {_RampColorAlpha0.y,_RampColorAlpha0.w,_RampColorAlpha1.y,_RampColorAlpha1.w,_RampColorAlpha2.y,_RampColorAlpha2.w};
+            int colorRampAlphaCount = _RampColorCount >> 16;
+
+            half4 rampColor;
+            rampColor.rgb = GetGradientColorValue(colorRampColorArr,colorRampColorTimeArr,colorRampColorCount,rampValue);
+            rampColor.a = GetGradientAlphaValue(colorRampAlphaArr,colorRampAlphaTimeArr,colorRampAlphaCount,rampValue);
+
+            rampColor *= _RampColorBlendColor;
+        
+            if (CheckLocalFlags(FLAG_BIT_PARTICLE_RAMP_COLOR_BLEND_ALPHA_MULTIPLY))
+            {
+                result *= rampColor;
+                alpha *= rampColor.a;
+            }
+            else
+            {
+                result += rampColor;
+                alpha += rampColor.a;
+            }
+        #endif
+        
+        
 
         //溶解部分
         #if defined(_DISSOLVE)
@@ -600,54 +655,119 @@
                 
             }
 
-            dissolveValue = SimpleSmoothstep(_Dissolve_Vec2.x,_Dissolve_Vec2.y,dissolveValue);
+            // dissolveValue = SimpleSmoothstep(_Dissolve_Vec2.x,_Dissolve_Vec2.y,dissolveValue);
+            dissolveValue = pow(dissolveValue,_Dissolve.y);
 
             #ifdef _DISSOLVE_EDITOR_TEST      //后续Test类的关键字要找机会排除
                 return half4(dissolveValue.rrr,1);
             #endif
                
 
-            half dissolveMaskValue = 0;
+          
             UNITY_BRANCH
             if(CheckLocalFlags(FLAG_BIT_PARTICLE_DISSOLVE_MASK))
             {
+                half dissolveMaskValue = 0;
                 half4 dissolveMaskSample = SampleTexture2DWithWrapFlags(_DissolveMaskMap,dissolve_mask_uv,FLAG_BIT_WRAPMODE_DISSOLVE_MASKMAP);
                 dissolveMaskValue = GetColorChannel(dissolveMaskSample,FLAG_BIT_COLOR_CHANNEL_POS_0_DISSOLVE_MASK_MAP);
                 _Dissolve.z += GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_DISSOLVE_MASK_INTENSITY,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
-                dissolveMaskValue *= _Dissolve.z;
-                dissolveValue = lerp(dissolveValue,1.01,dissolveMaskValue);
+                dissolveMaskValue += _Dissolve.z;
+                dissolveValue = dissolveMaskValue*dissolveValue;
+                // dissolveMaskValue = saturate(dissolveMaskValue);
             }
-            half originDissolve = dissolveValue;
         
-            _Dissolve.x += GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_DISSOLVE_INTENSITY,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
+            half dissolveStrenth = _Dissolve.x + GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_DISSOLVE_INTENSITY,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
         
-            dissolveValue = dissolveValue-_Dissolve.x;
-            half dissolveValueBeforeSoftStep = dissolveValue;
-            half softStep = _Dissolve.w;
-            dissolveValue = SimpleSmoothstep(0,softStep,(dissolveValue));
+            half invSoftStep = 1/_Dissolve.w;
+            half dissolveValueBeforeSoftStep = dissolveValue - ((dissolveStrenth)*(invSoftStep + 1)-1)*_Dissolve.w ;
+            dissolveValue = dissolveValue*invSoftStep -(1+invSoftStep)*dissolveStrenth +1;
+        
+            dissolveValue = saturate(dissolveValue);
+        
+
 
             alpha  *= dissolveValue;
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOVLE_USE_RAMP))
             {
-                half rampRange = 1-dissolveValueBeforeSoftStep ;
+                // half rampRange = (dissolveValueBeforeSoftStep - _Dissolve_Vec2.x)*_Dissolve_Vec2.y;
+                half rampRange = dissolveValueBeforeSoftStep;
                 rampRange = rampRange * _DissolveRampMap_ST.x +_DissolveRampMap_ST.z;
-                
-                half4 rampSample = SampleTexture2DWithWrapFlags(_DissolveRampMap,half2(rampRange,0.5),FLAG_BIT_WRAPMODE_DISSOLVE_RAMPMAP);
-                result = lerp(result,rampSample.rgb*_DissolveRampColor.rgb,rampSample.a*_DissolveRampColor.a);
+
+                half4 rampSample ;
+                if (CheckLocalFlags(FLAG_BIT_PARTICLE_DISSOLVE_RAMP_GRADIENT))
+                {
+                    half3 dissolveRampColorArr[] = {_DissolveRampColor0.rgb,_DissolveRampColor1.rgb,_DissolveRampColor2.rgb,_DissolveRampColor3.rgb,_DissolveRampColor4.rgb,_DissolveRampColor5.rgb};
+                    half dissolveRampColorTimeArr[] = {_DissolveRampColor0.a,_DissolveRampColor1.a,_DissolveRampColor2.a,_DissolveRampColor3.a,_DissolveRampColor4.a,_DissolveRampColor5.a};
+                    int dissolveRampColorCount = _DissolveRampCount & 0xFFFF;
+
+                    half dissolveRampAlphaArr[] = {_DissolveRampAlpha0.x,_DissolveRampAlpha0.z,_DissolveRampAlpha1.x,_DissolveRampAlpha1.z,_DissolveRampAlpha2.x,_DissolveRampAlpha2.z};
+                    half dissolveRampAlphaTimeArr[] = {_DissolveRampAlpha0.y,_DissolveRampAlpha0.w,_DissolveRampAlpha1.y,_DissolveRampAlpha1.w,_DissolveRampAlpha2.y,_DissolveRampAlpha2.w};
+                    int dissolveRampAlphaCount = _DissolveRampCount >> 16;
+
+                    const int rampWrapMode = CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_DISSOLVE_RAMPMAP);
+                    if (rampWrapMode == 0 || rampWrapMode == 2)
+                    {
+                        rampRange = frac(rampRange);
+                    }
+                    else
+                    {
+                        rampRange = saturate(rampRange);
+                    }
+                    
+                    
+                    rampSample.rgb = GetGradientColorValue(dissolveRampColorArr,dissolveRampColorTimeArr,dissolveRampColorCount,rampRange);
+                    rampSample.a = GetGradientAlphaValue(dissolveRampAlphaArr,dissolveRampAlphaTimeArr,dissolveRampAlphaCount,rampRange);
+                }
+                else
+                {
+                    rampSample = SampleTexture2DWithWrapFlags(_DissolveRampMap,half2(rampRange,0.5),FLAG_BIT_WRAPMODE_DISSOLVE_RAMPMAP);
+                }
+
+                if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOLVE_RAMP_MULITPLY))
+                {
+                    result = result * lerp(1,rampSample.rgb*_DissolveRampColor.rgb,rampSample.a*_DissolveRampColor.a);
+                }
+                else
+                {
+                    result = lerp(result,rampSample.rgb*_DissolveRampColor.rgb,rampSample.a*_DissolveRampColor.a);
+                }
             }
            
-            half lineMask = 1 - smoothstep(0,softStep,alpha * (dissolveValueBeforeSoftStep - _Dissolve.y));
-            result = lerp(result,_DissolveLineColor.rgb,lineMask*_DissolveLineColor.a);
-            
+        
+
+            if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOLVE_LINE_MASK))
+            {
+                half lineMask = dissolveValueBeforeSoftStep;//SmoothStep要优化
+                lineMask = saturate(lineMask*_Dissolve_Vec2.x+_Dissolve_Vec2.y);
+                lineMask = 1- lineMask;
+                
+                result = lerp(result,_DissolveLineColor.rgb,lineMask*_DissolveLineColor.a);
+            }
+            //
             
         
         #endif
      
         //颜色渐变
         #ifdef _COLORMAPBLEND
+            #if defined(_NOISEMAP)
+            if (!CheckLocalFlags(FLAG_BIT_PARTICLE_COLOR_BLEND_FOLLOW_MAINTEX_UV))
+            {
+                colorBlendMap_uv += cum_noise * _ColorBlendVec.x; //加入扭曲效果
+            }
+            #endif
             half4 colorBlend = SampleTexture2DWithWrapFlags(_ColorBlendMap,colorBlendMap_uv,FLAG_BIT_WRAPMODE_COLORBLENDMAP);
             colorBlend.rgb = colorBlend.rgb * _ColorBlendColor.rgb;
-            result.rgb  = lerp(result.rgb,result.rgb * colorBlend.rgb,_ColorBlendColor.a);
+            colorBlend.a = lerp(1,colorBlend.a*_ColorBlendColor.a,_ColorBlendVec.z);
+            if (CheckLocalFlags(FLAG_BIT_PARTICLE_COLOR_BLEND_ALPHA_MULTIPLY_MODE))
+            {
+                result *= colorBlend.rgb;
+                alpha *= colorBlend.a;
+            }
+            else
+            {
+                result.rgb  = lerp(result.rgb,result.rgb * colorBlend.rgb,colorBlend.a);
+            }
         #endif
 
         //菲涅
@@ -721,22 +841,90 @@
             #if defined(_NOISEMAP)
                 MaskMapuv += cum_noise * _MaskDistortion_intensity; //加入扭曲效果
             #endif
-            half4 maskmap1Sample = SampleTexture2DWithWrapFlags(_MaskMap, MaskMapuv,FLAG_BIT_WRAPMODE_MASKMAP);
-            half mask1 = GetColorChannel(maskmap1Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP1);
+
+            half mask1 = 1;
+            if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASKMAP_GRADIENT))
+            {
+                const int maskMapWrapMode = CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_MASKMAP);
+                half maskMapTimeValue;
+                if (maskMapWrapMode == 0 || maskMapWrapMode == 2)
+                {
+                    maskMapTimeValue = frac(MaskMapuv.x);
+                }
+                else
+                {
+                    maskMapTimeValue = saturate(MaskMapuv.x);
+                }
+
+                half maskMapAlphaArr[] = {_MaskMapGradientFloat0.x,_MaskMapGradientFloat0.z,_MaskMapGradientFloat1.x,_MaskMapGradientFloat1.z,_MaskMapGradientFloat2.x,_MaskMapGradientFloat2.z};
+                half maskMapAlphaTimeArr[] = {_MaskMapGradientFloat0.y,_MaskMapGradientFloat0.w,_MaskMapGradientFloat1.y,_MaskMapGradientFloat1.w,_MaskMapGradientFloat2.y,_MaskMapGradientFloat2.w};
+                int maskMapAlphaCount = _MaskMapGradientCount;
+                mask1 = GetGradientAlphaValue(maskMapAlphaArr,maskMapAlphaTimeArr,maskMapAlphaCount,maskMapTimeValue);
+            }
+            else
+            {
+                half4 maskmap1Sample = SampleTexture2DWithWrapFlags(_MaskMap, MaskMapuv,FLAG_BIT_WRAPMODE_MASKMAP);
+                mask1 = GetColorChannel(maskmap1Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP1);
+              
+            }
         
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP2))
             {
-                half maskMap2Sample = SampleTexture2DWithWrapFlags(_MaskMap2, MaskMapuv2,FLAG_BIT_WRAPMODE_MASKMAP2).r;
-                half mask2 = GetColorChannel(maskMap2Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP2);
+                half mask2 = 1;
+                if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASKMAP_2_GRADIENT))
+                {
+                    const int maskMap2WrapMode = CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_MASKMAP2);
+                    half maskMap2TimeValue;
+                    if (maskMap2WrapMode == 0 || maskMap2WrapMode == 3)
+                    {
+                        maskMap2TimeValue = frac(MaskMapuv2.y);
+                    }
+                    else
+                    {
+                        maskMap2TimeValue = saturate(MaskMapuv2.y);
+                    }
+
+                    half maskMap2AlphaArr[] = {_MaskMap2GradientFloat0.x,_MaskMap2GradientFloat0.z,_MaskMap2GradientFloat1.x,_MaskMap2GradientFloat1.z,_MaskMap2GradientFloat2.x,_MaskMap2GradientFloat2.z};
+                    half maskMap2AlphaTimeArr[] = {_MaskMap2GradientFloat0.y,_MaskMap2GradientFloat0.w,_MaskMap2GradientFloat1.y,_MaskMap2GradientFloat1.w,_MaskMap2GradientFloat2.y,_MaskMap2GradientFloat2.w};
+                    int maskMap2AlphaCount = _MaskMap2GradientCount;
+                    mask2 = GetGradientAlphaValue(maskMap2AlphaArr,maskMap2AlphaTimeArr,maskMap2AlphaCount,maskMap2TimeValue);
+                }
+                else
+                {
+                    half4 maskMap2Sample = SampleTexture2DWithWrapFlags(_MaskMap2, MaskMapuv2,FLAG_BIT_WRAPMODE_MASKMAP2);
+                    mask2 = GetColorChannel(maskMap2Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP2);
+                }
                 mask1 *= mask2;
             }
 
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP3))
             {
-                half maskMap3Sample = SampleTexture2DWithWrapFlags(_MaskMap3, MaskMapuv3,FLAG_BIT_WRAPMODE_MASKMAP3).r;
-                half mask3 = GetColorChannel(maskMap3Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP3);
+                half mask3 = 1;
+                if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASKMAP_3_GRADIENT))
+                {
+                    const int maskMap3WrapMode = CheckLocalWrapFlags(FLAG_BIT_WRAPMODE_MASKMAP3);
+                    half maskMap3TimeValue;
+                    if (maskMap3WrapMode == 0 || maskMap3WrapMode == 2)
+                    {
+                        maskMap3TimeValue = frac(MaskMapuv3.x);
+                    }
+                    else
+                    {
+                        maskMap3TimeValue = saturate(MaskMapuv3.x);
+                    }
+
+                    half maskMap3AlphaArr[] = {_MaskMap3GradientFloat0.x,_MaskMap3GradientFloat0.z,_MaskMap3GradientFloat1.x,_MaskMap3GradientFloat1.z,_MaskMap3GradientFloat2.x,_MaskMap3GradientFloat2.z};
+                    half maskMap3AlphaTimeArr[] = {_MaskMap3GradientFloat0.y,_MaskMap3GradientFloat0.w,_MaskMap3GradientFloat1.y,_MaskMap3GradientFloat1.w,_MaskMap3GradientFloat2.y,_MaskMap3GradientFloat2.w};
+                    int maskMap3AlphaCount = _MaskMap3GradientCount;
+                    mask3 = GetGradientAlphaValue(maskMap3AlphaArr,maskMap3AlphaTimeArr,maskMap3AlphaCount,maskMap3TimeValue);
+                }
+                else
+                {
+                    half4 maskMap3Sample = SampleTexture2DWithWrapFlags(_MaskMap3, MaskMapuv3,FLAG_BIT_WRAPMODE_MASKMAP3);
+                    mask3 = GetColorChannel(maskMap3Sample,FLAG_BIT_COLOR_CHANNEL_POS_0_MASKMAP3);
+                }
                 mask1 *= mask3;
             }
 

@@ -180,7 +180,7 @@ Material:
     - _W9ParticleShaderColorChannelFlag: 3
     - _W9ParticleShaderFlags: 10504
     - _W9ParticleShaderFlags1: 8388608
-    - _W9ParticleShaderGUIFoldToggle: 144179615
+    - _W9ParticleShaderGUIFoldToggle: 144179611
     - _W9ParticleShaderGUIFoldToggle1: 671088895
     - _W9ParticleShaderGUIFoldToggle2: 255
     - _W9ParticleShaderWrapFlags: 0
@@ -191,6 +191,7 @@ Material:
     - _AlphaToMask: 0
     - _BackFaceColor_Toggle: 0
     - _BackFirstPassToggle: 0
+    - _BackFristPassToggle: 0
     - _BaseBackColor_Toggle: 0
     - _BaseColorIntensityForTimeline: 1
     - _BaseMapColorRefine_Toggle: 0

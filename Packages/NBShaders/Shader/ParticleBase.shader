@@ -23,7 +23,7 @@
         _Dissolve_Test_Toggle("__Dissolve_Test_Toggle",Float) = 0
 
         
-        _ColorBlendMap_Toggle("__ColorBlendMap_Toggle",Float) = 0
+
         _FresnelMode("__FresnelMode",Float) = 0
         _InvertFresnel_Toggle("__InvertFresnel_Toggle",Float) = 0
         _HueShift_Toggle("__HueShift_Toggle",Float) = 0
@@ -51,6 +51,7 @@
         _BaseMapMaskMapOffset ("xy主贴图偏移速度", vector) = (0, 0, 0, 0)
 
         _BaseMapUVRotation ("主贴图旋转", Range(0, 360)) = 0
+        _BaseMapUVRotationSpeed ("主贴图旋转速度",Float) = 0
         [HDR]_BaseColor ("主贴图颜色_hdr", Color) = (1, 1, 1, 1)//HDR颜色不需要做Gamma Linear转换，Unity默认用Linear颜色
 //        _BaseColor ("Base Color", Color) = (1, 1, 1, 1)//HDR颜色不需要做Gamma Linear转换，Unity默认用Linear颜色
         [HDR]_BaseBackColor ("背面颜色_hdr", Color) = (1, 1, 1, 1)//HDR颜色不需要做Gamma Linear转换，Unity默认用Linear颜色
@@ -110,7 +111,8 @@
     	
         
         
-        // MaskMap------------
+        // MaskMap-----------
+    	
         _MaskMap ("遮罩贴图 xy:UV缩放 zw:UV偏移", 2D) = "white" { }
         _MaskMap2 ("遮罩2贴图 xy:UV缩放 zw:UV偏移", 2D) = "white"{}
         _MaskMap3 ("遮罩3贴图 xy:UV缩放 zw:UV偏移", 2D) = "white"{}
@@ -120,6 +122,22 @@
         _MaskDistortion_intensity ("遮罩扭曲强度", float) = 0.0
         _MaskMapRotationSpeed("遮罩旋转速度", float) = 0.0
         _MaskMapVec("x整体遮罩强度",Vector) = (1,0,0,0)
+    	
+    	_MaskMapGradientToggle("遮罩渐变模式",Float) = 0
+    	_MaskMapGradientCount("颜色映射数量",Integer) = 2
+    	_MaskMapGradientFloat0("x:MaskAlpha0,y:Pos0,z:MaskAlpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_MaskMapGradientFloat1("x:MaskAlpha2,y:Pos2,z:MaskAlpha3,w:Pos3",Vector) = (1,0,1,1)
+    	_MaskMapGradientFloat2("x:MaskAlpha4,y:Pos4,z:MaskAlpha5,w:Pos5",Vector) = (1,0,1,1)
+    	_MaskMap2GradientToggle("遮罩2渐变模式",Float) = 0
+    	_MaskMap2GradientCount("颜色映射数量",Integer) = 2
+    	_MaskMap2GradientFloat0("x:Mask2Alpha0,y:Pos0,z:Mask2Alpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_MaskMap2GradientFloat1("x:Mask2Alpha2,y:Pos2,z:Mask2Alpha3,w:Pos3",Vector) = (1,0,1,1)
+    	_MaskMap2GradientFloat2("x:Mask2Alpha4,y:Pos4,z:Mask2Alpha5,w:Pos5",Vector) = (1,0,1,1)
+    	_MaskMap3GradientToggle("遮罩3渐变模式",Float) = 0
+    	_MaskMap3GradientCount("颜色映射数量",Integer) = 2
+	    _MaskMap3GradientFloat0("x:Mask3Alpha0,y:Pos0,z:Mask3Alpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_MaskMap3GradientFloat1("x:Mask3Alpha2,y:Pos2,z:Mask3Alpha3,w:Pos3",Vector) = (1,0,1,1)
+    	_MaskMap3GradientFloat2("x:Mask3Alpha4,y:Pos4,z:Mask3Alpha5,w:Pos5",Vector) = (1,0,1,1)
         
         // 擦除----------------
         //[Header(ChaChu(Anima For CustomData.z).......)]
@@ -167,12 +185,41 @@
         _uvRapSoft ("LiuuvRapSoft-ignore", Range(0, 1)) = 0
         [HDR]_EmissionMapColor ("流光贴图颜色_hdr", Color) = (1, 1, 1, 1)
         _EmissionMapColorIntensity("流光颜色强度", float) = 1
+    	_EmissionFollowMainTexUV("流光跟随主贴图",Float) = 0
+    	
+    	//颜色渐变贴图--------
+    	_ColorBlendMap_Toggle("__ColorBlendMap_Toggle",Float) = 0
+        _ColorBlendMap("颜色渐变贴图 xy:UV缩放 zw:UV偏移",2D) = "white"{}
+        [HDR]_ColorBlendColor("颜色渐变叠加_hdr",Color) = (1,1,1,1)
+        _ColorBlendMapOffset("xy:颜色渐变贴图偏移动画",Vector) = (0,0,0,0)
+    	_ColorBlendAlphaMultiplyMode("颜色渐变Alpha相乘开关",Float) = 0
+	    _ColorBlendFollowMainTexUV("颜色渐变UV跟随主贴图UV",Float) = 0
+    	_ColorBlendVec("x:颜色渐变扰动强度z:Alpha强度w:旋转",Vector) = (0,0,1,0)
+    	
+    	//颜色映射Ramp
+    	_RampColorToggle("颜色映射开关",Float) = 0
+    	_RampColorSourceMode("Ramp来源模式",Float) = 0
+    	_RampColorBlendMode("Ramp颜色混合模式",Float) = 0
+    	_RampColorMap("颜色映射黑白图",2D) = "white"{}
+    	_RampColor0("rgb:RampColor0,a:pos",Color) = (1,1,1,0)
+    	_RampColor1("rgb:RampColor1,a:pos",Color) = (1,1,1,1)
+    	_RampColor2("rgb:RampColor2,a:pos",Color) = (1,1,1,1)
+    	_RampColor3("rgb:RampColor3,a:pos",Color) = (1,1,1,1)
+    	_RampColor4("rgb:RampColor4,a:pos",Color) = (1,1,1,1)
+    	_RampColor5("rgb:RampColor5,a:pos",Color) = (1,1,1,1)
+    	_RampColorAlpha0("x:RampColorAlpha0,y:Pos0,z:RampColorAlpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_RampColorAlpha1("x:RampColorAlpha2,y:Pos2,z:RampColorAlpha3,w:Pos3",Vector) = (1,0,1,1)
+    	_RampColorAlpha2("x:RampColorAlpha4,y:Pos4,z:RampColorAlpha5,w:Pos5",Vector) = (1,0,1,1)
+    	_RampColorCount("颜色映射数量",Integer) = 2
+    	[HDR]_RampColorBlendColor("颜色映射叠加颜色_hdr",Color) = (1,1,1,1)
+	    _RampColorMapOffset("xy:颜色映射贴图偏移动画,w:旋转",Vector) = (0,0,0,0)
+
         
         // Rongjie ------------------
         // [Header(RongJie(Anima For CustomData.y).......)]
         // [Toggle(_DISSOLVE)]_RJ ("RONGJIE?", float) = 0
-        _Dissolve ("x:溶解强度 y:溶解描边范围 z:局部控制强度 w:溶解硬度, _DissolveWidth", vector) = (0.5, 0.1, 1, 0.1)
-        _DissolveMap("溶解贴图 xy:UV缩放 zw:UV偏移",2D) = "grey"{}
+        _Dissolve ("x:溶解强度 y:溶解值Pow z:过程溶解强度 w:溶解硬软度", vector) = (0.5, 1, 0, 0.1)
+    	_DissolveMap("溶解贴图 xy:UV缩放 zw:UV偏移",2D) = "grey"{}
         _DissolveMaskMap("局部溶解蒙版 xy:UV缩放 zw:UV偏移",2D) = "white"{}
         _DissolveOffsetRotateDistort("xy:溶解贴图偏移速度 z:溶解贴图旋转",Vector) = (0,0,0,0)
         [HDR]_DissolveLineColor("溶解描边颜色_hdr",Color) = (0,0,0,1)
@@ -180,14 +227,27 @@
         _DissolveVoronoi_Vec2("x:噪波1和噪波2混合系数(圆尖),y:噪波整体和溶解贴图混合系数,z:噪波1速度,w:噪波2速度",Vector) = (1,1,2,2)
         _DissolveVoronoi_Vec3("xy:噪波1偏移速度,zw:噪波2偏移速度",Vector) = (0,0,0,0)
     	_DissolveVoronoi_Vec4("xy:噪波1偏移,zw:噪波2偏移",Vector) = (0,0,0,0)
-        _Dissolve_Vec2("溶解丝滑度（溶解值黑白调整）黑色X,白色Y",Vector) = (0,1,0,0)
+        _Dissolve_Vec2("x:Ramp位置偏移,y:Ramp范围",Vector) = (0,1,0,0)
         _DissolveRampMap("溶解Ramp图",2D) = "white"{}
+    	_DissolveRampColorBlendMode("溶解Ramp图混合模式",Float) = 0
         [HDR]_DissolveRampColor("溶解Ramp颜色_hdr",Color) = (1,1,1,1)
+    	_DissolveLineMaskToggle("溶解描边开关",Float) = 0
+	    
+    	_DissolveRampSourceMode("溶解Ramp来源模式",Float) = 0
+    	_DissolveRampColor0("rgb:DissolveRampColor0,a:pos",Color) = (1,1,1,0)
+    	_DissolveRampColor1("rgb:DissolveRampColor1,a:pos",Color) = (1,1,1,1)
+    	_DissolveRampColor2("rgb:DissolveRampColor2,a:pos",Color) = (1,1,1,1)
+    	_DissolveRampColor3("rgb:DissolveRampColor3,a:pos",Color) = (1,1,1,1)
+    	_DissolveRampColor4("rgb:DissolveRampColor4,a:pos",Color) = (1,1,1,1)
+    	_DissolveRampColor5("rgb:DissolveRampColor5,a:pos",Color) = (1,1,1,1)
+    	_DissolveRampAlpha0("x:DissolveRampAlpha0,y:Pos0,z:DissolveRampAlpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_DissolveRampAlpha1("x:DissolveRampAlpha2,y:Pos2,z:DissolveRampAlpha3,w:Pos3",Vector) = (1,0,1,1)
+    	_DissolveRampAlpha2("x:DissolveRampAlpha4,y:Pos4,z:DissolveRampAlpha5,w:Pos5",Vector) = (1,0,1,1)
+    	_DissolveRampCount("溶解Ramp映射数量",Integer) = 2
+    	
+
         
-        //颜色渐变贴图--------
-        _ColorBlendMap("颜色渐变贴图 xy:UV缩放 zw:UV偏移",2D) = "white"{}
-        [HDR]_ColorBlendColor("颜色渐变叠加_hdr",Color) = (1,1,1,1)
-        _ColorBlendMapOffset("xy:颜色渐变贴图偏移动画",Vector) = (0,0,0,0)
+ 
 
         _CustomData1X ("ignore", float) = 0
         _CustomData1Y ("ignore", float) = 0
@@ -377,6 +437,7 @@
             //后续Test类的关键字要找机会排除
             #pragma shader_feature_local _DISSOLVE_EDITOR_TEST
             #pragma  shader_feature_local  _COLORMAPBLEND//颜色渐变
+            #pragma  shader_feature_local  _COLOR_RAMP//颜色映射
 
             //将光照和UI混用，达到节省Keywords的目的。
             #pragma multi_compile _ UNITY_UI_CLIP_RECT _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS//UI 2D遮罩
@@ -485,6 +546,113 @@
                         //后续Test类的关键字要找机会排除
             #pragma shader_feature_local _DISSOLVE_EDITOR_TEST
             #pragma shader_feature_local  _COLORMAPBLEND//颜色渐变
+            #pragma  shader_feature_local  _COLOR_RAMP//颜色映射
+            
+            
+            
+            #pragma multi_compile_local _ UNITY_UI_CLIP_RECT _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS //UI 2D遮罩
+            // #pragma shader_feature_local _ _CH_XIANXING _CH_JINGXIANG  _CH_SELF   //线性擦除  径向擦除  mask擦除
+            #pragma shader_feature_local _PARCUSTOMDATA_ON
+
+            //用于特效层关键字
+            // #pragma shader_feature_local  _UIEFFECT_ON
+            
+            #pragma shader_feature_local _ FRESNEL_CUBEMAP FRESNEL_REFLECTIONPROBE
+
+            
+            // #pragma multi_compile _ _UIPARTICLE_ON//用于UIParticle组件动态更改参数//暂时注释掉，觉得没什么意义
+            #pragma multi_compile _ SOFT_UI_FRAME EVALUATE_SH_MIXED EVALUATE_SH_VERTEX//用于UI软蒙版
+            // -------------------------------------
+            // Particle Keywords
+            #pragma shader_feature_local _ _ALPHAPREMULTIPLY_ON _ALPHAMODULATE_ON     //设置alpah Add 。。组合
+            #pragma shader_feature_local _ALPHATEST_ON
+            //#pragma shader_feature_local _ _COLOROVERLAY_ON _COLORCOLOR_ON _COLORADDSUBDIFF_ON  //粒子颜色和材质颜色的混合运算  暂时先不要了
+            #pragma shader_feature_local _FLIPBOOKBLENDING_ON
+            #pragma shader_feature_local _SOFTPARTICLES_ON
+            // #pragma shader_feature_local _OCCLUDEOPACITY_ON
+            // #pragma shader_feature_local _ _SATURABILITY_ON
+
+            //UnscaleTime用于接收项目传的公开不受缩放影响的Time值
+            #pragma shader_feature_local _UNSCALETIME
+            //scriptableTime用于程序每帧传值
+            #pragma shader_feature_local _SCRIPTABLETIME
+            //#pragma shader_feature_local _DISTORTION_ON
+            #pragma shader_feature_local _NOISEMAP_NORMALIZEED
+
+            #pragma shader_feature_local _DEPTH_DECAL
+            #pragma shader_feature_local _PARALLAX_MAPPING
+
+            #pragma shader_feature_local _STENCIL_WITHOUT_PLAYER
+
+            //LIGHTING
+			#pragma shader_feature_local _FX_LIGHT_MODE_UNLIT _FX_LIGHT_MODE_BLINN_PHONG _FX_LIGHT_MODE_HALF_LAMBERT _FX_LIGHT_MODE_PBR _FX_LIGHT_MODE_SIX_WAY 
+            #pragma shader_feature_local _ _NORMALMAP
+            #pragma shader_feature_local _ _MATCAP
+            #pragma shader_feature_local _ _SPECULAR_COLOR
+            #pragma shader_feature_local _ VFX_SIX_WAY_ABSORPTION
+            
+            // -------------------------------------
+            // Unity defined keywords
+            // 之后进行优化时再说。
+            #pragma multi_compile_fog
+            // #define FOG_EXP2 1 
+            
+            #pragma vertex vertParticleUnlit
+            #pragma fragment fragParticleUnlit
+            
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            // The DeclareDepthTexture.hlsl file contains utilities for sampling the Camera
+            // depth texture.
+            
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+            
+            #include "Packages/com.xuanxuan.render.utility/Shader/HLSL/XuanXuan_Utility.hlsl"
+            #include "HLSL/ParticlesUnlitForwardPassNew.hlsl"
+            
+            
+            ENDHLSL
+            
+        }
+
+     // ------------------------------------------------------------------
+        //  Forward pass.
+        Pass
+        {
+            Tags
+        {
+              "LightMode" = "Universal2D" 
+        } //Queue设置是希望特效渲染在场景透明物体前面
+            offset [_offsetFactor], [_offsetUnits]
+            Cull[_Cull]
+
+            HLSLPROGRAM
+            #define PARTICLE
+            //20240228 target3.0 顶点着色器限制16个输出。提高版本
+            #pragma target 4.5
+            
+            // -------------------------------------
+            // Material Keywords
+ 
+            // #pragma enable_d3d11_debug_symbols  // 保留D3D11调试符号
+            
+            #pragma shader_feature_local _ _SCREEN_DISTORT_MODE
+            #pragma shader_feature_local _ _MASKMAP_ON
+            // #pragma shader_feature_local _MASKMAP
+            // #pragma shader_feature_local _MASKMAP2
+            //#pragma shader_feature_local _NOISEMAP
+            #pragma shader_feature_local _NOISEMAP
+            //#pragma shader_feature_local _EMISSION   //流光
+            #pragma shader_feature_local _EMISSION
+            //#pragma shader_feature_local _ _DISSOLVE    //溶解
+            #pragma shader_feature_local _DISSOLVE
+                        //后续Test类的关键字要找机会排除
+            #pragma shader_feature_local _DISSOLVE_EDITOR_TEST
+            #pragma shader_feature_local  _COLORMAPBLEND//颜色渐变
+            #pragma  shader_feature_local  _COLOR_RAMP//颜色映射
+            
+            
             
             #pragma multi_compile_local _ UNITY_UI_CLIP_RECT _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS //UI 2D遮罩
             // #pragma shader_feature_local _ _CH_XIANXING _CH_JINGXIANG  _CH_SELF   //线性擦除  径向擦除  mask擦除

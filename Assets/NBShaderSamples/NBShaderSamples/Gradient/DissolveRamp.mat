@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5916661276490442605
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -20,15 +7,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MatCapMateriak
+  m_Name: DissolveRamp
   m_Shader: {fileID: 4800000, guid: 7184a95c20fc1a441a8815af4c795ccd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _FX_LIGHT_MODE_BLINN_PHONG
-  - _MATCAP
-  - _NORMALMAP
-  - _SPECULAR_COLOR
+  - _DISSOLVE
+  - _FX_LIGHT_MODE_UNLIT
+  - _MASKMAP_ON
   m_InvalidKeywords:
   - _CUSTOMDATA
   - _CUSTOMDATA_OFF
@@ -45,7 +31,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: d14251240c0005d4697bb46df35dfb76, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -53,8 +39,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpTex:
-        m_Texture: {fileID: 2800000, guid: 488b537fe3fad384cba67852f242f88d, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorBlendMap:
         m_Texture: {fileID: 0}
@@ -73,16 +59,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMap:
-        m_Texture: {fileID: 2800000, guid: 57293ada82055cc48bdf8bc13518f205, type: 3}
-        m_Scale: {x: 3, y: 3}
+        m_Texture: {fileID: 2800000, guid: ed0db1b60dfea904f99df27ef57369ed, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMaskMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 3c38f66f87484c74dbed606f2ff9dda1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveRampMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 1.75, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
@@ -109,7 +95,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCapTex:
-        m_Texture: {fileID: 2800000, guid: 6f782829a9e4df04d93d1cfa7ff72fcc, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -137,7 +123,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RampColorMap:
-        m_Texture: {fileID: 2800000, guid: f6f3662867e2cec419b1c3b311d991c1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8f7df3393ccb0ce469fbb19598540497, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RigLBtF:
@@ -177,25 +163,25 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints:
-    - _DissolveRampCount: 2
+    - _DissolveRampCount: 196610
     - _MaskMap2GradientCount: 2
     - _MaskMap3GradientCount: 2
     - _MaskMapGradientCount: 2
-    - _RampColorCount: 196611
+    - _RampColorCount: 196612
     - _UVModeFlag0: 0
     - _W9ParticleCustomDataFlag0: 0
     - _W9ParticleCustomDataFlag1: 0
     - _W9ParticleCustomDataFlag2: 0
     - _W9ParticleCustomDataFlag3: 0
-    - _W9ParticleShaderColorChannelFlag: 3
-    - _W9ParticleShaderFlags: 10504
-    - _W9ParticleShaderFlags1: 8388608
-    - _W9ParticleShaderGUIFoldToggle: 233832863
-    - _W9ParticleShaderGUIFoldToggle1: 671097087
-    - _W9ParticleShaderGUIFoldToggle2: 251
-    - _W9ParticleShaderWrapFlags: 0
+    - _W9ParticleShaderColorChannelFlag: 17411
+    - _W9ParticleShaderFlags: 226492416
+    - _W9ParticleShaderFlags1: 8390656
+    - _W9ParticleShaderGUIFoldToggle: 57147515
+    - _W9ParticleShaderGUIFoldToggle1: 0
+    - _W9ParticleShaderGUIFoldToggle2: 243
+    - _W9ParticleShaderWrapFlags: 128
     m_Floats:
-    - _AdditiveToPreMultiplyAlphaLerp: 1
+    - _AdditiveToPreMultiplyAlphaLerp: 0
     - _AlphaAll: 1
     - _AlphaClip: 0
     - _AlphaToMask: 0
@@ -205,12 +191,13 @@ Material:
     - _BaseColorIntensityForTimeline: 1
     - _BaseMapColorRefine_Toggle: 0
     - _BaseMapUVRotation: 0
+    - _BaseMapUVRotationSpeed: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BlinnPhongSpecularToggle: 1
+    - _BlinnPhongSpecularToggle: 0
     - _BumpMapMaskMode: 0
-    - _BumpMapToggle: 1
-    - _BumpScale: -0.39
+    - _BumpMapToggle: 0
+    - _BumpScale: 1
     - _BumpTexFollowMainTexUVToggle: 0
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
@@ -219,6 +206,8 @@ Material:
     - _ChangeSaturability_Toggle: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ColorBlendAlphaMultiplyMode: 0
+    - _ColorBlendFollowMainTexUV: 0
     - _ColorBlendMap_Toggle: 0
     - _ColorMask: 15
     - _ColorMode: 0
@@ -243,12 +232,14 @@ Material:
     - _DepthOutline_Toggle: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DissolveMask_Toggle: 0
+    - _DissolveLineMaskToggle: 0
+    - _DissolveMask_Toggle: 1
+    - _DissolveRampColorBlendMode: 0
     - _DissolveRampSourceMode: 0
     - _DissolveVoronoi_Toggle: 0
     - _Dissolve_Test_Toggle: 0
-    - _Dissolve_Toggle: 0
-    - _Dissolve_useRampMap_Toggle: 0
+    - _Dissolve_Toggle: 1
+    - _Dissolve_useRampMap_Toggle: 1
     - _DistanceFade_Toggle: 0
     - _DistortionBothDirection_Toggle: 0
     - _Distortion_Choraticaberrat_Toggle: 0
@@ -258,6 +249,7 @@ Material:
     - _EdgeFade: 0.05
     - _Emi_Distortion_intensity: 0
     - _EmissionEnabled: 0
+    - _EmissionFollowMainTexUV: 0
     - _EmissionMapColorIntensity: 1
     - _EmissionMapUVRotation: 0
     - _EmissionSelfAlphaWeight: 0
@@ -271,7 +263,7 @@ Material:
     - _FresnelInOutSlider: 1
     - _FresnelMode: 0
     - _FresnelSelfAlphaWeight: 0
-    - _FxLightMode: 1
+    - _FxLightMode: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -290,8 +282,8 @@ Material:
     - _MaskMapRotationSpeed: 0
     - _MaskMapUVRotation: 0
     - _Mask_RotationToggle: 0
-    - _Mask_Toggle: 0
-    - _MatCapToggle: 1
+    - _Mask_Toggle: 1
+    - _MatCapToggle: 0
     - _MeshSourceMode: 0
     - _Metallic: 0
     - _Mode: 0
@@ -300,14 +292,14 @@ Material:
     - _Parallax: 0.005
     - _ParallaxMapping_Intensity: 1
     - _ParallaxMapping_Toggle: 0
-    - _PolarCoordinatesEnabled: 1
+    - _PolarCoordinatesEnabled: 0
     - _PolarCordinateOnlySpecialFunciton_Toggle: 0
     - _Portal_MaskToggle: 0
     - _Portal_Toggle: 0
     - _QueueBias: 0
     - _QueueOffset: 0
-    - _RampColorBlendMode: 0
-    - _RampColorSourceMode: 0
+    - _RampColorBlendMode: 1
+    - _RampColorSourceMode: 1
     - _RampColorToggle: 0
     - _ReceiveShadows: 1
     - _Saturability: 0
@@ -345,7 +337,7 @@ Material:
     - _ZTest: 4
     - _ZWrite: 0
     - _fogintensity: 1
-    - _fresnelEnabled: 1
+    - _fresnelEnabled: 0
     - _jingxiangCH_dire: 0
     - _noiseMaskMap_Toggle: 0
     - _noisemapEnabled: 0
@@ -354,7 +346,7 @@ Material:
     - _uvRapSoft: 0
     m_Colors:
     - _BaseBackColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 0, g: 0, b: 0, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _BaseMapColorRefine: {r: 1, g: 1, b: 2, a: 1}
     - _BaseMapMaskMapOffset: {r: 0, g: 0, b: 0, a: 0}
@@ -363,31 +355,32 @@ Material:
     - _ColorA: {r: 1, g: 1, b: 1, a: 1}
     - _ColorBlendColor: {r: 1, g: 1, b: 1, a: 1}
     - _ColorBlendMapOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _ColorBlendVec: {r: 0, g: 0, b: 1, a: 0}
     - _ContrastMidColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _CylinderMatrix0: {r: 0.000000059604645, g: -0.99999994, b: 0, a: 0}
-    - _CylinderMatrix1: {r: 0.99999994, g: 0.000000059604645, b: 0, a: 0}
-    - _CylinderMatrix2: {r: 0, g: 0, b: 1, a: 0}
-    - _CylinderMatrix3: {r: 0, g: 0, b: 0, a: 1}
+    - _CylinderMatrix0: {r: 0, g: 0, b: 0, a: 0}
+    - _CylinderMatrix1: {r: 0, g: 0, b: 0, a: 0}
+    - _CylinderMatrix2: {r: 0, g: 0, b: 0, a: 0}
+    - _CylinderMatrix3: {r: 0, g: 0, b: 0, a: 0}
     - _CylinderUVPosOffset: {r: 0, g: 0, b: 0, a: 0}
     - _CylinderUVRotate: {r: 0, g: 0, b: 90, a: 0}
     - _DepthOutline_Color: {r: 1, g: 1, b: 1, a: 1}
     - _DepthOutline_Vec: {r: 0, g: 0.5, b: 0, a: 0}
-    - _Dissolve: {r: -1, g: 0.037, b: 1, a: 0.12}
-    - _DissolveLineColor: {r: 3.3491988, g: 0.6887468, b: 9.734289, a: 1}
+    - _Dissolve: {r: 0.33, g: 1, b: 0.42, a: 0.047}
+    - _DissolveLineColor: {r: 0, g: 0, b: 0, a: 1}
     - _DissolveOffsetRotateDistort: {r: 0, g: 0, b: 0, a: 0}
-    - _DissolveRampAlpha0: {r: 1, g: 0, b: 1, a: 1}
-    - _DissolveRampAlpha1: {r: 1, g: 0, b: 1, a: 1}
+    - _DissolveRampAlpha0: {r: 1, g: 0, b: 1, a: 0.3647059}
+    - _DissolveRampAlpha1: {r: 0, g: 0.7176471, b: 0, a: 0}
     - _DissolveRampAlpha2: {r: 1, g: 0, b: 1, a: 1}
     - _DissolveRampColor: {r: 1, g: 1, b: 1, a: 1}
-    - _DissolveRampColor0: {r: 1, g: 1, b: 1, a: 0}
-    - _DissolveRampColor1: {r: 1, g: 1, b: 1, a: 1}
-    - _DissolveRampColor2: {r: 1, g: 1, b: 1, a: 1}
-    - _DissolveRampColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveRampColor0: {r: 1.3977199, g: 0.92937404, b: 0, a: 0.085297935}
+    - _DissolveRampColor1: {r: 0.6698113, g: 0, b: 0.60884845, a: 0.31470206}
+    - _DissolveRampColor2: {r: 0.6698113, g: 0, b: 0.60884845, a: 0.53235674}
+    - _DissolveRampColor3: {r: 0.6698113, g: 0, b: 0.60884845, a: 0.53235674}
     - _DissolveRampColor4: {r: 1, g: 1, b: 1, a: 1}
     - _DissolveRampColor5: {r: 1, g: 1, b: 1, a: 1}
-    - _DissolveVoronoi_Vec: {r: 2, g: 2, b: 2, a: 2}
-    - _DissolveVoronoi_Vec2: {r: 0.749, g: 0.78, b: 1, a: 1}
-    - _DissolveVoronoi_Vec3: {r: 1, g: 1, b: 0, a: 0}
+    - _DissolveVoronoi_Vec: {r: 1, g: 1, b: 2, a: 2}
+    - _DissolveVoronoi_Vec2: {r: 1, g: 1, b: 2, a: 2}
+    - _DissolveVoronoi_Vec3: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveVoronoi_Vec4: {r: 0, g: 0, b: 0, a: 0}
     - _Dissolve_Vec2: {r: 0, g: 1, b: 0, a: 0}
     - _DistortionDirection: {r: 1, g: 1, b: 0, a: 0}
@@ -395,10 +388,9 @@ Material:
     - _EmissionMapColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionMapUVOffset: {r: 0, g: 0, b: 0, a: 0}
     - _Fade: {r: 2, g: 4, b: 0, a: 0}
-    - _FresnelColor: {r: 0.76662904, g: 1.152662, b: 0.80226284, a: 0.46666667}
+    - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelRotation: {r: 0, g: 0, b: 0, a: 0.5}
-    - _FresnelUnit: {r: -0.49, g: 1.51, b: 1, a: 0}
-    - _FresnelUnit2: {r: 0.94, g: 1, b: 0, a: 0}
+    - _FresnelUnit: {r: 0, g: 0.5, b: 1, a: 0.5}
     - _InspectorData: {r: 1, g: 1, b: 0, a: 0}
     - _IntersectColor: {r: 1, g: 1, b: 1, a: 1}
     - _MainTex_Reverse_ST: {r: 1, g: 1, b: 0, a: 0}
@@ -415,22 +407,22 @@ Material:
     - _MaskMapOffsetAnition: {r: 0, g: 0, b: 0, a: 0}
     - _MaskMapVec: {r: 1, g: 0, b: 0, a: 0}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
-    - _MatCapInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _MaterialInfo: {r: 0.256, g: 0.602, b: 0, a: 0}
+    - _MatCapInfo: {r: 1, g: 0, b: 0, a: 0}
+    - _MaterialInfo: {r: 1, g: 1, b: 0, a: 0}
     - _NoiseOffset: {r: 0, g: 0, b: 0, a: 0}
     - _PCCenter: {r: 0.5, g: 0.5, b: 1, a: 0}
     - _ParallaxMapping_Vec: {r: 5, g: 30, b: 0, a: 0}
-    - _RampColor0: {r: 0, g: 0.05740881, b: 1, a: 0}
-    - _RampColor1: {r: 1, g: 0, b: 0, a: 0.47058824}
-    - _RampColor2: {r: 1, g: 1, b: 1, a: 1}
-    - _RampColor3: {r: 1, g: 0.3019608, b: 0.41673946, a: 0.60294497}
-    - _RampColor4: {r: 1, g: 1, b: 1, a: 0.85882354}
-    - _RampColor5: {r: 1, g: 1, b: 1, a: 0.85882354}
-    - _RampColorAlpha0: {r: 1, g: 0, b: 1, a: 0.7764706}
-    - _RampColorAlpha1: {r: 0, g: 1, b: 0, a: 0}
-    - _RampColorAlpha2: {r: 1, g: 1, b: 0, a: 0}
+    - _RampColor0: {r: 0, g: 0, b: 0, a: 0}
+    - _RampColor1: {r: 2.9960802, g: 2.1826732, b: 0, a: 0.23529412}
+    - _RampColor2: {r: 1, g: 0.117923744, b: 0.7855345, a: 0.51177233}
+    - _RampColor3: {r: 0.50345993, g: 0, b: 1, a: 1}
+    - _RampColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _RampColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _RampColorAlpha0: {r: 0, g: 0.13823149, b: 1, a: 0.25294882}
+    - _RampColorAlpha1: {r: 1, g: 1, b: 0, a: 0}
+    - _RampColorAlpha2: {r: 1, g: 0, b: 1, a: 1}
     - _RampColorBlendColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RampColorMapOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _RampColorMapOffset: {r: 0, g: 0, b: 0, a: 104}
     - _SixWayEmissionColor: {r: 1, g: 0.5, b: 0, a: 1}
     - _SixWayInfo: {r: 0.5, g: 0, b: 0, a: 0}
     - _SoftParticleFadeParams: {r: 0, g: 0.5, b: 0, a: 0}
@@ -442,3 +434,16 @@ Material:
     - _VertexOffset_MaskMap_Vec: {r: 0, g: 0, b: 1, a: 0}
     - _VertexOffset_Vec: {r: 0, g: 0, b: 1, a: 0}
   m_BuildTextureStacks: []
+--- !u!114 &6211966338555991910
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
