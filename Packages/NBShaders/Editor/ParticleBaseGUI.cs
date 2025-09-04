@@ -502,18 +502,14 @@ namespace NBShaderEditor
 
 
         }
-
-        public Gradient rampColorGradient = null;
+        
         private MaterialProperty[] rampColorPropArr = new MaterialProperty[6];
         private MaterialProperty[] rampColorAlphaPropArr = new MaterialProperty[3];
-        public Gradient maskMapGradient = null;
-        public Gradient maskMap2Gradient = null;
-        public Gradient maskMap3Gradient = null;
+
         private MaterialProperty[] maskMapGradientPropArr = new MaterialProperty[3];
         private MaterialProperty[] maskMap2GradientPropArr = new MaterialProperty[3];
         private MaterialProperty[] maskMap3GradientPropArr = new MaterialProperty[3];
-
-        public Gradient dissolveRampGradient = null;
+        
         private MaterialProperty[] dissolveRampColorPropArr = new MaterialProperty[6];
         private MaterialProperty[] dissolveRampAlphaPropArr = new MaterialProperty[3];
 
@@ -671,7 +667,7 @@ namespace NBShaderEditor
                                 maskMapGradientPropArr[0] = _helper.GetProperty("_MaskMapGradientFloat0");
                                 maskMapGradientPropArr[1] = _helper.GetProperty("_MaskMapGradientFloat1");
                                 maskMapGradientPropArr[2] = _helper.GetProperty("_MaskMapGradientFloat2");
-                                _helper.DrawGradient(maskMapGradient, false, ColorSpace.Gamma, "遮罩渐变", 6,
+                                _helper.DrawGradient(false, ColorSpace.Gamma, "遮罩渐变", 6,
                                     "_MaskMapGradientCount", alphaProperties: maskMapGradientPropArr);
                                 _helper.TextureScaleOffsetProperty("_MaskMap");
                                 _helper.DrawWrapMode("遮罩", W9ParticleShaderFlags.FLAG_BIT_WRAPMODE_MASKMAP,
@@ -764,7 +760,7 @@ namespace NBShaderEditor
                                         maskMap2GradientPropArr[0] = _helper.GetProperty("_MaskMap2GradientFloat0");
                                         maskMap2GradientPropArr[1] = _helper.GetProperty("_MaskMap2GradientFloat1");
                                         maskMap2GradientPropArr[2] = _helper.GetProperty("_MaskMap2GradientFloat2");
-                                        _helper.DrawGradient(maskMap2Gradient, false, ColorSpace.Gamma,
+                                        _helper.DrawGradient(false, ColorSpace.Gamma,
                                             "遮罩2渐变(UV纵向)", 6, "_MaskMap2GradientCount",
                                             alphaProperties: maskMap2GradientPropArr);
                                         matEditor.TextureScaleOffsetProperty(_helper.GetProperty("_MaskMap2"));
@@ -842,7 +838,7 @@ namespace NBShaderEditor
                                         maskMap3GradientPropArr[0] = _helper.GetProperty("_MaskMap3GradientFloat0");
                                         maskMap3GradientPropArr[1] = _helper.GetProperty("_MaskMap3GradientFloat1");
                                         maskMap3GradientPropArr[2] = _helper.GetProperty("_MaskMap3GradientFloat2");
-                                        _helper.DrawGradient(maskMap3Gradient, false, ColorSpace.Gamma,
+                                        _helper.DrawGradient(false, ColorSpace.Gamma,
                                             "遮罩3渐变(UV横向)", 6, "_MaskMap3GradientCount",
                                             alphaProperties: maskMap3GradientPropArr);
                                         matEditor.TextureScaleOffsetProperty(_helper.GetProperty("_MaskMap3"));
@@ -1123,7 +1119,7 @@ namespace NBShaderEditor
                     rampColorAlphaPropArr[0] = _helper.GetProperty("_RampColorAlpha0");
                     rampColorAlphaPropArr[1] = _helper.GetProperty("_RampColorAlpha1");
                     rampColorAlphaPropArr[2] = _helper.GetProperty("_RampColorAlpha2");
-                    _helper.DrawGradient(rampColorGradient, true, ColorSpace.Gamma, "映射颜色", 6, "_RampColorCount",
+                    _helper.DrawGradient(true, ColorSpace.Gamma, "映射颜色", 6, "_RampColorCount",
                         rampColorPropArr, rampColorAlphaPropArr);
                     _helper.DrawPopUp("Ramp颜色混合模式", "_RampColorBlendMode", rampColorBlendMode, drawOnValueChangedBlock:
                         modeProp =>
@@ -1246,7 +1242,7 @@ namespace NBShaderEditor
                                         dissolveRampAlphaPropArr[0] = _helper.GetProperty("_DissolveRampAlpha0");
                                         dissolveRampAlphaPropArr[1] = _helper.GetProperty("_DissolveRampAlpha1");
                                         dissolveRampAlphaPropArr[2] = _helper.GetProperty("_DissolveRampAlpha2");
-                                        _helper.DrawGradient(dissolveRampGradient, true, ColorSpace.Gamma,
+                                        _helper.DrawGradient(true, ColorSpace.Gamma,
                                             "Ramp颜色", 6, "_DissolveRampCount", dissolveRampColorPropArr,
                                             dissolveRampAlphaPropArr);
                                         matEditor.TextureScaleOffsetProperty(

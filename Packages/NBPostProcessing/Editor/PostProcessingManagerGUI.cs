@@ -23,7 +23,10 @@ public class PostProcessingManagerGUI : Editor
         DrawToggle("肌理开关",PostProcessingManager.overlayTextureToggles);
         DrawToggle("黑白闪开关",PostProcessingManager.flashToggles);
         DrawToggle("暗角开关",PostProcessingManager.vignetteToggles);
-        DrawToggle32("ShaderFlags", PostProcessingManager.material.GetInteger(NBPostProcessFlags.FlagsId));
+        if (PostProcessingManager.material)
+        {
+            DrawToggle32("ShaderFlags", PostProcessingManager.material.GetInteger(NBPostProcessFlags.FlagsId));
+        }
 
     }
 

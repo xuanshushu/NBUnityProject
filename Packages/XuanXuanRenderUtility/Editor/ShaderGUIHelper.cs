@@ -111,7 +111,7 @@ namespace NBShaderEditor
                 ResetTool.EndInit();
                 ResetTool.Update();
             }
-
+            
             isClearUnUsedTexture = false;
 
         }
@@ -1640,9 +1640,11 @@ namespace NBShaderEditor
 
         public void DrawGradientUndoPerformed()
         {
+            Debug.Log("UndoGradient");
             isUpateGradientPickerCache = true;
         }
-        Dictionary<Gradient,bool> gradientsUpdateDic = new Dictionary<Gradient,bool>();
+        Dictionary<(string,string),bool> gradientsUpdateDic = new Dictionary<(string,string),bool>();
+        Dictionary<(string,string),Gradient> gradientsDic = new Dictionary<(string,string),Gradient>();
 
         void GetGradientKeyCount(MaterialProperty countProperty,
             MaterialProperty[] colorProperties, MaterialProperty[] alphaProperties,out int countPropertyIntValue,out int colorKeysCount,out int alphaKeysCount)
@@ -1784,9 +1786,11 @@ namespace NBShaderEditor
         //如果是黑白Gradient，则取Gradient的颜色的黑白值（这样在面板上可视化比较好）
         //如果既有颜色，也有Alpha。则在CountProperty上采取前16位和后16位编码。
         //原则：gradient对象只是一个操作中介。取值应该直接在MatProperty上去，Set值也应该在验证合法后才能Set，不合法应该提出警告。
-        public void DrawGradient(Gradient gradient,bool hdr,ColorSpace colorSpace,string label,int maxCount,string countPropertyName,MaterialProperty[] colorProperties = null,MaterialProperty[] alphaProperties = null)
+        public void DrawGradient(bool hdr,ColorSpace colorSpace,string label,int maxCount,string countPropertyName,MaterialProperty[] colorProperties = null,MaterialProperty[] alphaProperties = null)
         {
             (string,string) nameTuple = (label, countPropertyName);
+
+        
             if (isUpateGradientPickerCache)
             {
                 foreach (var keys in gradientsUpdateDic.Keys.ToList())
@@ -1807,22 +1811,31 @@ namespace NBShaderEditor
             var gradientResetButtonRect = rect;
             gradientResetButtonRect.x = gradientResetButtonRect.x + gradientResetButtonRect.width - ResetTool.ResetButtonSize;
             gradientResetButtonRect.width = ResetTool.ResetButtonSize;
-            
-            
-            if (gradient == null||gradientsUpdateDic[gradient])
+
+            Gradient gradient;
+            if (!gradientsDic.ContainsKey(nameTuple)||gradientsUpdateDic[nameTuple])
             {
-                if (gradient == null)
+                if (!gradientsDic.ContainsKey(nameTuple))
                 {
                     gradient = new Gradient();
                     // gradient.colorSpace = ColorSpace.Gamma;
-                    gradientsUpdateDic.Add(gradient,false);
+                    gradientsDic.Add(nameTuple,gradient);
+                    gradientsUpdateDic.Add(nameTuple,false);
                 }
-
-                gradientsUpdateDic[gradient] = false;
+                else
+                {
+                    gradient = gradientsDic[nameTuple];
+                    gradientsUpdateDic[nameTuple] = false;
+                }
+                
                 SetGradientByProperty(gradient,countProperty, colorProperties, alphaProperties);
-              
+                
                 GradientReflectionHelper.RefreshGradientData();
                 // Debug.Log("----------------SetCurrentGradient------------------");
+            }
+            else
+            {
+                gradient = gradientsDic[nameTuple];
             }
             
             EditorGUI.showMixedValue = GradientPropertyHasMixedValue(countProperty, colorProperties, alphaProperties);
@@ -1834,7 +1847,7 @@ namespace NBShaderEditor
 
             Action onGradientEndChangeCheck = () =>
             {
-                gradientsUpdateDic[gradient] = true;
+                gradientsUpdateDic[nameTuple] = true;
                 int countPropertyValue = countPropertyIntValue;
 
                 if (colorProperties != null || isBlackAndWhiteGradient)
