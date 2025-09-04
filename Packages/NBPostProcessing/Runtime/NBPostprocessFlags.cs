@@ -5,7 +5,7 @@ public class NBPostProcessFlags: ShaderFlagsBase
     public const string FlagsName = "_NBPostProcessFlags";
     public static int FlagsId = Shader.PropertyToID(FlagsName);
     
-    protected override int GetShaderFlagsId(int index = 0)
+    public override int GetShaderFlagsId(int index = 0)
     {
         return FlagsId;
     }

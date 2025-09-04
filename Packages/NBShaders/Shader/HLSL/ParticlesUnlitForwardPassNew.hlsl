@@ -334,12 +334,12 @@
             {
                 cum_noise = cum_noise * 2 - 1;
             }
+            noiseMask *= noiseSample.a;
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_NOISE_MASKMAP))
             {
                 half4 noiseMaskSample = SampleTexture2DWithWrapFlags(_NoiseMaskMap,noiseMaskMap_uv,FLAG_BIT_WRAPMODE_NOISE_MASKMAP);
-                noiseMask= GetColorChannel(noiseMaskSample,FLAG_BIT_COLOR_CHANNEL_POS_0_NOISE_MASK);
-                noiseMask *= noiseSample.a;
+                noiseMask *= GetColorChannel(noiseMaskSample,FLAG_BIT_COLOR_CHANNEL_POS_0_NOISE_MASK);
             }
             _TexDistortion_intensity = GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_NOISE_INTENSITY,_TexDistortion_intensity,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
     
@@ -353,7 +353,7 @@
 
             float2 mainTexNoise =  cum_noise * noiseMask * _TexDistortion_intensity * _DistortionDirection.xy;
             uv.xy += mainTexNoise;//主贴图纹理扭曲
-            blendUv.xy += mainTexNoise;
+            blendUv.xy += mainTexNoise;  
         #endif
 
         // SampleAlbedo--------------------
@@ -606,15 +606,15 @@
 
             rampColor *= _RampColorBlendColor;
         
-            if (CheckLocalFlags(FLAG_BIT_PARTICLE_RAMP_COLOR_BLEND_ALPHA_MULTIPLY))
-            {
-                result *= rampColor;
-                alpha *= rampColor.a;
-            }
-            else
+            if (CheckLocalFlags(FLAG_BIT_PARTICLE_RAMP_COLOR_BLEND_ADD))
             {
                 result += rampColor;
                 alpha += rampColor.a;
+            }
+            else
+            {
+                result *= rampColor;
+                alpha *= rampColor.a;
             }
         #endif
         
@@ -658,9 +658,6 @@
             // dissolveValue = SimpleSmoothstep(_Dissolve_Vec2.x,_Dissolve_Vec2.y,dissolveValue);
             dissolveValue = pow(dissolveValue,_Dissolve.y);
 
-            #ifdef _DISSOLVE_EDITOR_TEST      //后续Test类的关键字要找机会排除
-                return half4(dissolveValue.rrr,1);
-            #endif
                
 
           
@@ -672,16 +669,24 @@
                 dissolveMaskValue = GetColorChannel(dissolveMaskSample,FLAG_BIT_COLOR_CHANNEL_POS_0_DISSOLVE_MASK_MAP);
                 _Dissolve.z += GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_DISSOLVE_MASK_INTENSITY,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
                 dissolveMaskValue += _Dissolve.z;
-                dissolveValue = dissolveMaskValue*dissolveValue;
-                // dissolveMaskValue = saturate(dissolveMaskValue);
+                // dissolveValue = dissolveMaskValue*dissolveValue;
+                //
+                // half mixedDisolveValue ;
+                // Blend_HardLight_half(dissolveValue,dissolveMaskValue,mixedDisolveValue);
+                // dissolveValue = mixedDisolveValue;
+
+                dissolveValue = (dissolveValue +dissolveMaskValue)*0.5;//Smart Way By Panda
             }
         
+            #ifdef _DISSOLVE_EDITOR_TEST      //后续Test类的关键字要找机会排除
+                return half4(dissolveValue.rrr,1);
+            #endif
             half dissolveStrenth = _Dissolve.x + GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_DISSOLVE_INTENSITY,0,input.VaryingsP_Custom1,input.VaryingsP_Custom2);
         
             half invSoftStep = 1/_Dissolve.w;
             half dissolveValueBeforeSoftStep = dissolveValue - ((dissolveStrenth)*(invSoftStep + 1)-1)*_Dissolve.w ;
             dissolveValue = dissolveValue*invSoftStep -(1+invSoftStep)*dissolveStrenth +1;
-        
+            // dissolveValue = smoothstep(dissolveStrenth-_Dissolve.w,dissolveStrenth,dissolveValue);//Smart Way By Panda
             dissolveValue = saturate(dissolveValue);
         
 
@@ -694,7 +699,11 @@
                 rampRange = rampRange * _DissolveRampMap_ST.x +_DissolveRampMap_ST.z;
 
                 half4 rampSample ;
-                if (CheckLocalFlags(FLAG_BIT_PARTICLE_DISSOLVE_RAMP_GRADIENT))
+                if (CheckLocalFlags(FLAG_BIT_PARTICLE_DISSOLVE_RAMP_MAP))
+                {
+                    rampSample = SampleTexture2DWithWrapFlags(_DissolveRampMap,half2(rampRange,0.5),FLAG_BIT_WRAPMODE_DISSOLVE_RAMPMAP);
+                }
+                else
                 {
                     half3 dissolveRampColorArr[] = {_DissolveRampColor0.rgb,_DissolveRampColor1.rgb,_DissolveRampColor2.rgb,_DissolveRampColor3.rgb,_DissolveRampColor4.rgb,_DissolveRampColor5.rgb};
                     half dissolveRampColorTimeArr[] = {_DissolveRampColor0.a,_DissolveRampColor1.a,_DissolveRampColor2.a,_DissolveRampColor3.a,_DissolveRampColor4.a,_DissolveRampColor5.a};
@@ -718,10 +727,6 @@
                     rampSample.rgb = GetGradientColorValue(dissolveRampColorArr,dissolveRampColorTimeArr,dissolveRampColorCount,rampRange);
                     rampSample.a = GetGradientAlphaValue(dissolveRampAlphaArr,dissolveRampAlphaTimeArr,dissolveRampAlphaCount,rampRange);
                 }
-                else
-                {
-                    rampSample = SampleTexture2DWithWrapFlags(_DissolveRampMap,half2(rampRange,0.5),FLAG_BIT_WRAPMODE_DISSOLVE_RAMPMAP);
-                }
 
                 if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOLVE_RAMP_MULITPLY))
                 {
@@ -738,7 +743,7 @@
             if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOLVE_LINE_MASK))
             {
                 half lineMask = dissolveValueBeforeSoftStep;//SmoothStep要优化
-                lineMask = saturate(lineMask*_Dissolve_Vec2.x+_Dissolve_Vec2.y);
+                lineMask = saturate(NB_Remap01(lineMask,_Dissolve_Vec2.x-_Dissolve_Vec2.y,_Dissolve_Vec2 + _Dissolve_Vec2.y));
                 lineMask = 1- lineMask;
                 
                 result = lerp(result,_DissolveLineColor.rgb,lineMask*_DissolveLineColor.a);
@@ -800,7 +805,12 @@
                 }
 
                 UNITY_BRANCH
-                if(CheckLocalFlags(FLAG_BIT_PARTICLE_FRESNEL_COLOR_ON))
+                if(CheckLocalFlags(FLAG_BIT_PARTICLE_FRESNEL_FADE_ON))
+                {
+                    fresnelValue *= alpha;
+                    alpha = lerp(alpha,fresnelValue,_FresnelUnit.z);
+                }
+                else
                 {
                     float fresnelColorIntensity = fresnelValue*_FresnelColor.a*_FresnelUnit.z;
                     
@@ -809,13 +819,6 @@
                     {
                         alpha = max(alpha,fresnelColorIntensity);//颜色要不要不被主贴图Alpha影响呢？
                     }
-                }
-
-                UNITY_BRANCH
-                if(CheckLocalFlags(FLAG_BIT_PARTICLE_FRESNEL_FADE_ON))
-                {
-                    fresnelValue *= alpha;
-                    alpha = lerp(alpha,fresnelValue,_FresnelUnit.z);
                 }
                 
             }
@@ -928,10 +931,15 @@
                 mask1 *= mask3;
             }
 
+            if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_REFINE))
+            {
+                mask1 = pow(mask1,_MaskRefineVec.x);
+                mask1 = mask1 * _MaskRefineVec.y;
+                mask1 += _MaskRefineVec.z;
+            }
+
             mask1 = lerp(1,mask1,_MaskMapVec.x);
             mask1 = saturate(mask1);
-        
-            // maskmap1.rgb *= maskmap1.a;//预乘
         
             alpha *= mask1;  //mask边缘
         #endif

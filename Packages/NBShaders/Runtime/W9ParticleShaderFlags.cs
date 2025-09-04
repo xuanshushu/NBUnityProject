@@ -24,7 +24,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
 
     public const string colorChannelFlagName = "_W9ParticleShaderColorChannelFlag";
     public static int colorChannelFlagId = Shader.PropertyToID(colorChannelFlagName);
-    protected override int GetShaderFlagsId(int index = 0)
+    public override int GetShaderFlagsId(int index = 0)
     {
         switch (index)
         {
@@ -113,9 +113,9 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_PARTICLE_NORMALMAP_MASK_MODE = 1 << 21;
     public const int FLAG_BIT_PARTICLE_COLOR_BLEND_FOLLOW_MAINTEX_UV = 1 << 22;
     public const int FLAG_BIT_PARTICLE_RAMP_COLOR_MAP_MODE_ON = 1 << 23;
-    public const int FLAG_BIT_PARTICLE_RAMP_COLOR_BLEND_ALPHA_MULTIPLY= 1 << 24;
+    public const int FLAG_BIT_PARTICLE_RAMP_COLOR_BLEND_ADD= 1 << 24;
     public const int FLAG_BIT_PARTICLE_COLOR_BLEND_ALPHA_MULTIPLY_MODE = 1 << 25;
-    public const int FLAG_BIT_PARTICLE_DISSOLVE_RAMP_GRADIENT = 1 << 26;
+    public const int FLAG_BIT_PARTICLE_DISSOLVE_RAMP_MAP = 1 << 26;
     public const int FLAG_BIT_PARTICLE_DISSOLVE_MASK = 1 << 27;
     public const int FLAG_BIT_PARTICLE_BACKCOLOR = 1 << 28;
     public const int FLAG_BIT_PARTICLE_EMISSION_FOLLOW_MAINTEX_UV= 1 << 29;
@@ -129,7 +129,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_PARTICLE_1_MASKMAP_3_GRADIENT = 1 << 4;
     public const int FLAG_BIT_PARTICLE_1_DISSOLVE_LINE_MASK = 1 << 5;
     public const int FLAG_BIT_PARTICLE_1_DISSOLVE_RAMP_MULITPLY = 1 << 6;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA2Y_VERTEXOFFSETY = 1 << 7;
+    public const int FLAG_BIT_PARTICLE_1_MASK_REFINE = 1 << 7;
     public const int FLAG_BIT_PARTICLE_CUSTOMDATA2W_CHORATICABERRAT_INTENSITY = 1 << 8;
     public const int FLAG_BIT_PARTICLE_1_IGNORE_VERTEX_COLOR = 1 << 9;
     public const int FLAG_BIT_PARTICLE_1_DISSOVLE_VORONOI = 1 << 10;
@@ -239,6 +239,8 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int foldOutBit2MatCapToggle= 1 << 1;
     public const int foldOutBit2RampColor= 1 << 2;
     public const int foldOutBit2DissolveLine= 1 << 3;
+    public const int foldOutBit2BaseBackColor= 1 << 4;
+    public const int foldOutBit2MaskRefine= 1 << 5;
 
 
     #region CustomDataCodes

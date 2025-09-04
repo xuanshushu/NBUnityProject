@@ -629,11 +629,13 @@ public class PostProcessingManager : MonoBehaviour
     public static float flashContrast = 0;
 
     public static Color flashColor = new Color(1, 1, 1, 1);
+    public static Color blackFlashColor = new Color(0, 0, 0, 1);
 
     private readonly int _flashDesaturateProperty = Shader.PropertyToID("_DeSaturateIntensity");
     private readonly int _flashInvertProperty = Shader.PropertyToID("_InvertIntensity");
     private readonly int _flashContrastProperty = Shader.PropertyToID("_Contrast");
     private readonly int _flashColorProperty = Shader.PropertyToID("_FlashColor");
+    private readonly int _blackFlashColorProperty = Shader.PropertyToID("_BlackFlashColor");
 
     private void InitFlash()
     {
@@ -646,6 +648,7 @@ public class PostProcessingManager : MonoBehaviour
         material.SetFloat(_flashInvertProperty, flashInvertIntensity);
         material.SetFloat(_flashContrastProperty, flashContrast);
         material.SetColor(_flashColorProperty,flashColor);
+        material.SetColor(_blackFlashColorProperty,blackFlashColor);
         flashDesaturateIntensity = 0;
         flashInvertIntensity = 0;
         flashContrast = 0;

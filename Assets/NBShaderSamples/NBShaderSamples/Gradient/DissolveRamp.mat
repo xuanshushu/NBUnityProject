@@ -174,7 +174,7 @@ Material:
     - _W9ParticleCustomDataFlag2: 0
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 17411
-    - _W9ParticleShaderFlags: 226492416
+    - _W9ParticleShaderFlags: 159383552
     - _W9ParticleShaderFlags1: 8390656
     - _W9ParticleShaderGUIFoldToggle: 57147515
     - _W9ParticleShaderGUIFoldToggle1: 0
@@ -365,7 +365,7 @@ Material:
     - _CylinderUVRotate: {r: 0, g: 0, b: 90, a: 0}
     - _DepthOutline_Color: {r: 1, g: 1, b: 1, a: 1}
     - _DepthOutline_Vec: {r: 0, g: 0.5, b: 0, a: 0}
-    - _Dissolve: {r: 0.33, g: 1, b: 0.42, a: 0.047}
+    - _Dissolve: {r: 0.673, g: 1, b: 0.42, a: 0.047}
     - _DissolveLineColor: {r: 0, g: 0, b: 0, a: 1}
     - _DissolveOffsetRotateDistort: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveRampAlpha0: {r: 1, g: 0, b: 1, a: 0.3647059}

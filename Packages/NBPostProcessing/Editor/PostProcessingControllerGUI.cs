@@ -252,7 +252,9 @@ public class PostProcessingControllerGUI : Editor
                 EditorGUILayout.PropertyField(flashContrastProp, new GUIContent("对比度"));
                 // ppController.flashColor = EditorGUILayout.ColorField("闪颜色", ppController.flashColor);
                 SerializedProperty flashColorProp = serializedObject.FindProperty("flashColor");
-                EditorGUILayout.PropertyField(flashColorProp, new GUIContent("闪颜色"));
+                EditorGUILayout.PropertyField(flashColorProp, new GUIContent("亮部闪颜色"));
+                SerializedProperty blackFlashColorProp = serializedObject.FindProperty("blackFlashColor");
+                EditorGUILayout.PropertyField(blackFlashColorProp, new GUIContent("暗部闪颜色"));
             });
 
         SerializedProperty vignetteToggleProp = serializedObject.FindProperty("vignetteToggle");

@@ -29,7 +29,7 @@ public abstract class ShaderFlagsBase
         return _material;
     }
 
-    protected abstract int GetShaderFlagsId(int index = 0);
+    public abstract int GetShaderFlagsId(int index = 0);
     protected abstract string GetShaderFlagsName(int index = 0);
 
     private void SetIntValue(Material material, int flagBits,int index = 0)

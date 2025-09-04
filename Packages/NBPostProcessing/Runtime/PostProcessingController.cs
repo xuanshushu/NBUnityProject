@@ -199,6 +199,7 @@ public class PostProcessingController : MonoBehaviour
     // [LabelText("对比度")] [ToggleGroup("flashToggle")]
     public float flashContrast = 1f;
     public Color flashColor = new Color(1f,1f,1f,1f);
+    public Color blackFlashColor = new Color(0f,0f,0f,1f);
     
     // [ToggleGroup("vignetteToggle", "暗角")] 
     // [OnValueChanged("InitAllSettings")]
@@ -545,6 +546,7 @@ public class PostProcessingController : MonoBehaviour
             PostProcessingManager.flashContrast =
                 Mathf.Max(PostProcessingManager.flashContrast, flashContrast);
             PostProcessingManager.flashColor = flashColor;
+            PostProcessingManager.blackFlashColor = blackFlashColor;
         }
 
         if (radialBlurToggle)

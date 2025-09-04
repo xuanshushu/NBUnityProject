@@ -68,6 +68,7 @@
     half4 _MaskMapOffsetAnition;
     half4 _MaskMap3OffsetAnition;
     half4 _MaskMapVec;
+    half4 _MaskRefineVec;
 
     int _MaskMapGradientCount;
     half4 _MaskMapGradientFloat0;
@@ -234,67 +235,61 @@
     SamplerState sampler_linear_RepeatU_ClampV;
     SamplerState sampler_linear_ClampU_RepeatV;
 
+    half4 SampleTexture2D(Texture2D tex,float2 uv,SAMPLER( textureSampler),bool sampleLOD = false,int lod = 0)
+    {
+        if (sampleLOD)
+        {
+            return SAMPLE_TEXTURE2D_LOD(tex,textureSampler,uv,lod);
+                    
+        }
+        else
+        {
+            return SAMPLE_TEXTURE2D(tex,textureSampler,uv);
+        }
+    }
+    
+
     half4 SampleTexture2DWithWrapFlags(Texture2D tex,float2 uv,uint bits,bool sampleLOD = false,int lod = 0)
     {
         const int wrapMode = CheckLocalWrapFlags(bits);
+        #if defined(SHADER_TARGET_GLSL)
+        switch (wrapMode)
+        {
+            case 0: uv = frac(uv);break;
+            case 1: uv = saturate(uv);break;
+            case 2: uv = float2(saturate(uv.x),frac(uv.y));break;
+            case 3: uv = float2(frac(uv.x),saturate(uv.y));break; 
+        }
+        if (sampleLOD)
+        {
+            return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_clamp,uv,lod);//SamplerWillIgnore;需要在GLSL相关平台打包时强制设置为Clamp循环。
+                    
+        }
+        else
+        {
+            return SAMPLE_TEXTURE2D(tex,sampler_linear_clamp,uv);//SamplerWillIgnore;需要在GLSL相关平台打包时强制设置为Clamp循环。
+        }
+
+        #else
+        
         switch (wrapMode)
         {
             case 0:
-                if (sampleLOD)
-                {
-                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_repeat,uv,lod);
-                    
-                }
-                else
-                {
-                    return tex.Sample(sampler_linear_repeat,uv);
-                }
+                return SampleTexture2D(tex,uv,sampler_linear_repeat,sampleLOD,lod);
                 break;
             case 1:
-                if (sampleLOD)
-                {
-                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_clamp,uv,lod);
-                    
-                }
-                else
-                {
-                    return tex.Sample(sampler_linear_clamp,uv);
-                }
-                break;
+                return SampleTexture2D(tex,uv,sampler_linear_clamp,sampleLOD,lod);
             case 2:
-                if (sampleLOD)
-                {
-                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_RepeatU_ClampV,uv,lod);
-                    
-                }
-                else
-                {
-                    return tex.Sample(sampler_linear_RepeatU_ClampV,uv);
-                }
+                return SampleTexture2D(tex,uv,sampler_linear_RepeatU_ClampV,sampleLOD,lod);
                 break;
             case 3:
-                if (sampleLOD)
-                {
-                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_ClampU_RepeatV,uv,lod);
-                    
-                }
-                else
-                {
-                    return tex.Sample(sampler_linear_ClampU_RepeatV,uv);
-                }
+                return SampleTexture2D(tex,uv,sampler_linear_ClampU_RepeatV,sampleLOD,lod);
                 break;
             default:
-                if (sampleLOD)
-                {
-                    return SAMPLE_TEXTURE2D_LOD(tex,sampler_linear_repeat,uv,lod);
-                    
-                }
-                else
-                {
-                    return tex.Sample(sampler_linear_repeat,uv);
-                }
+                return SampleTexture2D(tex,uv,sampler_linear_repeat,sampleLOD,lod);
                 break;
         }
+        #endif
     }
 
     half GetColorChannel(half4 color, int bitPos)
@@ -806,6 +801,7 @@ Texture2D _MatCapTex;
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP2))
             {
                 float2 maskMap2UV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_MASKMAP_2,baseUVs);
+                maskMap2UV = Rotate_Radians_float(maskMap2UV,half2(0.5,0.5),_MaskMapVec.y);
                 maskMap2UV = maskMap2UV * _MaskMap2_ST.xy + _MaskMap2_ST.zw;
                     
                 maskMap2UV = UVOffsetAnimaiton(maskMap2UV,_MaskMapOffsetAnition.zw);
@@ -816,6 +812,8 @@ Texture2D _MatCapTex;
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP3))
             {
                 float2 maskMap3UV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_MASKMAP_3,baseUVs);
+                maskMap3UV = Rotate_Radians_float(maskMap3UV,half2(0.5,0.5),_MaskMapVec.z);
+                
                 maskMap3UV = maskMap3UV* _MaskMap3_ST.xy + _MaskMap3_ST.zw;
                 
                 maskMap3UV = UVOffsetAnimaiton(maskMap3UV,_MaskMap3OffsetAnition.xy);

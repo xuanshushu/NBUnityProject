@@ -112,7 +112,8 @@
         
         
         // MaskMap-----------
-    	
+    	_MaskRefineToggle("遮罩整体调整开关",Float) = 0
+    	_MaskRefineVec("遮罩整体调整：x:Pow,y:相乘,z:相加",Vector) = (1,1,0,0)
         _MaskMap ("遮罩贴图 xy:UV缩放 zw:UV偏移", 2D) = "white" { }
         _MaskMap2 ("遮罩2贴图 xy:UV缩放 zw:UV偏移", 2D) = "white"{}
         _MaskMap3 ("遮罩3贴图 xy:UV缩放 zw:UV偏移", 2D) = "white"{}
@@ -121,21 +122,21 @@
         _MaskMapUVRotation ("遮罩旋转", Range(0, 360)) = 0.0
         _MaskDistortion_intensity ("遮罩扭曲强度", float) = 0.0
         _MaskMapRotationSpeed("遮罩旋转速度", float) = 0.0
-        _MaskMapVec("x整体遮罩强度",Vector) = (1,0,0,0)
+        _MaskMapVec("x整体遮罩强度,y遮罩2旋转,z遮罩3旋转",Vector) = (1,0,0,0)
     	
     	_MaskMapGradientToggle("遮罩渐变模式",Float) = 0
     	_MaskMapGradientCount("颜色映射数量",Integer) = 2
-    	_MaskMapGradientFloat0("x:MaskAlpha0,y:Pos0,z:MaskAlpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_MaskMapGradientFloat0("x:MaskAlpha0,y:Pos0,z:MaskAlpha1,w:Pos1",Vector) = (0,0,1,1)
     	_MaskMapGradientFloat1("x:MaskAlpha2,y:Pos2,z:MaskAlpha3,w:Pos3",Vector) = (1,0,1,1)
     	_MaskMapGradientFloat2("x:MaskAlpha4,y:Pos4,z:MaskAlpha5,w:Pos5",Vector) = (1,0,1,1)
     	_MaskMap2GradientToggle("遮罩2渐变模式",Float) = 0
     	_MaskMap2GradientCount("颜色映射数量",Integer) = 2
-    	_MaskMap2GradientFloat0("x:Mask2Alpha0,y:Pos0,z:Mask2Alpha1,w:Pos1",Vector) = (1,0,1,1)
+    	_MaskMap2GradientFloat0("x:Mask2Alpha0,y:Pos0,z:Mask2Alpha1,w:Pos1",Vector) = (0,0,1,1)
     	_MaskMap2GradientFloat1("x:Mask2Alpha2,y:Pos2,z:Mask2Alpha3,w:Pos3",Vector) = (1,0,1,1)
     	_MaskMap2GradientFloat2("x:Mask2Alpha4,y:Pos4,z:Mask2Alpha5,w:Pos5",Vector) = (1,0,1,1)
     	_MaskMap3GradientToggle("遮罩3渐变模式",Float) = 0
     	_MaskMap3GradientCount("颜色映射数量",Integer) = 2
-	    _MaskMap3GradientFloat0("x:Mask3Alpha0,y:Pos0,z:Mask3Alpha1,w:Pos1",Vector) = (1,0,1,1)
+	    _MaskMap3GradientFloat0("x:Mask3Alpha0,y:Pos0,z:Mask3Alpha1,w:Pos1",Vector) = (0,0,1,1)
     	_MaskMap3GradientFloat1("x:Mask3Alpha2,y:Pos2,z:Mask3Alpha3,w:Pos3",Vector) = (1,0,1,1)
     	_MaskMap3GradientFloat2("x:Mask3Alpha4,y:Pos4,z:Mask3Alpha5,w:Pos5",Vector) = (1,0,1,1)
         
@@ -201,8 +202,8 @@
     	_RampColorSourceMode("Ramp来源模式",Float) = 0
     	_RampColorBlendMode("Ramp颜色混合模式",Float) = 0
     	_RampColorMap("颜色映射黑白图",2D) = "white"{}
-    	_RampColor0("rgb:RampColor0,a:pos",Color) = (1,1,1,0)
-    	_RampColor1("rgb:RampColor1,a:pos",Color) = (1,1,1,1)
+    	_RampColor0("rgb:RampColor0,a:pos",Color) = (0,0,0,0)
+    	_RampColor1("rgb:RampColor1,a:pos",Color) = (1,0,0,1)
     	_RampColor2("rgb:RampColor2,a:pos",Color) = (1,1,1,1)
     	_RampColor3("rgb:RampColor3,a:pos",Color) = (1,1,1,1)
     	_RampColor4("rgb:RampColor4,a:pos",Color) = (1,1,1,1)
@@ -222,20 +223,20 @@
     	_DissolveMap("溶解贴图 xy:UV缩放 zw:UV偏移",2D) = "grey"{}
         _DissolveMaskMap("局部溶解蒙版 xy:UV缩放 zw:UV偏移",2D) = "white"{}
         _DissolveOffsetRotateDistort("xy:溶解贴图偏移速度 z:溶解贴图旋转",Vector) = (0,0,0,0)
-        [HDR]_DissolveLineColor("溶解描边颜色_hdr",Color) = (0,0,0,1)
+        [HDR]_DissolveLineColor("溶解描边颜色_hdr",Color) = (1,0,0,1)
         _DissolveVoronoi_Vec("xy:噪波1缩放,zw:噪波2缩放",Vector) = (1,1,2,2)
         _DissolveVoronoi_Vec2("x:噪波1和噪波2混合系数(圆尖),y:噪波整体和溶解贴图混合系数,z:噪波1速度,w:噪波2速度",Vector) = (1,1,2,2)
         _DissolveVoronoi_Vec3("xy:噪波1偏移速度,zw:噪波2偏移速度",Vector) = (0,0,0,0)
     	_DissolveVoronoi_Vec4("xy:噪波1偏移,zw:噪波2偏移",Vector) = (0,0,0,0)
-        _Dissolve_Vec2("x:Ramp位置偏移,y:Ramp范围",Vector) = (0,1,0,0)
+        _Dissolve_Vec2("x:Ramp位置偏移,y:Ramp范围",Vector) = (0.2,0.1,0,0)
         _DissolveRampMap("溶解Ramp图",2D) = "white"{}
     	_DissolveRampColorBlendMode("溶解Ramp图混合模式",Float) = 0
         [HDR]_DissolveRampColor("溶解Ramp颜色_hdr",Color) = (1,1,1,1)
     	_DissolveLineMaskToggle("溶解描边开关",Float) = 0
 	    
     	_DissolveRampSourceMode("溶解Ramp来源模式",Float) = 0
-    	_DissolveRampColor0("rgb:DissolveRampColor0,a:pos",Color) = (1,1,1,0)
-    	_DissolveRampColor1("rgb:DissolveRampColor1,a:pos",Color) = (1,1,1,1)
+    	_DissolveRampColor0("rgb:DissolveRampColor0,a:pos",Color) = (1,0,0,0)
+    	_DissolveRampColor1("rgb:DissolveRampColor1,a:pos",Color) = (0,0,0,1)
     	_DissolveRampColor2("rgb:DissolveRampColor2,a:pos",Color) = (1,1,1,1)
     	_DissolveRampColor3("rgb:DissolveRampColor3,a:pos",Color) = (1,1,1,1)
     	_DissolveRampColor4("rgb:DissolveRampColor4,a:pos",Color) = (1,1,1,1)
@@ -244,10 +245,7 @@
     	_DissolveRampAlpha1("x:DissolveRampAlpha2,y:Pos2,z:DissolveRampAlpha3,w:Pos3",Vector) = (1,0,1,1)
     	_DissolveRampAlpha2("x:DissolveRampAlpha4,y:Pos4,z:DissolveRampAlpha5,w:Pos5",Vector) = (1,0,1,1)
     	_DissolveRampCount("溶解Ramp映射数量",Integer) = 2
-    	
-
-        
- 
+	    
 
         _CustomData1X ("ignore", float) = 0
         _CustomData1Y ("ignore", float) = 0
@@ -313,7 +311,7 @@
         
         _ParallaxMapping_Toggle("视差",Float) = 0
         _ParallaxMapping_Map("视差贴图",2D) = "white"{}
-        _ParallaxMapping_Intensity("视差强度",Float) = 1
+        _ParallaxMapping_Intensity("视差强度",Float) = 0.05
     	_ParallaxMapping_Vec("遮蔽视差层数 x:最小值,y:最大值",Vector) = (5,30,0,0)
         
         
@@ -373,7 +371,17 @@
         [HideInInspector] _W9ParticleShaderGUIFoldToggle1("_W9ParticleShaderGUIFoldToggle1", Integer) = 255//这边默认全开
         [HideInInspector] _W9ParticleShaderGUIFoldToggle2("_W9ParticleShaderGUIFoldToggle2", Integer) = 255//这边默认全开
         [HideInInspector] _W9ParticleShaderColorChannelFlag("_W9ParticleShaderColorChannelFlag", Integer) = 3//默认主贴图开A通道
-        
+	    
+    	
+    	SaturabilityRangeVec("_Saturability",Vector) = (0,1,0,0)
+    	TexDistortionintensityRangeVec("_TexDistortion_intensity",Vector) = (-1,1,0,0)
+    	MaskDistortionIntensityRangeVec("_MaskDistortion_intensity",Vector) = (-2,2,0,0)
+    	EmiDistortionIntensityRangeVec("_TexDistortion_intensity",Vector) = (-1,1,0,0)
+    	BumpScaleRangeVec("_BumpScale",Vector) = (-1,1,0,0)
+    	DissolveXRangeVec("_Dissolve.x",Vector) = (-1,2,0,0)
+    	Dissolve2XRangeVec("_Dissolve_Vec2.x",Vector) = (0,1,0,0)
+    	Dissolve2YRangeVec("_Dissolve_Vec2.y",Vector) = (0,1,0,0)
+    	AlphaAllRangeVec("_AlphaAll",Vector) = (0,1,0,0)
 //        _offsetUnits("深度偏移单位距离-ignore", range(-2000,2000)) = 0
     }
     SubShader
@@ -721,5 +729,5 @@
         }
     }
     
-    CustomEditor "ParticleBaseGUI"
+    CustomEditor "NBShaderEditor.ParticleBaseGUI"
 }
