@@ -163,7 +163,8 @@ Shader "XuanXuan/Postprocess/NBPostProcessUber"
                     //disturbanceMask *= 0.4;
                     //half2 disturbanceMask = (SAMPLE_TEXTURE2D(_DisturbanceMaskTex, _linear_clamp, screenUV).xy) * 0.8 - 0.398432;  //上面两行合并
                     
-                    half2 disturbanceMask = (SAMPLE_TEXTURE2D(_DisturbanceMaskTex, _linear_clamp, screenUV).xy) * 0.8 - 0.4;  //上面两行合并
+                    half2 disturbanceMask = (SAMPLE_TEXTURE2D(_DisturbanceMaskTex, _linear_clamp, screenUV).xy);
+                    // return half4(disturbanceMask,0,1);//上面两行合并
   
                     
                     color.a = SimpleSmoothstep(0,0.01,abs(disturbanceMask.x + disturbanceMask.y));

@@ -43,7 +43,7 @@
     #define FLAG_BIT_PARTICLE_1_DISSOLVE_LINE_MASK (1 << 5)
     #define FLAG_BIT_PARTICLE_1_DISSOLVE_RAMP_MULITPLY (1 << 6)
     #define FLAG_BIT_PARTICLE_1_MASK_REFINE (1 << 7)
-    #define FLAG_BIT_PARTICLE_CUSTOMDATA2W_CHORATICABERRAT_INTENSITY (1 << 8)
+    #define FLAG_BIT_PARTICLE_1_SCREEN_DISTORT_ALPHA_REFINE (1 << 8)
     #define FLAG_BIT_PARTICLE_1_IGNORE_VERTEX_COLOR (1 << 9)
     #define FLAG_BIT_PARTICLE_1_DISSOVLE_VORONOI (1 << 10)
     #define FLAG_BIT_PARTICLE_1_DISSOVLE_USE_RAMP (1 << 11)
@@ -194,24 +194,6 @@
         return 999;//提示错误
     }
 
-    float2 GetUVByUVMode(uint flagProperty,int flagPos,float2 defaultUVChannel,float2 specialUVChannel,float2 polarOrTwirl,float2 cylinderUV)
-    {
-        flagProperty = flagProperty >> flagPos;
-        flagProperty = flagProperty & 3;
-        if(flagProperty == 0)
-        {
-            return defaultUVChannel;
-        }
-        if(flagProperty == 1)
-        {
-            return specialUVChannel;
-        }
-        if(flagProperty == 2)
-        {
-            return polarOrTwirl;
-        }
-        return cylinderUV;
-    }
 
     struct BaseUVs
     {
@@ -219,30 +201,50 @@
         float2 specialUVChannel;
         float2 uvAfterTwirlPolar;
         float2 cylinderUV;
+        float2 mainTexUV;
+        float2 screenUV;
+        float2 worldPosUV;
+        float2 objectPosUV;
     };
 
-    float2 GetUVByUVMode(uint flagProperty,int flagPos,BaseUVs baseUVs)
+    float2 GetUVByUVMode(uint flagProperty,uint flagTypeProperty,int flagPos,BaseUVs baseUVs)
     {
         flagProperty = flagProperty >> flagPos;
-        flagProperty = flagProperty & 3;
-        if(flagProperty == 0)
+        flagProperty &= 3;
+        flagTypeProperty = flagTypeProperty >> flagPos;
+        flagTypeProperty &= 3;
+        switch (flagTypeProperty)
         {
+            case 0:
+                switch(flagProperty)
+                {
+                    case 0:
+                    return baseUVs.defaultUVChannel;
+                    case 1:
+                    return baseUVs.specialUVChannel;
+                    case 2:
+                    return baseUVs.uvAfterTwirlPolar;
+                    case 3:
+                    return baseUVs.cylinderUV;
+                    default:
+                    return baseUVs.defaultUVChannel;
+                }
+            case 1:
+                switch(flagProperty)
+                {
+                    case 0:
+                    return baseUVs.mainTexUV;
+                    case 1:
+                    return baseUVs.screenUV;
+                    case 2:
+                    return baseUVs.worldPosUV;
+                    case 3:
+                    return baseUVs.objectPosUV;
+                    default:
+                    return baseUVs.defaultUVChannel;
+                }
+            default:
             return baseUVs.defaultUVChannel;
         }
-        if(flagProperty == 1)
-        {
-            return baseUVs.specialUVChannel;
-        }
-        if(flagProperty == 2)
-        {
-            return baseUVs.uvAfterTwirlPolar;
-        }
-        return baseUVs.cylinderUV;
     }
-
- 
-
-
-
-
 #endif

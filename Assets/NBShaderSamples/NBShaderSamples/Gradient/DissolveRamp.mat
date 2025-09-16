@@ -175,10 +175,10 @@ Material:
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 17411
     - _W9ParticleShaderFlags: 159383552
-    - _W9ParticleShaderFlags1: 8390656
-    - _W9ParticleShaderGUIFoldToggle: 57147515
-    - _W9ParticleShaderGUIFoldToggle1: 0
-    - _W9ParticleShaderGUIFoldToggle2: 243
+    - _W9ParticleShaderFlags1: 8391680
+    - _W9ParticleShaderGUIFoldToggle: 65538174
+    - _W9ParticleShaderGUIFoldToggle1: 671088640
+    - _W9ParticleShaderGUIFoldToggle2: 250
     - _W9ParticleShaderWrapFlags: 128
     m_Floats:
     - _AdditiveToPreMultiplyAlphaLerp: 0
@@ -236,7 +236,7 @@ Material:
     - _DissolveMask_Toggle: 1
     - _DissolveRampColorBlendMode: 0
     - _DissolveRampSourceMode: 0
-    - _DissolveVoronoi_Toggle: 0
+    - _DissolveVoronoi_Toggle: 1
     - _Dissolve_Test_Toggle: 0
     - _Dissolve_Toggle: 1
     - _Dissolve_useRampMap_Toggle: 1
@@ -281,6 +281,7 @@ Material:
     - _MaskMapGradientToggle: 0
     - _MaskMapRotationSpeed: 0
     - _MaskMapUVRotation: 0
+    - _MaskRefineToggle: 0
     - _Mask_RotationToggle: 0
     - _Mask_Toggle: 1
     - _MatCapToggle: 0
@@ -345,6 +346,15 @@ Material:
     - _offsetUnits: 0
     - _uvRapSoft: 0
     m_Colors:
+    - AlphaAllRangeVec: {r: 0, g: 1, b: 0, a: 0}
+    - BumpScaleRangeVec: {r: -1, g: 1, b: 0, a: 0}
+    - Dissolve2XRangeVec: {r: 0, g: 1, b: 0, a: 0}
+    - Dissolve2YRangeVec: {r: 0, g: 1, b: 0, a: 0}
+    - DissolveXRangeVec: {r: -1, g: 2, b: 0, a: 0}
+    - EmiDistortionIntensityRangeVec: {r: -1, g: 1, b: 0, a: 0}
+    - MaskDistortionIntensityRangeVec: {r: -2, g: 2, b: 0, a: 0}
+    - SaturabilityRangeVec: {r: 0, g: 1, b: 0, a: 0}
+    - TexDistortionintensityRangeVec: {r: -1, g: 1, b: 0, a: 0}
     - _BaseBackColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
@@ -406,6 +416,7 @@ Material:
     - _MaskMapGradientFloat2: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMapOffsetAnition: {r: 0, g: 0, b: 0, a: 0}
     - _MaskMapVec: {r: 1, g: 0, b: 0, a: 0}
+    - _MaskRefineVec: {r: 1, g: 1, b: 0, a: 0}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatCapInfo: {r: 1, g: 0, b: 0, a: 0}
     - _MaterialInfo: {r: 1, g: 1, b: 0, a: 0}

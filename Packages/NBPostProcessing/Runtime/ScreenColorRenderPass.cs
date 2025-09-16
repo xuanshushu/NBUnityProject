@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using System.Reflection;
 
-namespace MhRender.RendererFeatures
+namespace NBShader
 {
     public class ScreenColorRenderPass : ScriptableRenderPass
     {
@@ -15,8 +15,6 @@ namespace MhRender.RendererFeatures
         private static readonly int _screenColorRTID = Shader.PropertyToID("_screenColorRT");
         private RenderTargetIdentifier _tempRTHandle = new RenderTargetIdentifier(_tempRTID);
         private static readonly int _tempRTID = Shader.PropertyToID("CopyColorRT");
-
-        
 #endif
         private ProfilingSampler _profilingSampler;
         private readonly Downsampling _downSampling;

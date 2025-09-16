@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
-using PlasticGui;
 using UnityEngine;
-using UnityEngine.UIElements;
 using ShaderPropertyPack = NBShaderEditor.ShaderGUIHelper.ShaderPropertyPack;
 using UnityEditor;
 namespace NBShaderEditor

@@ -274,7 +274,7 @@ namespace NBShaderEditor
                 animBoolArr[arrIndex] = new AnimBool(shaderFlags[0].CheckFlagBits(flagBit,index:flagIndex));
             }
 
-            animBoolArr[arrIndex].speed = 6f;
+            animBoolArr[arrIndex].speed = 10f;
             
             return animBoolArr[arrIndex];
         }
@@ -306,11 +306,14 @@ namespace NBShaderEditor
             EditorGUILayout.EndHorizontal();
             
             float faded = animBool.faded;
-            if (faded == 0) faded = 0.00001f;
-            EditorGUILayout.BeginFadeGroup(faded);
-            EditorGUI.indentLevel++;
-            drawBlock?.Invoke();
-            EditorGUI.indentLevel--;
+            // if (faded == 0) faded = 0.00001f;
+            if (faded == 0 && ResetTool.IsInitResetData) faded = 0.00001f;
+            if (EditorGUILayout.BeginFadeGroup(faded))
+            {
+                EditorGUI.indentLevel++;
+                drawBlock?.Invoke();
+                EditorGUI.indentLevel--;
+            }
             EditorGUILayout.EndFadeGroup();
             foldOutState = animBool.target;
             if (foldOutState)
@@ -372,15 +375,15 @@ namespace NBShaderEditor
             EditorGUILayout.EndHorizontal();
             if (isIndentBlock) EditorGUI.indentLevel++;
             float faded = foldOutAnimBool.faded;
-            if (faded == 0) faded = 0.0001f; //用于欺骗FadeGroup，不要让他真的关闭了。这样会藏不住相关的GUI。我们的目的是，GUI藏住，但是逻辑还是在跑。drawBlock要执行。
-            EditorGUILayout.BeginFadeGroup(faded);
-                  
-                    bool isDisabledGroup = toggleProp.hasMixedValue || toggleProp.floatValue < 0.5f;
-                    EditorGUI.BeginDisabledGroup(isDisabledGroup);
-                        
-                    drawBlock?.Invoke(toggleProp);
-                    EditorGUI.EndDisabledGroup();
+            if (faded == 0 && ResetTool.IsInitResetData) faded = 0.0001f; //用于欺骗FadeGroup，不要让他真的关闭了。这样会藏不住相关的GUI。我们的目的是，GUI藏住，但是逻辑还是在跑。drawBlock要执行。
+            if (EditorGUILayout.BeginFadeGroup(faded))
+            {
+                bool isDisabledGroup = toggleProp.hasMixedValue || toggleProp.floatValue < 0.5f;
+                EditorGUI.BeginDisabledGroup(isDisabledGroup);
                     
+                drawBlock?.Invoke(toggleProp);
+                EditorGUI.EndDisabledGroup();
+            }
             EditorGUILayout.EndFadeGroup();
             if (isIndentBlock) EditorGUI.indentLevel--;
             
@@ -413,6 +416,7 @@ namespace NBShaderEditor
             if (label.Length <= 0) //给FoldOut功能使用。
             {
                 rect.x += 2f;
+                rect.width -= 24f;//避免覆盖ResetButton
                 isToggle = EditorGUI.Toggle(rect, isToggle, EditorStyles.toggle);
                 resetButtonRect.x = resetButtonRect.x + resetButtonRect.width - ResetTool.ResetButtonSize;
                 resetButtonRect.width = ResetTool.ResetButtonSize;
@@ -516,6 +520,11 @@ namespace NBShaderEditor
             if (rect.width <= 0)
             {
                 ResetTool.EndResetModifyButtonScope();//如果是DrawFoldOut，需要在DrawFoldOut里去结束。
+            }
+
+            if (ResetTool.IsInitResetData)
+            {
+                onEndChangeCheck();
             }
         }
 
@@ -1178,15 +1187,14 @@ namespace NBShaderEditor
             EditorGUI.LabelField(labelRect, label+"相关功能", EditorStyles.boldLabel);
             foldOutAnimBool.target = EditorGUI.Foldout(foldoutRect, foldOutAnimBool.target, "", true);
             float faded = foldOutAnimBool.faded;
-            if (faded == 0) faded = 0.00001f;
-            EditorGUILayout.BeginFadeGroup(faded);
-            EditorGUI.BeginDisabledGroup(texture == null);
-           
-            DrawAfterTexture(true, label, texturePropertyName, drawWrapMode, wrapModeFlagBitsName, flagIndex,
-                drawBlock);
+            if (faded == 0 && ResetTool.IsInitResetData) faded = 0.00001f;
             
-
-            EditorGUI.EndDisabledGroup();
+            if(EditorGUILayout.BeginFadeGroup(faded))
+            {
+                EditorGUI.BeginDisabledGroup(texture == null);
+                DrawAfterTexture(true, label, texturePropertyName, drawWrapMode, wrapModeFlagBitsName, flagIndex, drawBlock);
+                EditorGUI.EndDisabledGroup();
+            }
             EditorGUILayout.EndFadeGroup();
         }
 
@@ -1517,6 +1525,7 @@ namespace NBShaderEditor
                 drawOnValueChangedBlock?.Invoke(property);
                 ResetTool.CheckOnValueChange((label,propertyName));
             };
+           
 
             EditorGUILayout.BeginHorizontal();
             mode = EditorGUILayout.Popup(new GUIContent(label), (int)mode, optionGUIContents);
@@ -1533,6 +1542,11 @@ namespace NBShaderEditor
             drawBlock?.Invoke(property);
             ResetTool.EndResetModifyButtonScope();
             EditorGUI.showMixedValue = false;
+            
+            if (ResetTool.IsInitResetData)
+            {
+                drawOnValueChanged();
+            }
         }
 
         public MaterialProperty GetProperty(string propertyName)

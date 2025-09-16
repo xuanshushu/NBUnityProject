@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5916661276490442605
+--- !u!114 &-6472092188667982771
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,15 +20,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MatCapMateriak
+  m_Name: DistortParticles
   m_Shader: {fileID: 4800000, guid: 7184a95c20fc1a441a8815af4c795ccd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _FX_LIGHT_MODE_BLINN_PHONG
-  - _MATCAP
-  - _NORMALMAP
-  - _SPECULAR_COLOR
+  - _FX_LIGHT_MODE_UNLIT
+  - _MASKMAP_ON
+  - _NOISEMAP
+  - _SOFTPARTICLES_ON
   m_InvalidKeywords:
   - _CUSTOMDATA
   - _CUSTOMDATA_OFF
@@ -40,8 +40,8 @@ Material:
   stringTagMap: {}
   disabledShaderPasses:
   - SRPDEFAULTUNLIT
+  - UniversalForward
   - NBCameraOpaqueDistortPass
-  - NBDeferredDistortPass
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -55,7 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpTex:
-        m_Texture: {fileID: 2800000, guid: 488b537fe3fad384cba67852f242f88d, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorBlendMap:
@@ -111,7 +111,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCapTex:
-        m_Texture: {fileID: 2800000, guid: 6f782829a9e4df04d93d1cfa7ff72fcc, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -119,7 +119,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: f891f8270f72a814ebf8cb0a0e85e609, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseMaskMap:
@@ -179,24 +179,24 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints:
-    - _DissolveRampCount: 2
+    - _DissolveRampCount: 131074
     - _MaskMap2GradientCount: 2
     - _MaskMap3GradientCount: 2
     - _MaskMapGradientCount: 2
-    - _RampColorCount: 2
-    - _UVModeFlag0: 0
+    - _RampColorCount: 131074
+    - _UVModeFlag0: 8
     - _UVModeFlagType0: 0
     - _W9ParticleCustomDataFlag0: 0
     - _W9ParticleCustomDataFlag1: 0
     - _W9ParticleCustomDataFlag2: 0
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 3
-    - _W9ParticleShaderFlags: 8458
-    - _W9ParticleShaderFlags1: 8650752
-    - _W9ParticleShaderGUIFoldToggle: 9271
-    - _W9ParticleShaderGUIFoldToggle1: 671088640
-    - _W9ParticleShaderGUIFoldToggle2: 19
-    - _W9ParticleShaderWrapFlags: 0
+    - _W9ParticleShaderFlags: 12554
+    - _W9ParticleShaderFlags1: 276824068
+    - _W9ParticleShaderGUIFoldToggle: 213055
+    - _W9ParticleShaderGUIFoldToggle1: 679477250
+    - _W9ParticleShaderGUIFoldToggle2: 255
+    - _W9ParticleShaderWrapFlags: 2
     m_Floats:
     - _AdditiveToPreMultiplyAlphaLerp: 0
     - _AlphaAll: 1
@@ -204,6 +204,7 @@ Material:
     - _AlphaToMask: 0
     - _BackFaceColor_Toggle: 0
     - _BackFirstPassToggle: 0
+    - _BackFristPassToggle: 0
     - _BaseBackColor_Toggle: 0
     - _BaseColorIntensityForTimeline: 1
     - _BaseMapColorRefine_Toggle: 0
@@ -211,11 +212,11 @@ Material:
     - _BaseMapUVRotationSpeed: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BlinnPhongSpecularToggle: 1
+    - _BlinnPhongSpecularToggle: 0
     - _BumpMapMaskMode: 0
-    - _BumpMapToggle: 1
-    - _BumpScale: 0.733
-    - _BumpTexFollowMainTexUVToggle: 0
+    - _BumpMapToggle: 0
+    - _BumpScale: 1
+    - _BumpTexFollowMainTexUVToggle: 1
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
     - _CameraNearFadeDistance: 1
@@ -224,7 +225,6 @@ Material:
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _ColorBlendAlphaMultiplyMode: 0
-    - _ColorBlendFollowMainTexUV: 0
     - _ColorBlendMap_Toggle: 0
     - _ColorMask: 15
     - _ColorMode: 0
@@ -244,12 +244,12 @@ Material:
     - _CustomData2Y_MaskMapOffsetY_Toggle: 0
     - _CustomData2Z_FresnelOffset_Toggle: 0
     - _CustomStencilTest: 0
-    - _Cutoff: 0
+    - _Cutoff: 0.5
     - _DepthDecal_Toggle: 0
     - _DepthOutline_Toggle: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DisableMainPassToggle: 0
+    - _DisableMainPassToggle: 1
     - _DissolveLineMaskToggle: 0
     - _DissolveMask_Toggle: 0
     - _DissolveRampColorBlendMode: 0
@@ -260,7 +260,7 @@ Material:
     - _Dissolve_useRampMap_Toggle: 0
     - _DistanceFade_Toggle: 0
     - _DistortMode: 0
-    - _DistortionBothDirection_Toggle: 0
+    - _DistortionBothDirection_Toggle: 1
     - _Distortion_Choraticaberrat_Toggle: 0
     - _Distortion_Choraticaberrat_WithNoise_Toggle: 1
     - _DstBlend: 10
@@ -268,7 +268,6 @@ Material:
     - _EdgeFade: 0.05
     - _Emi_Distortion_intensity: 0
     - _EmissionEnabled: 0
-    - _EmissionFollowMainTexUV: 0
     - _EmissionMapColorIntensity: 1
     - _EmissionMapUVRotation: 0
     - _EmissionSelfAlphaWeight: 0
@@ -282,7 +281,7 @@ Material:
     - _FresnelInOutSlider: 1
     - _FresnelMode: 0
     - _FresnelSelfAlphaWeight: 0
-    - _FxLightMode: 1
+    - _FxLightMode: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -297,13 +296,13 @@ Material:
     - _MaskDistortion_intensity: 0
     - _MaskMap2GradientToggle: 0
     - _MaskMap3GradientToggle: 0
-    - _MaskMapGradientToggle: 0
+    - _MaskMapGradientToggle: 1
     - _MaskMapRotationSpeed: 0
-    - _MaskMapUVRotation: 0
+    - _MaskMapUVRotation: 90
     - _MaskRefineToggle: 0
     - _Mask_RotationToggle: 0
-    - _Mask_Toggle: 0
-    - _MatCapToggle: 1
+    - _Mask_Toggle: 1
+    - _MatCapToggle: 0
     - _MeshSourceMode: 0
     - _Metallic: 0
     - _Mode: 0
@@ -331,12 +330,12 @@ Material:
     - _ScreenDistortAlphaMulti: 1
     - _ScreenDistortAlphaPow: 1
     - _ScreenDistortAlphaRefineToggle: 0
-    - _ScreenDistortIntensity: 1
-    - _ScreenDistortModeToggle: 0
+    - _ScreenDistortIntensity: 0.286
+    - _ScreenDistortModeToggle: 1
     - _SixWayColorAbsorptionToggle: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
-    - _SoftParticlesEnabled: 0
+    - _SoftParticlesEnabled: 1
     - _SpecialUVChannelMode: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
@@ -371,7 +370,7 @@ Material:
     - _fresnelEnabled: 0
     - _jingxiangCH_dire: 0
     - _noiseMaskMap_Toggle: 0
-    - _noisemapEnabled: 0
+    - _noisemapEnabled: 1
     - _offsetFactor: 0
     - _offsetUnits: 0
     - _uvRapSoft: 0
@@ -397,10 +396,10 @@ Material:
     - _ColorBlendMapOffset: {r: 0, g: 0, b: 0, a: 0}
     - _ColorBlendVec: {r: 0, g: 0, b: 1, a: 0}
     - _ContrastMidColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _CylinderMatrix0: {r: 0.000000059604645, g: -0.99999994, b: 0, a: 0}
-    - _CylinderMatrix1: {r: 0.99999994, g: 0.000000059604645, b: 0, a: 0}
-    - _CylinderMatrix2: {r: 0, g: 0, b: 1, a: 0}
-    - _CylinderMatrix3: {r: 0, g: 0, b: 0, a: 1}
+    - _CylinderMatrix0: {r: 0, g: 0, b: 0, a: 0}
+    - _CylinderMatrix1: {r: 0, g: 0, b: 0, a: 0}
+    - _CylinderMatrix2: {r: 0, g: 0, b: 0, a: 0}
+    - _CylinderMatrix3: {r: 0, g: 0, b: 0, a: 0}
     - _CylinderUVPosOffset: {r: 0, g: 0, b: 0, a: 0}
     - _CylinderUVRotate: {r: 0, g: 0, b: 90, a: 0}
     - _DepthOutline_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -431,7 +430,6 @@ Material:
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelRotation: {r: 0, g: 0, b: 0, a: 0.5}
     - _FresnelUnit: {r: 0, g: 0.5, b: 1, a: 0.5}
-    - _FresnelUnit2: {r: 0.94, g: 1, b: 0, a: 0}
     - _InspectorData: {r: 1, g: 1, b: 0, a: 0}
     - _IntersectColor: {r: 1, g: 1, b: 1, a: 1}
     - _MainTex_Reverse_ST: {r: 1, g: 1, b: 0, a: 0}
@@ -442,7 +440,7 @@ Material:
     - _MaskMap3GradientFloat1: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMap3GradientFloat2: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMap3OffsetAnition: {r: 0, g: 0, b: 0, a: 0}
-    - _MaskMapGradientFloat0: {r: 0, g: 0, b: 1, a: 1}
+    - _MaskMapGradientFloat0: {r: 1, g: 0, b: 0, a: 1}
     - _MaskMapGradientFloat1: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMapGradientFloat2: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMapOffsetAnition: {r: 0, g: 0, b: 0, a: 0}
@@ -454,7 +452,7 @@ Material:
     - _NoiseIntensityRangeVec: {r: 0, g: 1, b: 0, a: 0}
     - _NoiseOffset: {r: 0, g: 0, b: 0, a: 0}
     - _PCCenter: {r: 0.5, g: 0.5, b: 1, a: 0}
-    - _ParallaxMapping_IntensityRangeVec: {r: 0, g: 1, b: 0, a: 0}
+    - _ParallaxMapping_IntensityRangeVec: {r: 0, g: 0.1, b: 0, a: 0}
     - _ParallaxMapping_Vec: {r: 5, g: 30, b: 0, a: 0}
     - _RampColor0: {r: 0, g: 0, b: 0, a: 0}
     - _RampColor1: {r: 1, g: 0, b: 0, a: 1}
@@ -470,7 +468,7 @@ Material:
     - _ScreenDistortIntensityRangeVec: {r: 0, g: 1, b: 0, a: 0}
     - _SixWayEmissionColor: {r: 1, g: 0.5, b: 0, a: 1}
     - _SixWayInfo: {r: 0.5, g: 0, b: 0, a: 0}
-    - _SoftParticleFadeParams: {r: 0, g: 0.5, b: 0, a: 0}
+    - _SoftParticleFadeParams: {r: 0, g: 3, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _TWParameter: {r: 0.5, g: 0.5, b: 0, a: 0}

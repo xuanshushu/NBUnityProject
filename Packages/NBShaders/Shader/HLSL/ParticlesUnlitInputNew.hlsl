@@ -2,6 +2,7 @@
     #define PARTICLESUNLITINPUT
     
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+    #include "../HLSL/EffectFlags.hlsl"
    
 
   //---------------particleInput-------------------
@@ -37,9 +38,16 @@
     half _BaseMapUVRotationSpeed;
     float _MaskMapUVRotation;
     float _NoiseMapUVRotation;
+    half _ScreenDistortIntensity;
+    half _ScreenDistortAlphaPow;
+    half _ScreenDistortAlphaAdd;
+    half _ScreenDistortAlphaMulti;
+    half _NoiseIntensity;
+    half _RefractionIOR;
     half _uvRapSoft;
     half4 _EmissionMapColor;
     half _EmissionMapColorIntensity;
+    
 
     //--------------光照部分-------------
     float4 _BumpTex_ST;
@@ -176,6 +184,8 @@
     half _ParallaxMapping_Intensity;
     half4 _ParallaxMapping_Map_ST;
     half4 _ParallaxMapping_Vec;
+    half _WorldSpaceUVModeSelector;
+    half _ObjectSpaceUVModeSelector;
 
     uint _W9ParticleShaderFlags;
 
@@ -189,6 +199,8 @@
     uint _W9ParticleCustomDataFlag3;
 
     uint _UVModeFlag0;
+    uint _UVModeFlagType0;
+  
 
     uint _W9ParticleShaderColorChannelFlag;
 
@@ -235,6 +247,8 @@
     SamplerState sampler_linear_RepeatU_ClampV;
     SamplerState sampler_linear_ClampU_RepeatV;
 
+
+
     half4 SampleTexture2D(Texture2D tex,float2 uv,SAMPLER( textureSampler),bool sampleLOD = false,int lod = 0)
     {
         if (sampleLOD)
@@ -251,8 +265,23 @@
 
     half4 SampleTexture2DWithWrapFlags(Texture2D tex,float2 uv,uint bits,bool sampleLOD = false,int lod = 0)
     {
-        const int wrapMode = CheckLocalWrapFlags(bits);
-        #if defined(SHADER_TARGET_GLSL)
+        #ifdef _CAMERA_OPAQUE_DISTORT_PASS
+        int wrapMode;
+        if (bits == FLAG_BIT_WRAPMODE_BASEMAP)
+        {
+            wrapMode = 1;
+        }
+        else
+        {
+            wrapMode = CheckLocalWrapFlags(bits);
+        }
+
+        #else
+            const int wrapMode = CheckLocalWrapFlags(bits);
+        #endif
+        
+        
+        #if defined(SHADER_TARGET_GLSL) ||defined (SHADER_API_GLES)|| defined(SHADER_API_GLES3)
         switch (wrapMode)
         {
             case 0: uv = frac(uv);break;
@@ -301,10 +330,6 @@
         if (bits == 2) return color.z;
         return color.w;
     }
- 
-
-    #include "../HLSL/EffectFlags.hlsl"
-
 
     samplerCUBE _FresnelHDRITex;
     sampler2D _MainTex;
@@ -334,14 +359,13 @@
         Texture2D _SixWayEmissionRamp;
     #endif
 
-    #ifdef _SCREEN_DISTORT_MODE
-        Texture2D _ScreenColorCopy1;
+    #ifdef _CAMERA_OPAQUE_DISTORT_PASS
+        Texture2D _CameraOpaqueTexture;
     #endif
 
-#ifdef _MATCAP
-
-#endif
-Texture2D _MatCapTex;
+    #ifdef _MATCAP
+    Texture2D _MatCapTex;
+    #endif
 
     // Pre-multiplied alpha helper
     #if defined(_ALPHAPREMULTIPLY_ON)  //if( blend: One OneMinusSrcAlpha)
@@ -650,7 +674,22 @@ Texture2D _MatCapTex;
         float2 colorRampMapUV;
     };
 
-    BaseUVs ProcessBaseUVs(float4 meshTexcoord0, float2 specialUVInTexcoord3,float4 VaryingsP_Custom1,float4 VaryingsP_Custom2,float3 postionOS)
+    float2 getPosUVByPosUVMode(float3 pos,half posUVMode)
+    {
+        switch ((int)posUVMode)
+        {
+            case 0:
+                return pos.xy;
+            case 1:
+                return pos.xz;
+            case 2:
+                return pos.yz;
+            default:
+                return pos.xz;
+        }
+    }
+
+    BaseUVs ProcessBaseUVs(float4 meshTexcoord0, float2 specialUVInTexcoord3,float4 VaryingsP_Custom1,float4 VaryingsP_Custom2,float3 postionOS,float3 positionWS,float2 screenUV)
     {
         //UV2的内容在外边就决定好。
             float2 defaultUVChannel = meshTexcoord0.xy;
@@ -710,33 +749,14 @@ Texture2D _MatCapTex;
             baseUVs.specialUVChannel = specialUVChannel;
             baseUVs.uvAfterTwirlPolar = UVAfterTwirlPolar;
             baseUVs.cylinderUV = cylinderUV;
-            return baseUVs;
-    }
-
-    void ParticleProcessUV(float4 meshTexcoord0, float2 specialUVInTexcoord3,inout ParticleUVs particleUVs,float4 VaryingsP_Custom1,float4 VaryingsP_Custom2,float2 screenUV,float3 postionOS)
-    {
-        BaseUVs baseUVs= ProcessBaseUVs(meshTexcoord0,specialUVInTexcoord3,VaryingsP_Custom1,VaryingsP_Custom2,postionOS);
         
-        particleUVs.specUV = baseUVs.specialUVChannel;
-        float2 baseMapUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_MAINTEX,baseUVs);
+            baseUVs.screenUV = screenUV;
+            baseUVs.worldPosUV = getPosUVByPosUVMode(positionWS,_WorldSpaceUVModeSelector);
+            baseUVs.objectPosUV = getPosUVByPosUVMode(postionOS,_ObjectSpaceUVModeSelector);
+        
+            float2 baseMapUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_MAINTEX,baseUVs);
 
-        #ifdef _FLIPBOOKBLENDING_ON //开启序列帧融合
-            if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_ANIMATION_SHEET_HELPER))
-            {
-                //走AnimationSheetHelper脚本的情况，永远和baseMap同步。
-                particleUVs.animBlendUV = baseMapUV*_BaseMap_AnimationSheetBlend_ST.xy+_BaseMap_AnimationSheetBlend_ST.zw;
-            }
-            else
-            {
-                //走粒子的情况
-                particleUVs.animBlendUV = meshTexcoord0.zw;
-            }
-        #endif
-
-
-        #ifdef _SCREEN_DISTORT_MODE
-            particleUVs.mainTexUV = screenUV;
-        #else
+            float2 mainTexUV = 0;
             _BaseMapUVRotation += time * _BaseMapUVRotationSpeed;
             baseMapUV = Rotate_Radians_float(baseMapUV, half2(0.5, 0.5), _BaseMapUVRotation);  //主贴图旋转
             UNITY_BRANCH
@@ -745,41 +765,98 @@ Texture2D _MatCapTex;
                 if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_UIEFFECT_SPRITE_MODE))
                 {
                     float2 originUV = meshTexcoord0.xy;//精灵主贴图不调整。
-                    particleUVs.mainTexUV = originUV*_UI_MainTex_ST.xy+_UI_MainTex_ST.zw;
+                    mainTexUV = originUV*_UI_MainTex_ST.xy+_UI_MainTex_ST.zw;
                 }
                 else
                 {
-                    particleUVs.mainTexUV = baseMapUV*_UI_MainTex_ST.xy+_UI_MainTex_ST.zw;
+                    mainTexUV = baseMapUV*_UI_MainTex_ST.xy+_UI_MainTex_ST.zw;
                 }
             }
             else
             {
                 baseMapUV.x += GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_MAINTEX_OFFSET_X,0,VaryingsP_Custom1,VaryingsP_Custom2);
                 baseMapUV.y += GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_MAINTEX_OFFSET_Y,0,VaryingsP_Custom1,VaryingsP_Custom2);
-                particleUVs.mainTexUV = TRANSFORM_TEX(baseMapUV, _BaseMap);  //主帖图UV重复和偏移
+                mainTexUV = TRANSFORM_TEX(baseMapUV, _BaseMap);  //主帖图UV重复和偏移
             }
-            particleUVs.mainTexUV = UVOffsetAnimaiton(particleUVs.mainTexUV,_BaseMapMaskMapOffset.xy);
-            
+            mainTexUV = UVOffsetAnimaiton(mainTexUV,_BaseMapMaskMapOffset.xy);
+            baseUVs.mainTexUV = mainTexUV;
+
+            return baseUVs;
+    }
+
+
+    void ParticleProcessUV(inout ParticleUVs particleUVs,float4 meshTexcoord0,float4 VaryingsP_Custom1,float4 VaryingsP_Custom2,BaseUVs baseUVs)
+    {
+        particleUVs.specUV = baseUVs.specialUVChannel;
+
+        //----------------------------------------
+        // float2 baseMapUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_MAINTEX,baseUVs);
+        //
+        // #ifdef _FLIPBOOKBLENDING_ON //开启序列帧融合
+        //     if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_ANIMATION_SHEET_HELPER))
+        //     {
+        //         //走AnimationSheetHelper脚本的情况，永远和baseMap同步。
+        //         particleUVs.animBlendUV = baseMapUV*_BaseMap_AnimationSheetBlend_ST.xy+_BaseMap_AnimationSheetBlend_ST.zw;
+        //     }
+        //     else
+        //     {
+        //         //走粒子的情况
+        //         particleUVs.animBlendUV = meshTexcoord0.zw;
+        //     }
+        // #endif
+        //
+        //
+        //
+        // _BaseMapUVRotation += time * _BaseMapUVRotationSpeed;
+        // baseMapUV = Rotate_Radians_float(baseMapUV, half2(0.5, 0.5), _BaseMapUVRotation);  //主贴图旋转
+        // UNITY_BRANCH
+        // if(CheckLocalFlags(FLAG_BIT_PARTICLE_UIEFFECT_ON) & !CheckLocalFlags1(FLAG_BIT_PARTICLE_1_UIEFFECT_BASEMAP_MODE))
+        // {
+        //     if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_UIEFFECT_SPRITE_MODE))
+        //     {
+        //         float2 originUV = meshTexcoord0.xy;//精灵主贴图不调整。
+        //         particleUVs.mainTexUV = originUV*_UI_MainTex_ST.xy+_UI_MainTex_ST.zw;
+        //     }
+        //     else
+        //     {
+        //         particleUVs.mainTexUV = baseMapUV*_UI_MainTex_ST.xy+_UI_MainTex_ST.zw;
+        //     }
+        // }
+        // else
+        // {
+        //     baseMapUV.x += GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_MAINTEX_OFFSET_X,0,VaryingsP_Custom1,VaryingsP_Custom2);
+        //     baseMapUV.y += GetCustomData(_W9ParticleCustomDataFlag0,FLAGBIT_POS_0_CUSTOMDATA_MAINTEX_OFFSET_Y,0,VaryingsP_Custom1,VaryingsP_Custom2);
+        //     particleUVs.mainTexUV = TRANSFORM_TEX(baseMapUV, _BaseMap);  //主帖图UV重复和偏移
+        // }
+        // particleUVs.mainTexUV = UVOffsetAnimaiton(particleUVs.mainTexUV,_BaseMapMaskMapOffset.xy);
+        particleUVs.mainTexUV = baseUVs.mainTexUV;
+        //-------------------------------------------------
+        #ifdef _FLIPBOOKBLENDING_ON //开启序列帧融合
+        // if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_ANIMATION_SHEET_HELPER))
+        // {
+        //     //走AnimationSheetHelper脚本的情况，永远和baseMap同步。
+        //     particleUVs.animBlendUV = baseMapUV*_BaseMap_AnimationSheetBlend_ST.xy+_BaseMap_AnimationSheetBlend_ST.zw;
+        // }
+        // else
+        // {
+            //走粒子的情况
+            particleUVs.animBlendUV = meshTexcoord0.zw;
+        // }
         #endif
+       
 
         #if defined(_NORMALMAP)
-        if (CheckLocalFlags1(FLAG_BIT_PARTICLE_1_BUMP_TEX_UV_FOLLOW_MAINTEX))
-        {
-            particleUVs.bumpTexUV = particleUVs.mainTexUV;
-        }
-        else
-        {
-            float2 bumpTexUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_BUMPTEX,baseUVs);
+            float2 bumpTexUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_BUMPTEX,baseUVs);
             bumpTexUV = TRANSFORM_TEX(bumpTexUV, _BumpTex);
             particleUVs.bumpTexUV = bumpTexUV;
-        }
+        
         #endif
         
         
 
         #if defined(_MASKMAP_ON)
         
-            float2 MaskMapuv = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_MASKMAP,baseUVs);
+            float2 MaskMapuv = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_MASKMAP,baseUVs);
 
             UNITY_BRANCH
             if(CheckLocalFlags(FLAG_BIT_PARTILCE_MASKMAPROTATIONANIMATION_ON))
@@ -800,7 +877,7 @@ Texture2D _MatCapTex;
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP2))
             {
-                float2 maskMap2UV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_MASKMAP_2,baseUVs);
+                float2 maskMap2UV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_MASKMAP_2,baseUVs);
                 maskMap2UV = Rotate_Radians_float(maskMap2UV,half2(0.5,0.5),_MaskMapVec.y);
                 maskMap2UV = maskMap2UV * _MaskMap2_ST.xy + _MaskMap2_ST.zw;
                     
@@ -811,7 +888,7 @@ Texture2D _MatCapTex;
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_MASK_MAP3))
             {
-                float2 maskMap3UV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_MASKMAP_3,baseUVs);
+                float2 maskMap3UV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_MASKMAP_3,baseUVs);
                 maskMap3UV = Rotate_Radians_float(maskMap3UV,half2(0.5,0.5),_MaskMapVec.z);
                 
                 maskMap3UV = maskMap3UV* _MaskMap3_ST.xy + _MaskMap3_ST.zw;
@@ -824,34 +901,19 @@ Texture2D _MatCapTex;
 
         
         #if defined(_EMISSION)
-        if (CheckLocalFlags(FLAG_BIT_PARTICLE_EMISSION_FOLLOW_MAINTEX_UV))
-        {
-            particleUVs.emissionUV = particleUVs.mainTexUV;
-        }
-        else
-        {
-            float2 emissionUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_EMISSION_MAP,baseUVs);
+            float2 emissionUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_EMISSION_MAP,baseUVs);
             particleUVs.emissionUV = ParticleUVCommonProcess(emissionUV,_EmissionMap_ST,_EmissionMapUVOffset.xy,_EmissionMapUVRotation);
-        }
         #endif
 
         #if defined(_DISSOLVE)
-            // if(CheckLocalFlags1(FLAG_BIT_PARTICLE_CUSTOMDATA1X_DISSOLVETEXOFFSETX))
-            // {
-            //     _DissolveMap_ST.z += VaryingsP_Custom1.x;
-            // }
-            // if(CheckLocalFlags1(FLAG_BIT_PARTICLE_CUSTOMDATA1Y_DISSOLVETEXOFFSETY))
-            // {
-            //     _DissolveMap_ST.w += VaryingsP_Custom1.y;
-            // }
             _DissolveMap_ST.z += GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_DISSOLVE_OFFSET_X,0,VaryingsP_Custom1,VaryingsP_Custom2);
             _DissolveMap_ST.w += GetCustomData(_W9ParticleCustomDataFlag1,FLAGBIT_POS_1_CUSTOMDATA_DISSOLVE_OFFSET_Y,0,VaryingsP_Custom1,VaryingsP_Custom2);
         
-            float2 dissolveUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_DISSOLVE_MAP,baseUVs);
+            float2 dissolveUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_DISSOLVE_MAP,baseUVs);
             particleUVs.dissolve_uv = ParticleUVCommonProcess(dissolveUV,_DissolveMap_ST,_DissolveOffsetRotateDistort.xy,_DissolveOffsetRotateDistort.z);
             if(CheckLocalFlags(FLAG_BIT_PARTICLE_DISSOLVE_MASK))
             {
-                float2 dissolveMaskUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_DISSOLVE_MASK_MAP,baseUVs);
+                float2 dissolveMaskUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_DISSOLVE_MASK_MAP,baseUVs);
                 particleUVs.dissolve_mask_uv = ParticleUVCommonProcess(dissolveMaskUV,_DissolveMaskMap_ST,float2(0,0),_DissolveOffsetRotateDistort.z);
             }
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_DISSOVLE_VORONOI))
@@ -868,19 +930,12 @@ Texture2D _MatCapTex;
         #endif
         
         #ifdef _COLORMAPBLEND
-        if (CheckLocalFlags(FLAG_BIT_PARTICLE_COLOR_BLEND_FOLLOW_MAINTEX_UV))
-        {
-            particleUVs.colorBlendUV = particleUVs.mainTexUV;
-        }
-        else
-        {
-            float2 colorBlendUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_COLOR_BLEND_MAP,baseUVs);
-            
+            float2 colorBlendUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_COLOR_BLEND_MAP,baseUVs);
             particleUVs.colorBlendUV = ParticleUVCommonProcess(colorBlendUV,_ColorBlendMap_ST,_ColorBlendMapOffset.xy,_ColorBlendVec.w);
-        }
+        
         #endif
         #ifdef _COLOR_RAMP
-            float2 colorRampMapUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_RAMP_COLOR_MAP,baseUVs);
+            float2 colorRampMapUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_RAMP_COLOR_MAP,baseUVs);
             particleUVs.colorRampMapUV = ParticleUVCommonProcess(colorRampMapUV,_RampColorMap_ST,_RampColorMapOffset.xy,_RampColorMapOffset.w);
         #endif
            half cum_noise = 0;
@@ -890,13 +945,13 @@ Texture2D _MatCapTex;
         #if defined(_NOISEMAP)
             
             //和ParticleUVCommonProcess相比，此处没有UV动画，NoiseMap的UV流动在最终的SampleNoise中进行
-            float2 noiseMapUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_NOISE_MAP,baseUVs);
+            float2 noiseMapUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_NOISE_MAP,baseUVs);
             particleUVs.noiseMapUV = ParticleUVCommonProcess(noiseMapUV,_NoiseMap_ST,half2(0,0),_NoiseMapUVRotation);
 
             UNITY_BRANCH
             if(CheckLocalFlags1(FLAG_BIT_PARTICLE_1_NOISE_MASKMAP))
             {
-                float2 noiseMaskMapUV = GetUVByUVMode(_UVModeFlag0,FLAG_BIT_UVMODE_POS_0_NOISE_MASK_MAP,baseUVs);
+                float2 noiseMaskMapUV = GetUVByUVMode(_UVModeFlag0,_UVModeFlagType0,FLAG_BIT_UVMODE_POS_0_NOISE_MASK_MAP,baseUVs);
                 particleUVs.noiseMaskMapUV = ParticleUVCommonProcess(noiseMaskMapUV,_NoiseMaskMap_ST,half2(0,0),0);
                
             }
@@ -1018,6 +1073,24 @@ Texture2D _MatCapTex;
         return  true;
         #endif
         return false;
+    }
+
+    float3 CustomRefract(float3 incident, float3 normal, float eta)
+    {
+        float N_dot_I = dot(normal, incident);
+        float k = 1.0f - eta * eta * (1.0f - N_dot_I * N_dot_I);
+
+        // 检查全内反射
+        if (k < 0.0)
+        {
+            // 全内反射时返回零向量
+            return float3(0, 0, 0);
+        }
+        else
+        {
+            // 计算折射方向
+            return eta * incident - (eta * N_dot_I + sqrt(k)) * normal;
+        }
     }
 
     Texture2D _ParallaxMapping_Map;
@@ -1169,9 +1242,9 @@ Texture2D _MatCapTex;
 
         float4 normalWSAndAnimBlend: TEXCOORD10;
         
-        float3 fresnelViewDir :TEXCOORD11;
+        // float3 fresnelViewDir :TEXCOORD11;
         
-        float3 viewDirWS :TEXCOORD13;
+        // float3 viewDirWS :TEXCOORD13;
         float4 texcoordMaskMap2 : TEXCOORD14;
 
         #ifdef _PARALLAX_MAPPING
@@ -1211,7 +1284,7 @@ Texture2D _MatCapTex;
         {
             return true;
         }
-        #if defined(_DEPTH_DECAL) || defined(_PARALLAX_MAPPING) || defined(_SCREEN_DISTORT_MODE)
+        #if defined(_DEPTH_DECAL) || defined(_PARALLAX_MAPPING) || defined(_SCREEN_DISTORT_MODE) || defined(_CAMERA_OPAQUE_DISTORT_PASS)
             return true;
         #endif
         return false;
@@ -1222,30 +1295,32 @@ Texture2D _MatCapTex;
 
 
 
-    void InitializeInputData(VaryingsParticle input, half3 normalTS, out InputData inputData)
+    void InitializeInputData(VaryingsParticle input,half3x3 tangentToWorld, half3 viewDirWS, out InputData inputData)
     {
         inputData = (InputData)0;
 
     #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
         inputData.positionWS = input.positionWS;
     #endif
-
-        half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-    #if defined(_NORMALMAP) || defined(_DETAIL)
-        float sgn = input.tangentWS.w;      // should be either +1 or -1
-        float3 bitangent = sgn * cross(input.normalWSAndAnimBlend.xyz, input.tangentWS.xyz);
-        half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangent.xyz, input.normalWSAndAnimBlend.xyz);
-
-        #if defined(_NORMALMAP)
-        inputData.tangentToWorld = tangentToWorld;
-        #endif
-        inputData.normalWS = TransformTangentToWorld(normalTS, tangentToWorld);
-    #else
-        inputData.normalWS = input.normalWSAndAnimBlend.xyz;
-    #endif
-
-        inputData.normalWS = NormalizeNormalPerPixel(inputData.normalWS);
-        inputData.viewDirectionWS = viewDirWS;
+    //Normal转到外面执行
+    //     half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
+    // #if defined(_NORMALMAP) || defined(_DETAIL)
+    //     float sgn = input.tangentWS.w;      // should be either +1 or -1
+    //     float3 bitangent = sgn * cross(input.normalWSAndAnimBlend.xyz, input.tangentWS.xyz);
+    //     half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangent.xyz, input.normalWSAndAnimBlend.xyz);
+    //
+    //     #if defined(_NORMALMAP)
+    //     inputData.tangentToWorld = tangentToWorld;
+    //     #endif
+    //     inputData.normalWS = TransformTangentToWorld(normalTS, tangentToWorld);
+    // #else
+    //     inputData.normalWS = input.normalWSAndAnimBlend.xyz;
+    // #endif
+    //
+    //     inputData.normalWS = NormalizeNormalPerPixel(inputData.normalWS);
+    inputData.tangentToWorld = tangentToWorld;
+    inputData.normalWS = input.normalWSAndAnimBlend.xyz;
+    inputData.viewDirectionWS = viewDirWS;
 
     #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
         inputData.shadowCoord = input.shadowCoord;

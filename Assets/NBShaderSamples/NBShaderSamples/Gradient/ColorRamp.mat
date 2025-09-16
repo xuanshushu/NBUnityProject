@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: ColorRamp
   m_Shader: {fileID: 4800000, guid: 7184a95c20fc1a441a8815af4c795ccd, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _COLOR_RAMP
   - _FX_LIGHT_MODE_UNLIT
@@ -23,6 +25,7 @@ Material:
   stringTagMap: {}
   disabledShaderPasses:
   - SRPDEFAULTUNLIT
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -171,10 +174,10 @@ Material:
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 16387
     - _W9ParticleShaderFlags: 8389376
-    - _W9ParticleShaderFlags1: 8388608
-    - _W9ParticleShaderGUIFoldToggle: 1562
-    - _W9ParticleShaderGUIFoldToggle1: 0
-    - _W9ParticleShaderGUIFoldToggle2: 255
+    - _W9ParticleShaderFlags1: 8392708
+    - _W9ParticleShaderGUIFoldToggle: 4168095
+    - _W9ParticleShaderGUIFoldToggle1: 754974720
+    - _W9ParticleShaderGUIFoldToggle2: 3
     - _W9ParticleShaderWrapFlags: 0
     m_Floats:
     - _AdditiveToPreMultiplyAlphaLerp: 0
@@ -269,12 +272,12 @@ Material:
     - _IntersectEnabled: 0
     - _IntersectRadius: 0.3
     - _InvertFresnel_Toggle: 0
-    - _Mask2_Toggle: 0
+    - _Mask2_Toggle: 1
     - _Mask3_Toggle: 0
     - _MaskDistortion_intensity: 0
     - _MaskMap2GradientToggle: 0
     - _MaskMap3GradientToggle: 0
-    - _MaskMapGradientToggle: 0
+    - _MaskMapGradientToggle: 1
     - _MaskMapRotationSpeed: 0
     - _MaskMapUVRotation: 0
     - _MaskRefineToggle: 0
@@ -407,7 +410,7 @@ Material:
     - _MaskMap3GradientFloat1: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMap3GradientFloat2: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMap3OffsetAnition: {r: 0, g: 0, b: 0, a: 0}
-    - _MaskMapGradientFloat0: {r: 1, g: 0, b: 1, a: 1}
+    - _MaskMapGradientFloat0: {r: 1, g: 0, b: 0, a: 1}
     - _MaskMapGradientFloat1: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMapGradientFloat2: {r: 1, g: 0, b: 1, a: 1}
     - _MaskMapOffsetAnition: {r: 0, g: 0, b: 0, a: 0}
@@ -419,9 +422,9 @@ Material:
     - _NoiseOffset: {r: 0, g: 0, b: 0, a: 0}
     - _PCCenter: {r: 0.5, g: 0.5, b: 1, a: 0}
     - _ParallaxMapping_Vec: {r: 5, g: 30, b: 0, a: 0}
-    - _RampColor0: {r: 3.4415903, g: 1.1692396, b: 0, a: 0.34117648}
-    - _RampColor1: {r: 1.4980392, g: 0, b: 0.8975155, a: 0.55588615}
-    - _RampColor2: {r: 0.8249584, g: 0, b: 1.5157166, a: 0.68235296}
+    - _RampColor0: {r: 3.4415905, g: 1.1692396, b: 0, a: 0.31470206}
+    - _RampColor1: {r: 1.4980392, g: 0, b: 0.8975155, a: 0.5294118}
+    - _RampColor2: {r: 0.8249583, g: 0, b: 1.5157166, a: 0.7323567}
     - _RampColor3: {r: 0.16037735, g: 2, b: 1.1400836, a: 0.8882429}
     - _RampColor4: {r: 0.50345975, g: 0, b: 1, a: 1}
     - _RampColor5: {r: 0.5034598, g: 0, b: 1, a: 1}

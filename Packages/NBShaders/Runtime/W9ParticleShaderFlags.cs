@@ -130,7 +130,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_PARTICLE_1_DISSOLVE_LINE_MASK = 1 << 5;
     public const int FLAG_BIT_PARTICLE_1_DISSOLVE_RAMP_MULITPLY = 1 << 6;
     public const int FLAG_BIT_PARTICLE_1_MASK_REFINE = 1 << 7;
-    public const int FLAG_BIT_PARTICLE_CUSTOMDATA2W_CHORATICABERRAT_INTENSITY = 1 << 8;
+    public const int FLAG_BIT_PARTICLE_1_SCREEN_DISTORT_ALPHA_REFINE = 1 << 8;
     public const int FLAG_BIT_PARTICLE_1_IGNORE_VERTEX_COLOR = 1 << 9;
     public const int FLAG_BIT_PARTICLE_1_DISSOVLE_VORONOI = 1 << 10;
     public const int FLAG_BIT_PARTICLE_1_DISSOVLE_USE_RAMP = 1 << 11;
@@ -241,6 +241,7 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int foldOutBit2DissolveLine= 1 << 3;
     public const int foldOutBit2BaseBackColor= 1 << 4;
     public const int foldOutBit2MaskRefine= 1 << 5;
+    public const int foldOutBit2ScreenDistortAlphaRefine = 1 << 6;
 
 
     #region CustomDataCodes
@@ -533,7 +534,9 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     #endregion
 
     public const string UVModeFlag0Name = "_UVModeFlag0";
+    public const string UVModeFlagType0Name = "_UVModeFlagType0";
     public static int UVModeFlag0PropID = Shader.PropertyToID(UVModeFlag0Name);
+    public static int UVModeFlagType0PropID = Shader.PropertyToID(UVModeFlagType0Name);
 
     public string GetUVModePropName(int dataIndex)
     {
@@ -548,10 +551,14 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
 
     public enum UVMode
     {
-        DefaultUVChannel,   //0 0b_00
-        SpecialUVChannel,   //1 0b_01
-        PolarOrTwirl,       //2 0b_10
-        Cylinder, //3 0b_11
+        DefaultUVChannel,   //0 0b_00 modeIndex 00
+        SpecialUVChannel,   //1 0b_01 modeIndex 00
+        PolarOrTwirl,       //2 0b_10 modeIndex 00
+        Cylinder,           //3 0b_11 modeIndex 00
+        MainTex,            //0 0b_00 modeIndex 01
+        ScreenUV,           //1 0b_01 modeIndex 01
+        WorldPos,           //2 0b_10 modeIndex 01
+        ObjectPos,          //3 0b_11 modeIndex 01
         UnknownOrMixed = -1
     }
     
@@ -570,54 +577,70 @@ public class W9ParticleShaderFlags: ShaderFlagsBase
     public const int FLAG_BIT_UVMODE_POS_0_BUMPMAP = 12 * 2;
     public const int FLAG_BIT_UVMODE_POS_0_RAMP_COLOR_MAP = 13 * 2;
 
-    public int GetUVModeFlagPropID(int flagIndex)
+    public void GetUVModeFlagPropID(int flagIndex,out int flagID,out int flagTypeID)
     {
         switch (flagIndex)
         {
             case 0:
-                return UVModeFlag0PropID;
+                flagID = UVModeFlag0PropID;
+                flagTypeID = UVModeFlagType0PropID;
+                return;
         }
 
-        return 0;
+        flagID = 0;
+        flagTypeID = 0;
+        
     }
 
     public void SetUVMode(UVMode mode, int uvModePos, int flagIndex = 0)
     {
-        int uvModeFlagPropId = GetUVModeFlagPropID(flagIndex);
+        GetUVModeFlagPropID(flagIndex,out int uvModeFlagPropId,out int uvModeFlagTypePropId);
         int uvModeFlag = material.GetInteger(uvModeFlagPropId);
+        int uvModeFlagType = material.GetInteger(uvModeFlagTypePropId);
 
 
         int clearFlag = 0b_11 << uvModePos;
         clearFlag = ~ clearFlag;
 
         uvModeFlag &= clearFlag;
-        int modeBit = (int)mode << uvModePos;
+        int modeBit = (int)mode%4 << uvModePos;
         uvModeFlag |= modeBit;
+        uvModeFlagType &= clearFlag;
+        int typeBit = (int)mode/4 << uvModePos;
+        uvModeFlagType |= typeBit;
         
         material.SetInteger(uvModeFlagPropId,uvModeFlag);
+        material.SetInteger(uvModeFlagTypePropId,uvModeFlagType);
     }
 
     public UVMode GetUVMode(int uvModePos, int flagIndex = 0)
     {
-        int uvModeFlagPropId = GetUVModeFlagPropID(flagIndex);
+        GetUVModeFlagPropID(flagIndex,out int uvModeFlagPropId,out int uvModeFlagTypePropId);
         int uvModeFlag = material.GetInteger(uvModeFlagPropId);
         uvModeFlag = uvModeFlag >> uvModePos;
         uvModeFlag &= 0b_11;
-        return (UVMode)uvModeFlag;
+        int uvModeFlagType = material.GetInteger(uvModeFlagTypePropId);
+        uvModeFlagType = uvModeFlagType >> uvModePos;
+        uvModeFlagType &= 0b_11;
+        return (UVMode)(uvModeFlag + 4*uvModeFlagType);
     }
 
     public bool CheckIsUVModeOn(UVMode mode)
     {
         uint uvModeFlag0 = (uint)material.GetInteger(UVModeFlag0PropID);
+        uint uvModeFlagType0 = (uint)material.GetInteger(UVModeFlagType0PropID);
 
-        uint uvModeBit = (uint)mode;
+        uint uvModeflagBit = (uint)mode%4;
+        uint uvModeflagTypeBit = (uint)mode/4;
 
         bool isUvMode = false;
         for (int i = 0; i < 16; i++)
         {
-            uint checkBit = uvModeFlag0 >> (i * 2);
-            checkBit = checkBit & 0b_11;
-            if (checkBit == uvModeBit)
+            uint checkflagBit = uvModeFlag0 >> (i * 2);
+            checkflagBit = checkflagBit & 0b_11;
+            uint checkflagTypeBit = uvModeflagTypeBit >> (i * 2);
+            checkflagTypeBit = checkflagTypeBit & 0b_11;
+            if (checkflagBit == uvModeflagBit && checkflagTypeBit == uvModeflagTypeBit)
             {
                 isUvMode = true;
                 break;
