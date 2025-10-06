@@ -22,8 +22,6 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: DistortParticles
   m_Shader: {fileID: 4800000, guid: 7184a95c20fc1a441a8815af4c795ccd, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _FX_LIGHT_MODE_UNLIT
   - _MASKMAP_ON
@@ -42,7 +40,6 @@ Material:
   - SRPDEFAULTUNLIT
   - UniversalForward
   - NBCameraOpaqueDistortPass
-  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -196,6 +193,7 @@ Material:
     - _W9ParticleShaderGUIFoldToggle: 213055
     - _W9ParticleShaderGUIFoldToggle1: 679477250
     - _W9ParticleShaderGUIFoldToggle2: 255
+    - _W9ParticleShaderPNoiseBlendFlag: 0
     - _W9ParticleShaderWrapFlags: 2
     m_Floats:
     - _AdditiveToPreMultiplyAlphaLerp: 0
@@ -252,6 +250,7 @@ Material:
     - _DisableMainPassToggle: 1
     - _DissolveLineMaskToggle: 0
     - _DissolveMask_Toggle: 0
+    - _DissolvePNoiseBlendOpacity: 1
     - _DissolveRampColorBlendMode: 0
     - _DissolveRampSourceMode: 0
     - _DissolveVoronoi_Toggle: 0
@@ -260,6 +259,7 @@ Material:
     - _Dissolve_useRampMap_Toggle: 0
     - _DistanceFade_Toggle: 0
     - _DistortMode: 0
+    - _DistortPNoiseBlendOpacity: 1
     - _DistortionBothDirection_Toggle: 1
     - _Distortion_Choraticaberrat_Toggle: 0
     - _Distortion_Choraticaberrat_WithNoise_Toggle: 1
@@ -291,6 +291,7 @@ Material:
     - _IntersectEnabled: 0
     - _IntersectRadius: 0.3
     - _InvertFresnel_Toggle: 0
+    - _MainTexPNoiseBlendOpacity: 1
     - _Mask2_Toggle: 0
     - _Mask3_Toggle: 0
     - _MaskDistortion_intensity: 0
@@ -298,7 +299,8 @@ Material:
     - _MaskMap3GradientToggle: 0
     - _MaskMapGradientToggle: 1
     - _MaskMapRotationSpeed: 0
-    - _MaskMapUVRotation: 90
+    - _MaskMapUVRotation: -90
+    - _MaskPNoiseBlendOpacity: 1
     - _MaskRefineToggle: 0
     - _Mask_RotationToggle: 0
     - _Mask_Toggle: 1
@@ -306,6 +308,11 @@ Material:
     - _MeshSourceMode: 0
     - _Metallic: 0
     - _Mode: 0
+    - _NB_Debug_Dissolve: 0
+    - _NB_Debug_Distort: 0
+    - _NB_Debug_Fresnel: 0
+    - _NB_Debug_Mask: 0
+    - _NB_Debug_PNoise: 0
     - _NoiseIntensity: 1
     - _NoiseMapUVRotation: 0
     - _ObjectPosUVMode: 0
@@ -318,6 +325,11 @@ Material:
     - _PolarCordinateOnlySpecialFunciton_Toggle: 0
     - _Portal_MaskToggle: 0
     - _Portal_Toggle: 0
+    - _ProgramNoiseBaseBlendOpacity: 0
+    - _ProgramNoise_Rotate: 0
+    - _ProgramNoise_Simple_Toggle: 0
+    - _ProgramNoise_Toggle: 0
+    - _ProgramNoise_Voronoi_Toggle: 0
     - _QueueBias: 0
     - _QueueOffset: 0
     - _RampColorBlendMode: 0

@@ -143,20 +143,8 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.xuanxuan.nb.postprocessing": {
-      "version": "file:NBPostProcessing",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.xuanxuan.nb.shaders": {
-      "version": "file:NBShaders",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "com.xuanxuan.render.utility": {
-      "version": "file:XuanXuanRenderUtility",
+    "com.xuanxuan.nb.fx": {
+      "version": "file:NB_FX",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
