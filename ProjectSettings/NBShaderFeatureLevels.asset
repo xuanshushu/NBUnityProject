@@ -203,5 +203,5 @@ MonoBehaviour:
     tier: 3
   m_BuildStripPolicy: 0
   m_ExplicitTier: 3
-  m_EnableDebugSymbols: 1
+  m_EnableDebugSymbols: 0
   m_RuntimeSettingsAsset: {fileID: 0}

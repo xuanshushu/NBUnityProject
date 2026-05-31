@@ -55,7 +55,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _BumpTex:
         m_Texture: {fileID: 2800000, guid: 802d35084d278c7408a18ccd978f49aa, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorBlendMap:
         m_Texture: {fileID: 0}
@@ -221,7 +221,7 @@ Material:
     - _NBShaderWrapFlags2: 0
     - _RampColorCount: 131074
     - _UVModeFlag0: 0
-    - _UVModeFlagType0: 0
+    - _UVModeFlagType0: 16777216
     - _W9ParticleCustomDataFlag0: 0
     - _W9ParticleCustomDataFlag1: 0
     - _W9ParticleCustomDataFlag2: 0
@@ -262,10 +262,10 @@ Material:
     - _BaseColorIntensityForTimeline: 1
     - _BaseMapColorRefineFoldOut: 0
     - _BaseMapColorRefine_Toggle: 0
-    - _BaseMapFoldOut: 0
+    - _BaseMapFoldOut: 1
     - _BaseMapUVRotation: 0
     - _BaseMapUVRotationSpeed: 0
-    - _BaseOptionBigBlockItemFoldOut: 0
+    - _BaseOptionBigBlockItemFoldOut: 1
     - _BigBlockModeSettingFoldOut: 1
     - _Blend: 4
     - _BlendModePreserveSpecular: 1
@@ -273,9 +273,9 @@ Material:
     - _BumpMapMaskMode: 1
     - _BumpMapToggle: 1
     - _BumpScale: 1
-    - _BumpTexFoldOut: 0
+    - _BumpTexFoldOut: 1
     - _BumpTexFollowMainTexUVToggle: 1
-    - _BumpToggleFoldOut: 0
+    - _BumpToggleFoldOut: 1
     - _BumpUVModeFoldOut: 0
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
@@ -385,10 +385,10 @@ Material:
     - _IntersectEnabled: 0
     - _IntersectRadius: 0.3
     - _InvertFresnel_Toggle: 0
-    - _LightBigBlockItemFoldOut: 0
+    - _LightBigBlockItemFoldOut: 1
     - _LinearToGamma: 1
     - _Loop: 1
-    - _MainTexBigBlockItemFoldOut: 0
+    - _MainTexBigBlockItemFoldOut: 1
     - _MainTexPNoiseBlendOpacity: 1
     - _MainTexUVModeFoldOut: 0
     - _Mask2BlockFoldOut: 0

@@ -32,7 +32,6 @@ Material:
   - _PARALLAX_MAPPING
   - _PARCUSTOMDATA_ON
   - _SCREEN_DISTORT_MODE
-  - _SHARED_UV
   - _SPECULAR_COLOR
   m_InvalidKeywords:
   - _CUSTOMDATA
@@ -223,8 +222,8 @@ Material:
     - _W9ParticleCustomDataFlag2: 0
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 3
-    - _W9ParticleShaderFlags: 272654
-    - _W9ParticleShaderFlags1: 8388865
+    - _W9ParticleShaderFlags: 270606
+    - _W9ParticleShaderFlags1: 8388609
     - _W9ParticleShaderGUIFoldToggle: 1208032286
     - _W9ParticleShaderGUIFoldToggle1: 696254464
     - _W9ParticleShaderGUIFoldToggle2: 67
@@ -422,7 +421,7 @@ Material:
     - _NB_Debug_PNoise: 0
     - _NB_Debug_VertexOffset: 0
     - _NoiseBlockFoldOut: 1
-    - _NoiseIntensity: 1
+    - _NoiseIntensity: 0.544
     - _NoiseMapFoldOut: 0
     - _NoiseMapUVRotation: 0
     - _NoiseMaskBlockFoldOut: 0
@@ -435,8 +434,8 @@ Material:
     - _OverrideZValue: 1000
     - _OverrideZ_Toggle: 0
     - _Parallax: 0.005
-    - _ParallaxBlockFoldOut: 0
-    - _ParallaxMapping_Intensity: 0.795
+    - _ParallaxBlockFoldOut: 1
+    - _ParallaxMapping_Intensity: 0.726
     - _ParallaxMapping_Toggle: 1
     - _ParallaxUVModeFoldOut: 0
     - _PolarCoordinatesEnabled: 1
@@ -469,14 +468,14 @@ Material:
     - _ScreenDistortAlphaAdd: 0
     - _ScreenDistortAlphaFoldOut: 1
     - _ScreenDistortAlphaMulti: 1
-    - _ScreenDistortAlphaPow: 0.74
-    - _ScreenDistortAlphaRefineToggle: 1
+    - _ScreenDistortAlphaPow: 1
+    - _ScreenDistortAlphaRefineToggle: 0
     - _ScreenDistortIntensity: 1
     - _ScreenDistortModeToggle: 2
     - _ShaderKeywordFoldOut: 1
     - _SharedUVBlockFoldOut: 0
     - _SharedUVModeFoldOut: 0
-    - _SharedUVToggle: 1
+    - _SharedUVToggle: 0
     - _SixWayColorAbsorptionToggle: 0
     - _SkinBoneCount: 2
     - _Smoothness: 0.5
@@ -635,7 +634,7 @@ Material:
     - _NoiseOffset: {r: 0, g: 0, b: 0, a: 0}
     - _PCCenter: {r: 0.5, g: 0.5, b: 1, a: 0}
     - _ParallaxMapping_IntensityRangeVec: {r: 0, g: 1, b: 0, a: 0}
-    - _ParallaxMapping_Vec: {r: 5, g: 17.1, b: 0, a: 0}
+    - _ParallaxMapping_Vec: {r: 5, g: 18, b: 0, a: 0}
     - _RampColor0: {r: 0, g: 0, b: 0, a: 0}
     - _RampColor1: {r: 1, g: 0, b: 0, a: 1}
     - _RampColor2: {r: 1, g: 1, b: 1, a: 1}
