@@ -8,13 +8,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: GradientMask
-  m_Shader: {fileID: 4800000, guid: 7184a95c20fc1a441a8815af4c795ccd, type: 3}
+  m_Shader: {fileID: 4800000, guid: 7787bfdacec31472ca6644d6e3616bd4, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _FX_LIGHT_MODE_UNLIT
+  - _MASKMAP2_ON
+  - _MASKMAP3_ON
   - _MASKMAP_ON
+  - _PARCUSTOMDATA_ON
   m_InvalidKeywords:
   - _CUSTOMDATA
-  - _CUSTOMDATA_OFF
   - _FLIPBOOKBLENDING_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -25,6 +29,9 @@ Material:
   - SRPDEFAULTUNLIT
   - NBCameraOpaqueDistortPass
   - NBDeferredDistortPass
+  - DepthOnly
+  - SHADOWCASTER
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -140,11 +147,35 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _VATTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _VertexOffset_Map:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _VertexOffset_MaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _colTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _lookupTable:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _posTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _posTexture2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _rotTexture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -165,6 +196,9 @@ Material:
     - _MaskMap2GradientCount: 2
     - _MaskMap3GradientCount: 3
     - _MaskMapGradientCount: 3
+    - _NBShaderGUIFoldToggle: 3
+    - _NBShaderGUIFoldToggle1: 255
+    - _NBShaderGUIFoldToggle2: 255
     - _RampColorCount: 196612
     - _UVModeFlag0: 168
     - _UVModeFlagType0: 0
@@ -180,41 +214,70 @@ Material:
     - _W9ParticleShaderGUIFoldToggle2: 251
     - _W9ParticleShaderPNoiseBlendFlag: 0
     - _W9ParticleShaderWrapFlags: 134
+    - _W9ParticleShaderWrapFlags2: 0
     m_Floats:
     - _AdditiveToPreMultiplyAlphaLerp: 0
+    - _AffectsShadows: 0
     - _AlphaAll: 1
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _Autoplay: 0
+    - _AutoplaySpeed: 1
+    - _B_CAN_SPIN: 0
+    - _B_LOAD_COL_TEX: 0
+    - _B_LOAD_LOOKUP_TABLE: 0
+    - _B_LOAD_POS_TWO_TEX: 0
+    - _B_UNLOAD_ROT_TEX: 0
+    - _B_autoPlayback: 1
+    - _B_hideOverlappingOrigin: 1
+    - _B_interpolate: 1
+    - _B_pscaleAreInPosA: 1
+    - _B_spinFromHeading: 0
     - _BackFaceColor_Toggle: 0
     - _BackFirstPassToggle: 0
+    - _BaseBackColorFoldOut: 0
     - _BaseBackColor_Toggle: 0
+    - _BaseColorAdjustmentFoldOut: 0
     - _BaseColorIntensityForTimeline: 1
+    - _BaseMapColorRefineFoldOut: 0
     - _BaseMapColorRefine_Toggle: 0
+    - _BaseMapFoldOut: 0
     - _BaseMapUVRotation: 0
     - _BaseMapUVRotationSpeed: 0
+    - _BaseOptionBigBlockItemFoldOut: 0
+    - _BigBlockModeSettingFoldOut: 1
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BlinnPhongSpecularToggle: 0
     - _BumpMapMaskMode: 0
     - _BumpMapToggle: 0
     - _BumpScale: 1
+    - _BumpTexFoldOut: 0
     - _BumpTexFollowMainTexUVToggle: 0
+    - _BumpToggleFoldOut: 0
+    - _BumpUVModeFoldOut: 0
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
     - _CameraNearFadeDistance: 1
     - _Chachu: 0
     - _ChangeSaturability_Toggle: 0
+    - _ChromaticAberrationFoldOut: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ColorAdjustmentOnlyAffectMainTex: 0
     - _ColorBlendAlphaMultiplyMode: 0
+    - _ColorBlendBlockFoldOut: 0
     - _ColorBlendFollowMainTexUV: 0
     - _ColorBlendMap_Toggle: 0
+    - _ColorBlendUVModeFoldOut: 0
     - _ColorMask: 15
     - _ColorMode: 0
+    - _ColorMultiAlpha: 0
     - _Contrast: 1
+    - _ContrastFoldOut: 0
     - _Contrast_Toggle: 0
     - _Cull: 2
-    - _CustomData: 0
+    - _CustomData: 1
     - _CustomData1W_HueShift_Toggle: 0
     - _CustomData1X: 0
     - _CustomData1X_MainTexOffsetX_Toggle: 0
@@ -227,21 +290,34 @@ Material:
     - _CustomData2Y_MaskMapOffsetY_Toggle: 0
     - _CustomData2Z_FresnelOffset_Toggle: 0
     - _CustomStencilTest: 0
+    - _CustomStencilTestFoldOut: 0
     - _Cutoff: 0.5
+    - _DeformingSkin: 0
     - _DepthDecal_Toggle: 0
+    - _DepthOutlineBlockFoldOut: 0
     - _DepthOutline_Toggle: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DisableMainPassToggle: 0
+    - _DissolveBlockFoldOut: 0
+    - _DissolveLineFoldOut: 0
     - _DissolveLineMaskToggle: 0
+    - _DissolveMapFoldOut: 0
+    - _DissolveMaskFoldOut: 0
+    - _DissolveMaskMode: 0
+    - _DissolveMaskUVModeFoldOut: 0
     - _DissolveMask_Toggle: 0
     - _DissolvePNoiseBlendOpacity: 1
     - _DissolveRampColorBlendMode: 0
+    - _DissolveRampFoldOut: 0
     - _DissolveRampSourceMode: 0
+    - _DissolveRampUVModeFoldOut: 0
+    - _DissolveUVModeFoldOut: 0
     - _DissolveVoronoi_Toggle: 0
     - _Dissolve_Test_Toggle: 0
     - _Dissolve_Toggle: 0
     - _Dissolve_useRampMap_Toggle: 1
+    - _DistanceFadeFoldOut: 0
     - _DistanceFade_Toggle: 0
     - _DistortMode: 0
     - _DistortPNoiseBlendOpacity: 1
@@ -252,106 +328,176 @@ Material:
     - _DstBlendAlpha: 0
     - _EdgeFade: 0.05
     - _Emi_Distortion_intensity: 0
+    - _EmissionBlockFoldOut: 0
     - _EmissionEnabled: 0
     - _EmissionFollowMainTexUV: 0
     - _EmissionMapColorIntensity: 1
     - _EmissionMapUVRotation: 0
     - _EmissionSelfAlphaWeight: 0
+    - _EmissionUVModeFoldOut: 0
     - _EnvironmentReflections: 1
+    - _FeatureBigBlockItemFoldOut: 0
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
     - _ForceZWriteToggle: 0
+    - _Frame: 0
+    - _FrameInterpolation: 1
+    - _Frames: 10
     - _FrePower: 0.5
+    - _FresnelBlockFoldOut: 0
     - _FresnelColorAffectByAlpha: 1
     - _FresnelFadeDistance: 1
     - _FresnelInOutSlider: 1
     - _FresnelMode: 0
     - _FresnelSelfAlphaWeight: 0
     - _FxLightMode: 0
+    - _GlobalPolarFoldOut: 0
+    - _GlobalTwirlFoldOut: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _HoudiniVATSubMode: 0
     - _HueShift: 0
+    - _HueShiftFoldOut: 0
     - _HueShift_Toggle: 0
     - _IgnoreVetexColor_Toggle: 0
+    - _ImportScale: 0.01
+    - _InterpolateLoop: 1
     - _IntersectEnabled: 0
     - _IntersectRadius: 0.3
     - _InvertFresnel_Toggle: 0
+    - _LightBigBlockItemFoldOut: 0
+    - _LinearToGamma: 1
+    - _Loop: 1
+    - _MainTexBigBlockItemFoldOut: 0
     - _MainTexPNoiseBlendOpacity: 1
+    - _MainTexUVModeFoldOut: 0
+    - _Mask2BlockFoldOut: 0
+    - _Mask2UVModeFoldOut: 0
     - _Mask2_Toggle: 1
+    - _Mask3BlockFoldOut: 0
+    - _Mask3UVModeFoldOut: 0
     - _Mask3_Toggle: 1
+    - _MaskBlockFoldOut: 0
     - _MaskDistortion_intensity: 0
     - _MaskMap2GradientToggle: 1
     - _MaskMap3GradientToggle: 1
+    - _MaskMapFoldOut: 0
     - _MaskMapGradientToggle: 1
     - _MaskMapRotationSpeed: 0
     - _MaskMapUVRotation: -90
     - _MaskPNoiseBlendOpacity: 1
+    - _MaskRefineFoldOut: 0
     - _MaskRefineToggle: 0
+    - _MaskRotationFoldOut: 0
+    - _MaskUVModeFoldOut: 0
     - _Mask_RotationToggle: 0
     - _Mask_Toggle: 1
+    - _MatCapFoldOut: 0
     - _MatCapToggle: 0
     - _MeshSourceMode: 0
     - _Metallic: 0
     - _Mode: 0
+    - _NBShaderFeatureTier: 3
     - _NB_Debug_Dissolve: 0
     - _NB_Debug_Distort: 0
     - _NB_Debug_Fresnel: 0
     - _NB_Debug_Mask: 0
     - _NB_Debug_PNoise: 0
+    - _NB_Debug_VertexOffset: 0
+    - _NoiseBlockFoldOut: 0
     - _NoiseIntensity: 1
+    - _NoiseMapFoldOut: 0
     - _NoiseMapUVRotation: 0
+    - _NoiseMaskBlockFoldOut: 0
+    - _NoiseMaskUVModeFoldOut: 0
+    - _NoiseUVModeFoldOut: 0
     - _ObjectSpaceUVModeSelector: 1
     - _OcclusionStrength: 1
+    - _OverrideZBlockFoldOut: 0
+    - _OverrideZValue: 1000
+    - _OverrideZ_Toggle: 0
     - _Parallax: 0.005
+    - _ParallaxBlockFoldOut: 0
     - _ParallaxMapping_Intensity: 0.1
     - _ParallaxMapping_Toggle: 0
+    - _ParallaxUVModeFoldOut: 0
     - _PolarCoordinatesEnabled: 1
     - _PolarCordinateOnlySpecialFunciton_Toggle: 0
+    - _PortalBlockFoldOut: 0
     - _Portal_MaskToggle: 0
     - _Portal_Toggle: 0
     - _ProgramNoiseBaseBlendOpacity: 0
+    - _ProgramNoiseBlockFoldOut: 0
+    - _ProgramNoiseSimpleFoldOut: 0
+    - _ProgramNoiseUVModeFoldOut: 0
+    - _ProgramNoiseVoronoiFoldOut: 0
     - _ProgramNoise_Rotate: 0
     - _ProgramNoise_Simple_Toggle: 0
     - _ProgramNoise_Toggle: 0
     - _ProgramNoise_Voronoi_Toggle: 0
     - _QueueBias: 0
     - _QueueOffset: 0
+    - _RGBAEncoded: 1
+    - _RGBAHalf: 1
     - _RampColorBlendMode: 1
+    - _RampColorBlockFoldOut: 0
     - _RampColorSourceMode: 1
     - _RampColorToggle: 0
+    - _RampColorUVModeFoldOut: 0
     - _ReceiveShadows: 1
     - _RefractionIOR: 1.5
     - _Saturability: 0
+    - _SaturabilityFoldOut: 0
     - _ScreenDistortAlphaAdd: 0
+    - _ScreenDistortAlphaFoldOut: 0
     - _ScreenDistortAlphaMulti: 1
     - _ScreenDistortAlphaPow: 1
     - _ScreenDistortAlphaRefineToggle: 0
     - _ScreenDistortIntensity: 1
     - _ScreenDistortModeToggle: 0
+    - _ShaderKeywordFoldOut: 0
+    - _SharedUVBlockFoldOut: 0
+    - _SharedUVModeFoldOut: 0
+    - _SharedUVToggle: 0
     - _SixWayColorAbsorptionToggle: 0
+    - _SkinBoneCount: 2
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
+    - _SoftParticlesFoldOut: 0
     - _SpecialUVChannelMode: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
     - _SrcBlendAlpha: 1
     - _Stencil: 0
     - _StencilComp: 8
+    - _StencilFail: 0
     - _StencilKeyIndex: 0
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWithoutPlayerToggle: 0
     - _StencilWriteMask: 255
+    - _StencilZFail: 0
     - _Surface: 0
+    - _TABigBlockItemFoldOut: 0
     - _TWStrength: 5.78
     - _TexDistortion_intensity: 0.5
     - _TimeMode: 0
     - _TransparentMode: 1
+    - _TransparentShadowDitherToggle: 0
+    - _TyFlowVATSubMode: 0
     - _UIEffect_Toggle: 0
     - _UTwirlEnabled: 1
     - _UseUV1_Toggle: 0
+    - _VATBlockFoldOut: 0
+    - _VATIncludesNormals: 0
+    - _VATMode: 0
+    - _VAT_Toggle: 0
+    - _VertexOffsetBlockFoldOut: 0
+    - _VertexOffsetMaskBlockFoldOut: 0
+    - _VertexOffsetMaskUVModeFoldOut: 0
+    - _VertexOffsetUVModeFoldOut: 0
     - _VertexOffset_Mask_Toggle: 0
     - _VertexOffset_NormalDir_Toggle: 0
     - _VertexOffset_StartFromZero: 0
@@ -359,17 +505,38 @@ Material:
     - _WorkflowMode: 1
     - _WorldSpaceUVModeSelector: 1
     - _XianXingCH_UVRota: 0
+    - _ZOffsetBlockFoldOut: 0
     - _ZOffset_Toggle: 0
     - _ZTest: 4
     - _ZWrite: 0
+    - _animateFirstFrame: 0
+    - _boundMaxX: 1
+    - _boundMaxY: 1
+    - _boundMaxZ: 1
+    - _boundMinX: -1
+    - _boundMinY: -1
+    - _boundMinZ: -1
+    - _displayFrame: 0
     - _fogintensity: 1
+    - _frameCount: 1
     - _fresnelEnabled: 0
+    - _gameTimeAtFirstFrame: 0
+    - _globalPscaleMul: 1
+    - _heightBaseScale: 0.2
+    - _houdiniFPS: 24
     - _jingxiangCH_dire: 0
     - _noiseMaskMap_Toggle: 0
     - _noisemapEnabled: 0
     - _offsetFactor: 0
     - _offsetUnits: 0
+    - _originRadius: 0.02
+    - _particleTexUScale: 1
+    - _particleTexVScale: 1
+    - _playbackSpeed: 1
+    - _scaleByVelAmount: 1
+    - _spinPhase: 0
     - _uvRapSoft: 0
+    - _widthBaseScale: 0.2
     m_Colors:
     - AlphaAllRangeVec: {r: 0, g: 1, b: 0, a: 0}
     - BumpScaleRangeVec: {r: -1, g: 1, b: 0, a: 0}
@@ -462,6 +629,8 @@ Material:
     - _RampColorBlendColor: {r: 1, g: 1, b: 1, a: 1}
     - _RampColorMapOffset: {r: 0, g: 0, b: 0, a: 104}
     - _ScreenDistortIntensityRangeVec: {r: 0, g: 1, b: 0, a: 0}
+    - _SharedUV_ST: {r: 1, g: 1, b: 0, a: 0}
+    - _SharedUV_Vec: {r: 0, g: 0, b: 0, a: 0}
     - _SixWayEmissionColor: {r: 1, g: 0.5, b: 0, a: 1}
     - _SixWayInfo: {r: 0.5, g: 0, b: 0, a: 0}
     - _SoftParticleFadeParams: {r: 0, g: 0.5, b: 0, a: 0}

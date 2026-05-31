@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Balloon
   m_Shader: {fileID: 4800000, guid: 7184a95c20fc1a441a8815af4c795ccd, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _FX_LIGHT_MODE_BLINN_PHONG
   - _TYFLOW_VAT_RELATIVE
@@ -26,6 +28,7 @@ Material:
   - SRPDEFAULTUNLIT
   - NBCameraOpaqueDistortPass
   - NBDeferredDistortPass
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -199,7 +202,7 @@ Material:
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 3
     - _W9ParticleShaderFlags: 8194
-    - _W9ParticleShaderFlags1: 2097152
+    - _W9ParticleShaderFlags1: 2359296
     - _W9ParticleShaderGUIFoldToggle: 11
     - _W9ParticleShaderGUIFoldToggle1: 0
     - _W9ParticleShaderGUIFoldToggle2: 4347
@@ -399,6 +402,7 @@ Material:
     - _TexDistortion_intensity: 0.5
     - _TimeMode: 0
     - _TransparentMode: 0
+    - _TransparentShadowDitherToggle: 0
     - _TyFlowVATSubMode: 1
     - _UIEffect_Toggle: 0
     - _UTwirlEnabled: 0

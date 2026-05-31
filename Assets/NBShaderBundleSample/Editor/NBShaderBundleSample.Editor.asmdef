@@ -1,0 +1,19 @@
+{
+    "name": "NBShaderBundleSample.Editor",
+    "rootNamespace": "",
+    "references": [
+        "com.xuanxuan.nb.shaders2",
+        "com.xuanxuan.nb.shaders2.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

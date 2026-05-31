@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NBShader_High
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 7787bfdacec31472ca6644d6e3616bd4, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: EVALUATE_SH_VERTEX _FLIPBOOKBLENDING_ON _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: EVALUATE_SH_VERTEX _FLIPBOOKBLENDING_ON _SOFTPARTICLES_ON
+        passType: 13
+      - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _FX_LIGHT_MODE_BLINN_PHONG
+          _NORMALMAP _SOFTPARTICLES_ON
+        passType: 13
+      - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _NORMALMAP _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _DISSOLVE _DISSOLVE_MASK _DISSOLVE_RAMP _FX_LIGHT_MODE_UNLIT
+        passType: 13
+      - keywords: _DISSOLVE _DISSOLVE_MASK _DISSOLVE_RAMP _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _FRESNEL _FX_LIGHT_MODE_BLINN_PHONG _NORMALMAP _SPECULAR_COLOR
+        passType: 13
+      - keywords: _FRESNEL _FX_LIGHT_MODE_HALF_LAMBERT _NORMALMAP _SPECULAR_COLOR
+        passType: 13
+      - keywords: _FRESNEL _FX_LIGHT_MODE_UNLIT _NORMALMAP _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _FRESNEL _FX_LIGHT_MODE_UNLIT _NORMALMAP _SPECULAR_COLOR
+        passType: 13
+      - keywords: _FRESNEL _NORMALMAP _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _FX_LIGHT_MODE_BLINN_PHONG
+        passType: 13
+      - keywords: _FX_LIGHT_MODE_BLINN_PHONG _MATCAP _NORMALMAP _SPECULAR_COLOR
+        passType: 13
+      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP2_ON _MASKMAP_ON
+        passType: 13
+      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP2_ON _MASKMAP_ON _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _NOISEMAP _PARCUSTOMDATA_ON _SCREEN_DISTORT_MODE
+        passType: 13
+      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _NOISEMAP _SOFTPARTICLES_ON
+        passType: 13
+      - keywords: _NORMALMAP _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _NORMALMAP _SPECULAR_COLOR
+        passType: 13
