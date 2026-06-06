@@ -32,7 +32,6 @@ Material:
   - _SOFTPARTICLES_ON
   m_InvalidKeywords:
   - _CUSTOMDATA
-  - _CUSTOMDATA_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

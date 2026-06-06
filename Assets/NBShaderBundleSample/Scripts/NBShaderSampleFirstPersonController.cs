@@ -169,7 +169,7 @@ public sealed class NBShaderSampleFirstPersonController : MonoBehaviour
             return;
         }
 
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUi())
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverInteractiveUi())
             LockCursor();
     }
 
@@ -243,9 +243,15 @@ public sealed class NBShaderSampleFirstPersonController : MonoBehaviour
             m_MobileControlsRoot.SetActive(useMobileControls);
     }
 
-    private static bool IsPointerOverUi()
+    private static bool IsPointerOverInteractiveUi()
     {
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return true;
+
+        if (Mouse.current == null)
+            return false;
+
+        return NBShaderBundleSampleEntry.IsPointerOverVisiblePanel(Mouse.current.position.ReadValue());
     }
 
     private static void LockCursor()

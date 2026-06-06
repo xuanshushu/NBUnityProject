@@ -35,9 +35,18 @@ ShaderVariantCollection:
         passType: 13
       - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _NORMALMAP _PARCUSTOMDATA_ON
         passType: 13
+      - keywords: _COLOR_RAMP _COLOR_RAMP_MAP _FX_LIGHT_MODE_UNLIT
+        passType: 13
+      - keywords: _COLOR_RAMP _COLOR_RAMP_MAP _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
+        passType: 13
       - keywords: _DISSOLVE _DISSOLVE_MASK _DISSOLVE_RAMP _FX_LIGHT_MODE_UNLIT
         passType: 13
       - keywords: _DISSOLVE _DISSOLVE_MASK _DISSOLVE_RAMP _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
+        passType: 13
+      - keywords: _DISTORT_REFRACTION _FX_LIGHT_MODE_BLINN_PHONG _NOISEMAP _NORMALMAP
+          _PARALLAX_MAPPING _SPECULAR_COLOR
+        passType: 13
+      - keywords: _DISTORT_REFRACTION _NOISEMAP _NORMALMAP
         passType: 13
       - keywords: _FRESNEL _FX_LIGHT_MODE_BLINN_PHONG _NORMALMAP _SPECULAR_COLOR
         passType: 13
@@ -76,6 +85,8 @@ ShaderVariantCollection:
       - keywords: _HOUDINI_VAT_RIGIDBODY _VAT _VAT_HOUDINI
         passType: 13
       - keywords: _HOUDINI_VAT_SOFTBODY _VAT _VAT_HOUDINI
+        passType: 13
+      - keywords: _NOISEMAP _NORMALMAP _PARCUSTOMDATA_ON _SCREEN_DISTORT_MODE
         passType: 13
       - keywords: _NORMALMAP _PARCUSTOMDATA_ON
         passType: 13

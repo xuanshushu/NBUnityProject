@@ -132,6 +132,7 @@ MonoBehaviour:
   - _NOISEMAP
   - _NOISE_MASKMAP
   - _NORMALMAP
+  - _OVERRIDE_Z
   - _PARALLAX_MAPPING
   - _PARCUSTOMDATA_ON
   - _PROGRAM_NOISE
@@ -156,18 +157,12 @@ MonoBehaviour:
   - _VERTEX_OFFSET
   - _VERTEX_OFFSET_MASKMAP
   lowAllowedPassFeatures:
-  - pass.backFirst
   - pass.screenDistort.cameraOpaque
-  - pass.screenDistort.deferred
   - pass.depthOnly
-  - pass.shadowCaster
   - pass.universal2D
   mediumAllowedPassFeatures:
-  - pass.backFirst
   - pass.screenDistort.cameraOpaque
-  - pass.screenDistort.deferred
   - pass.depthOnly
-  - pass.shadowCaster
   - pass.universal2D
   highAllowedPassFeatures:
   - pass.backFirst
@@ -185,7 +180,7 @@ MonoBehaviour:
   - pass.universal2D
   qualityTierMappings:
   - qualityName: Performant
-    tier: 0
+    tier: 1
   - qualityName: Balanced
     tier: 2
   - qualityName: High Fidelity

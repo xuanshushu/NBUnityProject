@@ -164,19 +164,13 @@ MonoBehaviour:
   m_TierPassSets:
   - tier: 0
     allowedPassFeatures:
-    - pass.backFirst
     - pass.screenDistort.cameraOpaque
-    - pass.screenDistort.deferred
     - pass.depthOnly
-    - pass.shadowCaster
     - pass.universal2D
   - tier: 1
     allowedPassFeatures:
-    - pass.backFirst
     - pass.screenDistort.cameraOpaque
-    - pass.screenDistort.deferred
     - pass.depthOnly
-    - pass.shadowCaster
     - pass.universal2D
   - tier: 2
     allowedPassFeatures:
@@ -196,7 +190,7 @@ MonoBehaviour:
     - pass.universal2D
   m_QualityTierMappings:
   - qualityName: Performant
-    tier: 0
+    tier: 1
   - qualityName: Balanced
     tier: 2
   - qualityName: High Fidelity

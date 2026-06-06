@@ -12,8 +12,6 @@ ShaderVariantCollection:
     second:
       variants:
       - keywords: 
-        passType: 8
-      - keywords: 
         passType: 13
       - keywords: EVALUATE_SH_VERTEX
         passType: 13

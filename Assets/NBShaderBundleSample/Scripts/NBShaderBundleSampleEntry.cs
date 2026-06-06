@@ -26,15 +26,30 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
     private AssetBundle m_CurrentShaderBundle;
     private ShaderVariantCollection m_CurrentVariantCollection;
     private NBShaderFeatureRuntimeSettings m_CurrentRuntimeSettings;
+    private Scene m_EntryScene;
+    private bool m_IsRegisteredForPointerBlock;
+    private static int s_ActivePointerBlockCount;
 
     private void Awake()
     {
+        m_EntryScene = gameObject.scene;
         ForceLandscapeOrientation();
     }
 
     private void OnEnable()
     {
+        RegisterPointerBlock();
         ForceLandscapeOrientation();
+    }
+
+    private void OnDisable()
+    {
+        UnregisterPointerBlock();
+    }
+
+    private void OnDestroy()
+    {
+        UnregisterPointerBlock();
     }
 
     private static void ForceLandscapeOrientation()
@@ -48,9 +63,7 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
 
     private void OnGUI()
     {
-        var margin = Mathf.Min(24f, Mathf.Max(8f, Screen.width * 0.04f));
-        var width = Mathf.Min(420f, Mathf.Max(240f, Screen.width - margin * 2f));
-        var area = new Rect(margin, margin, width, Screen.height - margin * 2f);
+        var area = GetPanelRect();
         GUILayout.BeginArea(area, GUI.skin.box);
         GUILayout.Label("NBShader Bundle Sample", GUI.skin.label);
         GUILayout.Space(8f);
@@ -81,6 +94,11 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
 
         GUILayout.Space(12f);
         GUILayout.Label("Scene bundle: " + GetBundlePath(m_SampleSceneBundleName));
+#if UNITY_EDITOR
+        var editorBundleTargetWarning = GetEditorBundleTargetWarning();
+        if (!string.IsNullOrEmpty(editorBundleTargetWarning))
+            GUILayout.Label(editorBundleTargetWarning);
+#endif
         GUILayout.EndArea();
     }
 
@@ -170,6 +188,14 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
             yield break;
         }
 
+        ActivateSampleScene(scene);
+        if (HasError())
+        {
+            yield return UnloadCurrentContentRoutine();
+            FinishLoading();
+            yield break;
+        }
+
         var materialCount = 0;
         try
         {
@@ -197,6 +223,7 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
         var loadedScene = SceneManager.GetSceneByName(m_SampleSceneName);
         if (loadedScene.IsValid() && loadedScene.isLoaded)
         {
+            RestoreEntrySceneActiveIfNeeded(loadedScene);
             var unloadSceneOperation = SceneManager.UnloadSceneAsync(loadedScene);
             if (unloadSceneOperation != null)
                 yield return unloadSceneOperation;
@@ -218,6 +245,30 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
 
         m_LoadedTier = null;
         yield return Resources.UnloadUnusedAssets();
+    }
+
+    private void ActivateSampleScene(Scene scene)
+    {
+        if (!SceneManager.SetActiveScene(scene))
+        {
+            m_Error = "Failed to activate loaded scene: " + scene.name;
+            return;
+        }
+
+        DynamicGI.UpdateEnvironment();
+    }
+
+    private void RestoreEntrySceneActiveIfNeeded(Scene sceneToUnload)
+    {
+        if (SceneManager.GetActiveScene() != sceneToUnload)
+            return;
+
+        var entryScene = m_EntryScene;
+        if (!entryScene.IsValid() || !entryScene.isLoaded)
+            entryScene = gameObject.scene;
+
+        if (entryScene.IsValid() && entryScene.isLoaded)
+            SceneManager.SetActiveScene(entryScene);
     }
 
     private IEnumerator LoadBundleRoutine(string bundleName, Action<AssetBundle> onLoaded)
@@ -423,6 +474,24 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
         return Path.Combine(Application.streamingAssetsPath, m_BundleRoot, bundleName).Replace('\\', '/');
     }
 
+#if UNITY_EDITOR
+    private static string GetEditorBundleTargetWarning()
+    {
+        var buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+        if (buildTarget == UnityEditor.BuildTarget.StandaloneWindows ||
+            buildTarget == UnityEditor.BuildTarget.StandaloneWindows64 ||
+            buildTarget == UnityEditor.BuildTarget.StandaloneOSX ||
+            buildTarget == UnityEditor.BuildTarget.StandaloneLinux64)
+        {
+            return null;
+        }
+
+        return "Editor preview uses AssetBundles built for the active Build Target (" +
+               buildTarget +
+               "). Switch to Standalone and rebuild AssetBundles for Editor preview; use Android bundles in an Android player.";
+    }
+#endif
+
     public string sampleSceneName { get { return m_SampleSceneName; } }
     public string sampleSceneBundleName { get { return m_SampleSceneBundleName; } }
 
@@ -440,6 +509,40 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
         {
             GUI.enabled = m_PreviousEnabled;
         }
+    }
+
+    public static bool IsPointerOverVisiblePanel(Vector2 screenPosition)
+    {
+        if (s_ActivePointerBlockCount <= 0)
+            return false;
+
+        var guiPosition = new Vector2(screenPosition.x, Screen.height - screenPosition.y);
+        return GetPanelRect().Contains(guiPosition);
+    }
+
+    private static Rect GetPanelRect()
+    {
+        var margin = Mathf.Min(24f, Mathf.Max(8f, Screen.width * 0.04f));
+        var width = Mathf.Min(420f, Mathf.Max(240f, Screen.width - margin * 2f));
+        return new Rect(margin, margin, width, Screen.height - margin * 2f);
+    }
+
+    private void RegisterPointerBlock()
+    {
+        if (m_IsRegisteredForPointerBlock)
+            return;
+
+        m_IsRegisteredForPointerBlock = true;
+        s_ActivePointerBlockCount++;
+    }
+
+    private void UnregisterPointerBlock()
+    {
+        if (!m_IsRegisteredForPointerBlock)
+            return;
+
+        m_IsRegisteredForPointerBlock = false;
+        s_ActivePointerBlockCount = Mathf.Max(0, s_ActivePointerBlockCount - 1);
     }
 }
 
