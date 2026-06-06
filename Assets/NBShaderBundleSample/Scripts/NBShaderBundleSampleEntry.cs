@@ -486,9 +486,9 @@ public sealed class NBShaderBundleSampleEntry : MonoBehaviour
             return null;
         }
 
-        return "Editor preview uses AssetBundles built for the active Build Target (" +
+        return "Editor preview reads Windows64 AssetBundles from StreamingAssets. Active Build Target is " +
                buildTarget +
-               "). Switch to Standalone and rebuild AssetBundles for Editor preview; use Android bundles in an Android player.";
+               "; use Build PC AssetBundles before Play if another platform build changed StreamingAssets.";
     }
 #endif
 
