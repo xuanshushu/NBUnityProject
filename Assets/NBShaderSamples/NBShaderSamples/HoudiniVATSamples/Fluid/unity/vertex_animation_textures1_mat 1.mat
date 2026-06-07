@@ -25,7 +25,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2100
   stringTagMap: {}
   disabledShaderPasses:
   - SRPDEFAULTUNLIT
@@ -216,7 +216,7 @@ Material:
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 3
     - _W9ParticleShaderFlags: 8194
-    - _W9ParticleShaderFlags1: 2359296
+    - _W9ParticleShaderFlags1: 2097152
     - _W9ParticleShaderGUIFoldToggle: 11
     - _W9ParticleShaderGUIFoldToggle1: 134217728
     - _W9ParticleShaderGUIFoldToggle2: 4351
@@ -337,7 +337,7 @@ Material:
     - _EmissionMapUVRotation: 0
     - _EmissionSelfAlphaWeight: 0
     - _EmissionUVModeFoldOut: 0
-    - _FeatureBigBlockItemFoldOut: 0
+    - _FeatureBigBlockItemFoldOut: 1
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
     - _ForceZWriteToggle: 0
@@ -478,7 +478,7 @@ Material:
     - _StencilWithoutPlayerToggle: 0
     - _StencilWriteMask: 255
     - _StencilZFail: 0
-    - _TABigBlockItemFoldOut: 0
+    - _TABigBlockItemFoldOut: 1
     - _TWStrength: 1
     - _TexDistortion_intensity: 0.5
     - _TimeMode: 0
@@ -490,7 +490,7 @@ Material:
     - _UVSec: 0
     - _UnloadRotTex: 0
     - _UseUV1_Toggle: 0
-    - _VATBlockFoldOut: 0
+    - _VATBlockFoldOut: 1
     - _VATIncludesNormals: 0
     - _VATMode: 0
     - _VAT_Toggle: 1
@@ -504,7 +504,7 @@ Material:
     - _VertexOffset_Toggle: 0
     - _WorldSpaceUVModeSelector: 1
     - _XianXingCH_UVRota: 0
-    - _ZOffsetBlockFoldOut: 0
+    - _ZOffsetBlockFoldOut: 1
     - _ZOffset_Toggle: 0
     - _ZTest: 4
     - _ZWrite: 1

@@ -116,7 +116,4 @@ MonoBehaviour:
   m_Name: NBPostProcess
   m_EditorClassIdentifier: 
   m_Active: 1
-  downSampling: 1
-  disturbanceLayerMask:
-    serializedVersion: 2
-    m_Bits: 33555456
+  downSampling: 0

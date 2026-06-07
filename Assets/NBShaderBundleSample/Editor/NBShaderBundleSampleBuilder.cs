@@ -21,9 +21,14 @@ public static class NBShaderBundleSampleBuilder
     private const string BundleBuildRoot = GeneratedRoot + "/BundleBuild";
     private const string BundleStagingOutputFolder = GeneratedRoot + "/BundleOutputStaging";
     private const string BundleOutputBackupFolder = GeneratedRoot + "/BundleOutputBackup";
+    private const string PlatformBundleOutputRoot = GeneratedRoot + "/BundleOutput";
+    private const string Windows64BundleOutputFolder = PlatformBundleOutputRoot + "/StandaloneWindows64";
+    private const string AndroidBundleOutputFolder = PlatformBundleOutputRoot + "/Android";
     private const string BundleOutputFolder = "Assets/StreamingAssets/NBShaderBundleSample";
     private const string ApkOutputFolder = "Builds/NBShaderBundleSample";
     private const string ApkOutputPath = ApkOutputFolder + "/NBShaderBundleSample.apk";
+    private const string Windows64OutputFolder = ApkOutputFolder + "/Windows64";
+    private const string Windows64OutputPath = Windows64OutputFolder + "/NBShaderBundleSample.exe";
 
     private const string SampleSceneBundleName = "sample_scene.ab";
     // Scene dependencies are authored against this stable bundle name; final tier files are renamed copies.
@@ -37,14 +42,32 @@ public static class NBShaderBundleSampleBuilder
         new TierBuildSpec(NBShaderFeatureTier.Ultra, "nbshader_ultra.ab")
     };
 
-    [MenuItem("Tools/NBShader/Bundle Sample/Build AssetBundles")]
+    [MenuItem("Tools/NBShader/Bundle Sample/Build PC AssetBundles")]
     public static void BuildAssetBundles()
     {
-        BuildAssetBundles(true);
+        BuildPcAssetBundles(true);
     }
 
-    private static void BuildAssetBundles(bool strictContentValidation)
+    private static void BuildPcAssetBundles(bool strictContentValidation)
     {
+        BuildAssetBundles(
+            BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneWindows64,
+            Windows64BundleOutputFolder,
+            strictContentValidation);
+        PublishCachedBundleOutputs(Windows64BundleOutputFolder, BundleOutputFolder, strictContentValidation);
+        Debug.Log(
+            "NBShader bundle sample Windows64 AssetBundles built to " + Windows64BundleOutputFolder +
+            " and published to " + BundleOutputFolder);
+    }
+
+    private static void BuildAssetBundles(
+        BuildTargetGroup targetGroup,
+        BuildTarget target,
+        string publishFolder,
+        bool strictContentValidation)
+    {
+        EnsureBuildTarget(targetGroup, target);
         EnsureRequiredAsset(EntryScenePath);
         EnsureRequiredAsset(SampleScenePath);
         EnsureRequiredAssetOfType<Shader>(NBShaderPath);
@@ -63,12 +86,12 @@ public static class NBShaderBundleSampleBuilder
                 throw new BuildFailedException("NBShader SVC generation failed: " + svcResult.firstErrorMessage);
 
             var runtimeSettingsByTier = CreateRuntimeSettingsAssets();
-            BuildTierBundleSets(runtimeSettingsByTier, BundleStagingOutputFolder);
+            BuildTierBundleSets(runtimeSettingsByTier, BundleStagingOutputFolder, target);
             AssetDatabase.Refresh();
             ValidateBundleOutputs(BundleStagingOutputFolder);
             ValidateBundleContents(BundleStagingOutputFolder, strictContentValidation);
-            CommitBundleOutputs();
-            ValidateBundleOutputs(BundleOutputFolder);
+            PublishBundleOutputs(BundleStagingOutputFolder, publishFolder);
+            ValidateBundleOutputs(publishFolder);
         }
         finally
         {
@@ -79,43 +102,133 @@ public static class NBShaderBundleSampleBuilder
         }
 
         AssetDatabase.Refresh();
-        Debug.Log("NBShader bundle sample AssetBundles built to " + BundleOutputFolder);
+        Debug.Log("NBShader bundle sample " + target + " AssetBundles built to " + publishFolder);
     }
 
     [MenuItem("Tools/NBShader/Bundle Sample/Validate Build Outputs")]
     public static void ValidateBuildOutputs()
     {
-        ValidateEntrySceneBuildConfiguration(true);
-        ValidatePublishedBundleOutputs(true);
-        Debug.Log("NBShader bundle sample build outputs are valid.");
+        var originalTarget = EditorUserBuildSettings.activeBuildTarget;
+        var originalGroup = BuildPipeline.GetBuildTargetGroup(originalTarget);
+        Exception validateException = null;
+
+        try
+        {
+            EnsureBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+            ValidateEntrySceneBuildConfiguration(true);
+            ValidatePublishedBundleOutputs(true);
+            Debug.Log("NBShader bundle sample Windows64 build outputs are valid.");
+        }
+        catch (Exception exception)
+        {
+            validateException = exception;
+            throw;
+        }
+        finally
+        {
+            var restoreException = RestoreBuildTarget(originalGroup, originalTarget);
+            if (validateException == null && restoreException != null)
+            {
+                throw new BuildFailedException(
+                    "NBShader bundle sample build outputs are valid, but build target restoration failed: " +
+                    restoreException.Message);
+            }
+        }
     }
 
     [MenuItem("Tools/NBShader/Bundle Sample/Build Android APK")]
     public static void BuildAndroidApk()
     {
-        if (!EnsureAndroidBuildTarget())
-            throw new BuildFailedException("Failed to switch active build target to Android.");
+        var originalTarget = EditorUserBuildSettings.activeBuildTarget;
+        var originalGroup = BuildPipeline.GetBuildTargetGroup(originalTarget);
+        Exception buildException = null;
 
-        BuildAssetBundles(false);
-        ValidateEntrySceneBuildConfiguration(false);
-
-        var outputPath = GetProjectAbsolutePath(ApkOutputPath);
-        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+        try
         {
-            scenes = new[] { EntryScenePath },
-            locationPathName = outputPath,
-            target = BuildTarget.Android,
-            options = BuildOptions.Development | BuildOptions.AllowDebugging
-        });
+            BuildAssetBundles(BuildTargetGroup.Android, BuildTarget.Android, AndroidBundleOutputFolder, false);
+            PublishCachedBundleOutputs(AndroidBundleOutputFolder, BundleOutputFolder, false);
+            ValidateEntrySceneBuildConfiguration(false);
 
-        if (report == null || report.summary.result != BuildResult.Succeeded)
-        {
-            var result = report != null ? report.summary.result.ToString() : "No report";
-            throw new BuildFailedException("NBShader bundle sample Android APK build failed: " + result);
+            var outputPath = GetProjectAbsolutePath(ApkOutputPath);
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = new[] { EntryScenePath },
+                locationPathName = outputPath,
+                target = BuildTarget.Android,
+                options = BuildOptions.Development | BuildOptions.AllowDebugging
+            });
+
+            if (report == null || report.summary.result != BuildResult.Succeeded)
+            {
+                var result = report != null ? report.summary.result.ToString() : "No report";
+                throw new BuildFailedException("NBShader bundle sample Android APK build failed: " + result);
+            }
+
+            Debug.Log("NBShader bundle sample Android development APK built to " + ApkOutputPath);
         }
+        catch (Exception exception)
+        {
+            buildException = exception;
+            throw;
+        }
+        finally
+        {
+            var restoreException = RestorePcBundlesAndBuildTarget(originalGroup, originalTarget);
+            if (buildException == null && restoreException != null)
+            {
+                throw new BuildFailedException(
+                    "NBShader bundle sample Android APK built, but post-build restoration failed: " +
+                    restoreException.Message);
+            }
+        }
+    }
 
-        Debug.Log("NBShader bundle sample Android development APK built to " + ApkOutputPath);
+    [MenuItem("Tools/NBShader/Bundle Sample/Build Windows64 Player")]
+    public static void BuildWindows64Player()
+    {
+        var originalTarget = EditorUserBuildSettings.activeBuildTarget;
+        var originalGroup = BuildPipeline.GetBuildTargetGroup(originalTarget);
+        Exception buildException = null;
+
+        try
+        {
+            BuildPcAssetBundles(false);
+            ValidateEntrySceneBuildConfiguration(false);
+
+            var outputPath = GetProjectAbsolutePath(Windows64OutputPath);
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = new[] { EntryScenePath },
+                locationPathName = outputPath,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.Development | BuildOptions.AllowDebugging
+            });
+
+            if (report == null || report.summary.result != BuildResult.Succeeded)
+            {
+                var result = report != null ? report.summary.result.ToString() : "No report";
+                throw new BuildFailedException("NBShader bundle sample Windows64 player build failed: " + result);
+            }
+
+            Debug.Log("NBShader bundle sample Windows64 development player built to " + Windows64OutputPath);
+        }
+        catch (Exception exception)
+        {
+            buildException = exception;
+            throw;
+        }
+        finally
+        {
+            var restoreException = RestoreBuildTarget(originalGroup, originalTarget);
+            if (buildException == null && restoreException != null)
+            {
+                throw new BuildFailedException(
+                    "NBShader bundle sample Windows64 player built, but build target restoration failed: " +
+                    restoreException.Message);
+            }
+        }
     }
 
     private static Dictionary<NBShaderFeatureTier, string> CreateRuntimeSettingsAssets()
@@ -157,7 +270,10 @@ public static class NBShaderBundleSampleBuilder
         return settings;
     }
 
-    private static void BuildTierBundleSets(Dictionary<NBShaderFeatureTier, string> runtimeSettingsByTier, string outputFolder)
+    private static void BuildTierBundleSets(
+        Dictionary<NBShaderFeatureTier, string> runtimeSettingsByTier,
+        string outputFolder,
+        BuildTarget target)
     {
         var copiedSceneBundle = false;
         for (var i = 0; i < TierBuilds.Length; i++)
@@ -189,7 +305,8 @@ public static class NBShaderBundleSampleBuilder
                             assetNames = new[] { NBShaderPath, svcPath, runtimeSettingsPath }
                         }
                     },
-                    spec.bundleName);
+                    spec.bundleName,
+                    target);
                 ValidateTierBuildManifest(manifest, spec.bundleName);
 
                 // The scene bundle is built with each tier so Unity records the stable internal shader dependency name.
@@ -204,14 +321,18 @@ public static class NBShaderBundleSampleBuilder
         }
     }
 
-    private static AssetBundleManifest BuildBundles(string outputFolder, AssetBundleBuild[] builds, string label)
+    private static AssetBundleManifest BuildBundles(
+        string outputFolder,
+        AssetBundleBuild[] builds,
+        string label,
+        BuildTarget target)
     {
         EnsureAssetFolder(outputFolder);
         var manifest = BuildPipeline.BuildAssetBundles(
             outputFolder,
             builds,
             BuildAssetBundleOptions.ChunkBasedCompression,
-            EditorUserBuildSettings.activeBuildTarget);
+            target);
         if (manifest == null)
             throw new BuildFailedException("Failed to build NBShader bundle sample " + label + ".");
 
@@ -422,23 +543,44 @@ public static class NBShaderBundleSampleBuilder
             throw new BuildFailedException("Expected bundle output is missing: " + assetPath);
     }
 
-    private static void CommitBundleOutputs()
+    private static void PublishCachedBundleOutputs(string sourceFolder, string targetFolder, bool strictContentValidation)
     {
-        EnsureAssetFolder(GetParentAssetFolder(BundleOutputFolder));
+        ValidateBundleOutputs(sourceFolder);
+        RecreateAssetFolder(BundleStagingOutputFolder);
+        CopyBundleOutputFiles(sourceFolder, BundleStagingOutputFolder);
+        AssetDatabase.Refresh();
+        ValidateBundleOutputs(BundleStagingOutputFolder);
+        ValidateBundleContents(BundleStagingOutputFolder, strictContentValidation);
+        PublishBundleOutputs(BundleStagingOutputFolder, targetFolder);
+        ValidateBundleOutputs(targetFolder);
+    }
+
+    private static void CopyBundleOutputFiles(string sourceFolder, string targetFolder)
+    {
+        EnsureAssetFolder(targetFolder);
+        CopyGeneratedFile(sourceFolder + "/" + SampleSceneBundleName, targetFolder + "/" + SampleSceneBundleName);
+        for (var i = 0; i < TierBuilds.Length; i++)
+            CopyGeneratedFile(sourceFolder + "/" + TierBuilds[i].bundleName, targetFolder + "/" + TierBuilds[i].bundleName);
+    }
+
+    private static void PublishBundleOutputs(string sourceFolder, string targetFolder)
+    {
+        EnsureAssetFolder(GetParentAssetFolder(targetFolder));
 
         var backupCreated = false;
         if (AssetDatabase.IsValidFolder(BundleOutputBackupFolder))
             AssetDatabase.DeleteAsset(BundleOutputBackupFolder);
 
-        if (AssetDatabase.IsValidFolder(BundleOutputFolder))
+        if (AssetDatabase.IsValidFolder(targetFolder))
         {
-            var backupError = AssetDatabase.MoveAsset(BundleOutputFolder, BundleOutputBackupFolder);
+            var backupError = AssetDatabase.MoveAsset(targetFolder, BundleOutputBackupFolder);
             if (!string.IsNullOrEmpty(backupError))
-                throw new BuildFailedException("Failed to back up existing NBShader bundle sample output: " + backupError);
+                throw new BuildFailedException(
+                    "Failed to back up existing NBShader bundle sample output " + targetFolder + ": " + backupError);
             backupCreated = true;
         }
 
-        var moveError = AssetDatabase.MoveAsset(BundleStagingOutputFolder, BundleOutputFolder);
+        var moveError = AssetDatabase.MoveAsset(sourceFolder, targetFolder);
         if (string.IsNullOrEmpty(moveError))
         {
             if (backupCreated)
@@ -446,19 +588,66 @@ public static class NBShaderBundleSampleBuilder
             return;
         }
 
-        if (backupCreated && AssetDatabase.IsValidFolder(BundleOutputBackupFolder) && !AssetDatabase.IsValidFolder(BundleOutputFolder))
+        if (backupCreated && AssetDatabase.IsValidFolder(BundleOutputBackupFolder) && !AssetDatabase.IsValidFolder(targetFolder))
         {
-            var restoreError = AssetDatabase.MoveAsset(BundleOutputBackupFolder, BundleOutputFolder);
+            var restoreError = AssetDatabase.MoveAsset(BundleOutputBackupFolder, targetFolder);
             if (!string.IsNullOrEmpty(restoreError))
             {
                 throw new BuildFailedException(
-                    "Failed to publish NBShader bundle sample output: " + moveError +
+                    "Failed to publish NBShader bundle sample output to " + targetFolder + ": " + moveError +
                     "\nFailed to restore previous output from backup: " + restoreError +
                     "\nPrevious output remains at " + BundleOutputBackupFolder + ".");
             }
         }
 
-        throw new BuildFailedException("Failed to publish NBShader bundle sample output: " + moveError);
+        throw new BuildFailedException(
+            "Failed to publish NBShader bundle sample output from " + sourceFolder + " to " + targetFolder + ": " + moveError);
+    }
+
+    private static Exception RestorePcBundlesAndBuildTarget(BuildTargetGroup originalGroup, BuildTarget originalTarget)
+    {
+        Exception firstException = null;
+        try
+        {
+            BuildPcAssetBundles(false);
+        }
+        catch (Exception exception)
+        {
+            firstException = exception;
+            Debug.LogWarning(
+                "Failed to restore Windows64 NBShader bundle sample AssetBundles after player build: " +
+                exception.Message);
+        }
+
+        var targetException = RestoreBuildTarget(originalGroup, originalTarget);
+        if (firstException == null)
+            firstException = targetException;
+
+        return firstException;
+    }
+
+    private static Exception RestoreBuildTarget(BuildTargetGroup originalGroup, BuildTarget originalTarget)
+    {
+        try
+        {
+            EnsureBuildTarget(originalGroup, originalTarget);
+            return null;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning(
+                "Failed to restore Unity Build Target to " + originalTarget + ": " + exception.Message);
+            return exception;
+        }
+    }
+
+    private static void EnsureBuildTarget(BuildTargetGroup targetGroup, BuildTarget target)
+    {
+        if (EditorUserBuildSettings.activeBuildTarget == target)
+            return;
+
+        if (!EditorUserBuildSettings.SwitchActiveBuildTarget(targetGroup, target))
+            throw new BuildFailedException("Failed to switch active build target to " + target + ".");
     }
 
     private static string GetProjectAbsolutePath(string assetPath)
@@ -505,14 +694,6 @@ public static class NBShaderBundleSampleBuilder
             throw new BuildFailedException(message);
 
         Debug.LogWarning(message);
-    }
-
-    private static bool EnsureAndroidBuildTarget()
-    {
-        if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
-            return true;
-
-        return EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
     }
 
     private static void EnsureAssetFolder(string folder)
