@@ -159,25 +159,21 @@ MonoBehaviour:
   lowAllowedPassFeatures:
   - pass.screenDistort.cameraOpaque
   - pass.depthOnly
-  - pass.universal2D
   mediumAllowedPassFeatures:
   - pass.screenDistort.cameraOpaque
   - pass.depthOnly
-  - pass.universal2D
   highAllowedPassFeatures:
   - pass.backFirst
   - pass.screenDistort.cameraOpaque
   - pass.screenDistort.deferred
   - pass.depthOnly
   - pass.shadowCaster
-  - pass.universal2D
   ultraAllowedPassFeatures:
   - pass.backFirst
   - pass.screenDistort.cameraOpaque
   - pass.screenDistort.deferred
   - pass.depthOnly
   - pass.shadowCaster
-  - pass.universal2D
   qualityTierMappings:
   - qualityName: Performant
     tier: 1

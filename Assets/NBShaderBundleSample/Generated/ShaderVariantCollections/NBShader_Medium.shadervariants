@@ -13,17 +13,11 @@ ShaderVariantCollection:
       variants:
       - keywords: 
         passType: 13
-      - keywords: EVALUATE_SH_VERTEX _FLIPBOOKBLENDING_ON _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: EVALUATE_SH_VERTEX _FLIPBOOKBLENDING_ON _SOFTPARTICLES_ON
-        passType: 13
-      - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _PARCUSTOMDATA_ON
         passType: 13
       - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _SOFTPARTICLES_ON
         passType: 13
       - keywords: _DISSOLVE _DISSOLVE_MASK _FX_LIGHT_MODE_UNLIT
-        passType: 13
-      - keywords: _DISSOLVE _DISSOLVE_MASK _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
         passType: 13
       - keywords: _FRESNEL
         passType: 13
@@ -31,25 +25,11 @@ ShaderVariantCollection:
         passType: 13
       - keywords: _FRESNEL _FX_LIGHT_MODE_UNLIT
         passType: 13
-      - keywords: _FRESNEL _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
-        passType: 13
-      - keywords: _FRESNEL _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT
         passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON
         passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _NOISEMAP _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _NOISEMAP _SOFTPARTICLES_ON
         passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _PARCUSTOMDATA_ON
-        passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _NOISEMAP
-        passType: 13
-      - keywords: _NOISEMAP _PARCUSTOMDATA_ON
-        passType: 13
-      - keywords: _PARCUSTOMDATA_ON
         passType: 13

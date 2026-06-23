@@ -43,9 +43,10 @@ Material:
   stringTagMap: {}
   disabledShaderPasses:
   - SRPDEFAULTUNLIT
-  - NBDeferredDistortPass
+  - Universal2D
   - SHADOWCASTER
   - DepthOnly
+  - NBDeferredDistortPass
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3

@@ -28,20 +28,12 @@ ShaderVariantCollection:
       - keywords: EVALUATE_SH_VERTEX _FLIPBOOKBLENDING_ON _FX_LIGHT_MODE_SIX_WAY
           _SOFTPARTICLES_ON
         passType: 13
-      - keywords: EVALUATE_SH_VERTEX _FLIPBOOKBLENDING_ON _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _FX_LIGHT_MODE_BLINN_PHONG
           _NORMALMAP _SOFTPARTICLES_ON
         passType: 13
-      - keywords: _ALPHAPREMULTIPLY_ON _FLIPBOOKBLENDING_ON _NORMALMAP _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _COLOR_RAMP _COLOR_RAMP_MAP _FX_LIGHT_MODE_UNLIT
         passType: 13
-      - keywords: _COLOR_RAMP _COLOR_RAMP_MAP _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _DISSOLVE _DISSOLVE_MASK _DISSOLVE_RAMP _FX_LIGHT_MODE_UNLIT
-        passType: 13
-      - keywords: _DISSOLVE _DISSOLVE_MASK _DISSOLVE_RAMP _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
         passType: 13
       - keywords: _DISTORT_REFRACTION _FX_LIGHT_MODE_BLINN_PHONG _NOISEMAP _NORMALMAP
           _PARALLAX_MAPPING _SPECULAR_COLOR
@@ -52,11 +44,7 @@ ShaderVariantCollection:
         passType: 13
       - keywords: _FRESNEL _FX_LIGHT_MODE_HALF_LAMBERT _NORMALMAP _SPECULAR_COLOR
         passType: 13
-      - keywords: _FRESNEL _FX_LIGHT_MODE_UNLIT _NORMALMAP _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _FRESNEL _FX_LIGHT_MODE_UNLIT _NORMALMAP _SPECULAR_COLOR
-        passType: 13
-      - keywords: _FRESNEL _NORMALMAP _PARCUSTOMDATA_ON
         passType: 13
       - keywords: _FX_LIGHT_MODE_BLINN_PHONG _HOUDINI_VAT_DYNAMIC_REMESH _VAT _VAT_HOUDINI
         passType: 13
@@ -74,10 +62,6 @@ ShaderVariantCollection:
         passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP2_ON _MASKMAP3_ON _MASKMAP_ON
         passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP2_ON _MASKMAP3_ON _MASKMAP_ON _PARCUSTOMDATA_ON
-        passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _NOISEMAP _PARCUSTOMDATA_ON _SCREEN_DISTORT_MODE
-        passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _NOISEMAP _SOFTPARTICLES_ON
         passType: 13
       - keywords: _HOUDINI_VAT_DYNAMIC_REMESH _VAT _VAT_HOUDINI
@@ -85,10 +69,6 @@ ShaderVariantCollection:
       - keywords: _HOUDINI_VAT_RIGIDBODY _VAT _VAT_HOUDINI
         passType: 13
       - keywords: _HOUDINI_VAT_SOFTBODY _VAT _VAT_HOUDINI
-        passType: 13
-      - keywords: _NOISEMAP _NORMALMAP _PARCUSTOMDATA_ON _SCREEN_DISTORT_MODE
-        passType: 13
-      - keywords: _NORMALMAP _PARCUSTOMDATA_ON
         passType: 13
       - keywords: _TYFLOW_VAT_RELATIVE _VAT _VAT_TYFLOW
         passType: 13

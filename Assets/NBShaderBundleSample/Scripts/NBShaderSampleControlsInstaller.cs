@@ -4,6 +4,7 @@ using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using NBShader;
 
 public static class NBShaderSampleControlsInstaller
 {
@@ -133,7 +134,7 @@ public static class NBShaderSampleControlsInstaller
 
     private static void EnsureEventSystem(Scene scene)
     {
-        if (EventSystem.current != null || Object.FindObjectOfType<EventSystem>() != null)
+        if (EventSystem.current != null || FindExistingEventSystem() != null)
             return;
 
         var eventSystem = new GameObject(
@@ -141,6 +142,11 @@ public static class NBShaderSampleControlsInstaller
             typeof(EventSystem),
             typeof(InputSystemUIInputModule));
         SceneManager.MoveGameObjectToScene(eventSystem, scene);
+    }
+
+    private static EventSystem FindExistingEventSystem()
+    {
+        return UnityObjectFindCompat.FindAny<EventSystem>();
     }
 
     private static GameObject FindRootChild(Scene scene, string objectName)

@@ -15,23 +15,11 @@ ShaderVariantCollection:
         passType: 13
       - keywords: EVALUATE_SH_VERTEX
         passType: 13
-      - keywords: EVALUATE_SH_VERTEX _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _ALPHAPREMULTIPLY_ON
         passType: 13
-      - keywords: _ALPHAPREMULTIPLY_ON _PARCUSTOMDATA_ON
-        passType: 13
       - keywords: _DISSOLVE _DISSOLVE_MASK _FX_LIGHT_MODE_UNLIT
-        passType: 13
-      - keywords: _DISSOLVE _DISSOLVE_MASK _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
         passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT
         passType: 13
       - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON
-        passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _MASKMAP_ON _PARCUSTOMDATA_ON
-        passType: 13
-      - keywords: _FX_LIGHT_MODE_UNLIT _PARCUSTOMDATA_ON
-        passType: 13
-      - keywords: _PARCUSTOMDATA_ON
         passType: 13

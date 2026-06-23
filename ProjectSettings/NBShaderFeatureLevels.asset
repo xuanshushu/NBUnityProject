@@ -186,7 +186,7 @@ MonoBehaviour:
     - pass.shadowCaster
   m_QualityTierMappings:
   - qualityName: Performant
-    tier: 1
+    tier: 0
   - qualityName: Balanced
     tier: 2
   - qualityName: High Fidelity

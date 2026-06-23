@@ -31,6 +31,7 @@ Material:
   - NBDeferredDistortPass
   - DepthOnly
   - SHADOWCASTER
+  - Universal2D
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
