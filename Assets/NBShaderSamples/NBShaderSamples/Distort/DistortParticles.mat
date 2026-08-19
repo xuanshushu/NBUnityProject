@@ -28,6 +28,7 @@ Material:
   - _FX_LIGHT_MODE_UNLIT
   - _MASKMAP_ON
   - _NOISEMAP
+  - _NOISE_MASKMAP
   - _PARCUSTOMDATA_ON
   - _SCREEN_DISTORT_MODE
   - _SOFTPARTICLES_ON
@@ -127,7 +128,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseMaskMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -211,6 +212,7 @@ Material:
     - _MaskMap2GradientCount: 2
     - _MaskMap3GradientCount: 2
     - _MaskMapGradientCount: 2
+    - _NBShaderForceNoMipFlags: 0
     - _NBShaderGUIFoldToggle: 3
     - _NBShaderGUIFoldToggle1: 255
     - _NBShaderGUIFoldToggle2: 255
@@ -283,7 +285,9 @@ Material:
     - _ColorAdjustmentOnlyAffectMainTex: 0
     - _ColorBlendAlphaMultiplyMode: 0
     - _ColorBlendBlockFoldOut: 0
+    - _ColorBlendColorIntensity: 1
     - _ColorBlendMap_Toggle: 0
+    - _ColorBlendMode: 1
     - _ColorBlendUVModeFoldOut: 0
     - _ColorMask: 15
     - _ColorMode: 0
@@ -343,6 +347,9 @@ Material:
     - _DstBlendAlpha: 0
     - _EdgeFade: 0.05
     - _Emi_Distortion_intensity: 0
+    - _EmissionAlphaIntensity: 1
+    - _EmissionAlphaMultiplyMode: 0
+    - _EmissionBlendMode: 0
     - _EmissionBlockFoldOut: 0
     - _EmissionEnabled: 0
     - _EmissionMapColorIntensity: 1
@@ -399,7 +406,7 @@ Material:
     - _MaskMapFoldOut: 0
     - _MaskMapGradientToggle: 1
     - _MaskMapRotationSpeed: 0
-    - _MaskMapUVRotation: -90
+    - _MaskMapUVRotation: 0
     - _MaskPNoiseBlendOpacity: 1
     - _MaskRefineFoldOut: 0
     - _MaskRefineToggle: 0
@@ -421,9 +428,9 @@ Material:
     - _NB_Debug_VertexOffset: 0
     - _NoiseBlockFoldOut: 1
     - _NoiseIntensity: 1
-    - _NoiseMapFoldOut: 0
+    - _NoiseMapFoldOut: 1
     - _NoiseMapUVRotation: 0
-    - _NoiseMaskBlockFoldOut: 0
+    - _NoiseMaskBlockFoldOut: 1
     - _NoiseMaskUVModeFoldOut: 0
     - _NoiseUVModeFoldOut: 0
     - _ObjectPosUVMode: 0
@@ -469,7 +476,7 @@ Material:
     - _ScreenDistortAlphaMulti: 1
     - _ScreenDistortAlphaPow: 1
     - _ScreenDistortAlphaRefineToggle: 0
-    - _ScreenDistortIntensity: 0.286
+    - _ScreenDistortIntensity: 0.065
     - _ScreenDistortModeToggle: 1
     - _ShaderKeywordFoldOut: 0
     - _SharedUVBlockFoldOut: 0
@@ -541,7 +548,7 @@ Material:
     - _heightBaseScale: 0.2
     - _houdiniFPS: 24
     - _jingxiangCH_dire: 0
-    - _noiseMaskMap_Toggle: 0
+    - _noiseMaskMap_Toggle: 1
     - _noisemapEnabled: 1
     - _offsetFactor: 0
     - _offsetUnits: 0

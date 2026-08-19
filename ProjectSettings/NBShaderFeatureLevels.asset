@@ -191,4 +191,5 @@ MonoBehaviour:
     tier: 2
   - qualityName: High Fidelity
     tier: 3
+  m_DisableQualityTierWatcher: 0
   m_EnableDebugSymbols: 0

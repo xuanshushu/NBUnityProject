@@ -217,6 +217,7 @@ Material:
     - _NBShaderCustomDataFlag3: 0
     - _NBShaderFlags: 8450
     - _NBShaderFlags1: 8388608
+    - _NBShaderForceNoMipFlags: 0
     - _NBShaderGUIFoldToggle: 3
     - _NBShaderGUIFoldToggle1: 255
     - _NBShaderGUIFoldToggle2: 255
@@ -232,7 +233,7 @@ Material:
     - _W9ParticleCustomDataFlag3: 0
     - _W9ParticleShaderColorChannelFlag: 3
     - _W9ParticleShaderFlags: 10506
-    - _W9ParticleShaderFlags1: 8650752
+    - _W9ParticleShaderFlags1: 8388609
     - _W9ParticleShaderGUIFoldToggle: 144179615
     - _W9ParticleShaderGUIFoldToggle1: 671088640
     - _W9ParticleShaderGUIFoldToggle2: 255
@@ -291,7 +292,9 @@ Material:
     - _ColorAdjustmentOnlyAffectMainTex: 0
     - _ColorBlendAlphaMultiplyMode: 0
     - _ColorBlendBlockFoldOut: 0
+    - _ColorBlendColorIntensity: 1
     - _ColorBlendMap_Toggle: 0
+    - _ColorBlendMode: 1
     - _ColorBlendUVModeFoldOut: 0
     - _ColorMask: 15
     - _ColorMode: 0
@@ -351,6 +354,9 @@ Material:
     - _DstBlendAlpha: 0
     - _EdgeFade: 0.05
     - _Emi_Distortion_intensity: 0
+    - _EmissionAlphaIntensity: 1
+    - _EmissionAlphaMultiplyMode: 0
+    - _EmissionBlendMode: 0
     - _EmissionBlockFoldOut: 0
     - _EmissionEnabled: 0
     - _EmissionMapColorIntensity: 1

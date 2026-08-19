@@ -39,7 +39,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3100
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses:
   - SRPDEFAULTUNLIT
@@ -212,6 +212,7 @@ Material:
     - _MaskMap2GradientCount: 2
     - _MaskMap3GradientCount: 2
     - _MaskMapGradientCount: 2
+    - _NBShaderForceNoMipFlags: 0
     - _NBShaderGUIFoldToggle: 3
     - _NBShaderGUIFoldToggle1: 255
     - _NBShaderGUIFoldToggle2: 255
@@ -283,8 +284,10 @@ Material:
     - _ColorAdjustmentOnlyAffectMainTex: 0
     - _ColorBlendAlphaMultiplyMode: 0
     - _ColorBlendBlockFoldOut: 0
+    - _ColorBlendColorIntensity: 1
     - _ColorBlendFollowMainTexUV: 0
     - _ColorBlendMap_Toggle: 0
+    - _ColorBlendMode: 1
     - _ColorBlendUVModeFoldOut: 0
     - _ColorMask: 15
     - _ColorMode: 0
@@ -344,6 +347,9 @@ Material:
     - _DstBlendAlpha: 0
     - _EdgeFade: 0.05
     - _Emi_Distortion_intensity: 0
+    - _EmissionAlphaIntensity: 1
+    - _EmissionAlphaMultiplyMode: 0
+    - _EmissionBlendMode: 0
     - _EmissionBlockFoldOut: 0
     - _EmissionEnabled: 0
     - _EmissionFollowMainTexUV: 0
@@ -473,7 +479,7 @@ Material:
     - _ScreenDistortAlphaRefineToggle: 0
     - _ScreenDistortIntensity: 1
     - _ScreenDistortModeToggle: 2
-    - _ShaderKeywordFoldOut: 1
+    - _ShaderKeywordFoldOut: 0
     - _SharedUVBlockFoldOut: 0
     - _SharedUVModeFoldOut: 0
     - _SharedUVToggle: 0
