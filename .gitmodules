@@ -1,0 +1,3 @@
+[submodule "Packages/NB_FX"]
+	path = Packages/NB_FX
+	url = https://github.com/xuanshushu/NB_FX.git
