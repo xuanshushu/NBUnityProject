@@ -86,10 +86,9 @@ They must be followed at all times.
 
 ## Compatibility Rules
 
-- Must support Unity 2021.3 through current project targets.
-- Do not use APIs unavailable in older Unity versions unless guarded.
-- Use preprocessor directives when necessary.
-- Ensure ShaderLab and HLSL compatibility across supported versions.
+- Per NB_FX decision D21 (2026-09-27), current implementation and G1–G6 validation target the active Unity 6000.3.18f1 / URP, Shader Graph, and VFX Graph 17.3 environment. Unity 2021.3 and other lower-version compatibility are evaluated in the final T10/G7 round, not prerequisites for current functional work.
+- Do not claim support for an untested Unity/URP/Graph version. Guard version-specific APIs when a version is explicitly included in the validated support matrix.
+- Preserve the current environment's existing ShaderLab behavior, serialized materials, Flags protocol, GUI, Pass layout, and NBPostprocess contracts during the refactor.
 
 ## Problem Solving Rules
 
